@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>チンチラ体重管理</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🐭 チンチラ体重管理</h1>
+
+    <!-- チンチラ選択・追加 -->
+    <section class="card">
+      <h2>チンチラ</h2>
+      <div class="chinchilla-controls">
+        <select id="chinchilla-select">
+          <option value="">-- チンチラを選択 --</option>
+        </select>
+        <button id="btn-delete-chinchilla" class="btn btn-danger" disabled>削除</button>
+      </div>
+      <div class="add-chinchilla">
+        <input type="text" id="new-chinchilla-name" placeholder="名前を入力">
+        <input type="date" id="new-chinchilla-birthday" title="誕生日（任意）">
+        <button id="btn-add-chinchilla" class="btn btn-primary">追加</button>
+      </div>
+      <div id="chinchilla-info" class="chinchilla-info hidden"></div>
+    </section>
+
+    <!-- 体重記録 -->
+    <section class="card" id="weight-section">
+      <h2>体重を記録</h2>
+      <div class="weight-form">
+        <input type="date" id="weight-date">
+        <div class="weight-input-group">
+          <input type="number" id="weight-value" placeholder="体重" step="0.1" min="0">
+          <span class="unit">g</span>
+        </div>
+        <input type="text" id="weight-memo" placeholder="メモ（任意）">
+        <button id="btn-add-weight" class="btn btn-primary">記録</button>
+      </div>
+    </section>
+
+    <!-- グラフ -->
+    <section class="card" id="chart-section">
+      <h2>体重推移</h2>
+      <div class="chart-container">
+        <canvas id="weight-chart"></canvas>
+      </div>
+    </section>
+
+    <!-- 履歴テーブル -->
+    <section class="card" id="history-section">
+      <h2>記録履歴</h2>
+      <div class="table-wrapper">
+        <table id="weight-table">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>体重 (g)</th>
+              <th>前回比</th>
+              <th>メモ</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="weight-tbody"></tbody>
+        </table>
+      </div>
+      <p id="no-data-msg" class="no-data">データがありません</p>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
