@@ -2,7 +2,7 @@
   "use strict";
 
   // --- データ管理 ---
-  const STORAGE_KEY = "chinchilla_weight_app";
+  const STORAGE_KEY = "chinchilla_health_app";
 
   function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -29,6 +29,8 @@
   const elBtnAdd = document.getElementById("btn-add-chinchilla");
   const elBtnDelete = document.getElementById("btn-delete-chinchilla");
   const elInfo = document.getElementById("chinchilla-info");
+
+  // Weight elements
   const elWeightDate = document.getElementById("weight-date");
   const elWeightValue = document.getElementById("weight-value");
   const elWeightMemo = document.getElementById("weight-memo");
@@ -37,18 +39,53 @@
   const elNoData = document.getElementById("no-data-msg");
   const elCanvas = document.getElementById("weight-chart");
 
+  // Health check elements
+  const elHealthDate = document.getElementById("health-date");
+  const elBtnAddHealth = document.getElementById("btn-add-health");
+  const elHealthMemo = document.getElementById("health-memo");
+  const elHealthHistory = document.getElementById("health-history");
+  const elNoHealthMsg = document.getElementById("no-health-msg");
+
+  // Vet elements
+  const elVetDate = document.getElementById("vet-date");
+  const elVetClinic = document.getElementById("vet-clinic");
+  const elVetReason = document.getElementById("vet-reason");
+  const elVetDiagnosis = document.getElementById("vet-diagnosis");
+  const elVetTreatment = document.getElementById("vet-treatment");
+  const elVetCost = document.getElementById("vet-cost");
+  const elVetNextDate = document.getElementById("vet-next-date");
+  const elBtnAddVet = document.getElementById("btn-add-vet");
+  const elVetHistory = document.getElementById("vet-history");
+  const elNoVetMsg = document.getElementById("no-vet-msg");
+
+  // Dashboard elements
+  const elDashboardEmpty = document.getElementById("dashboard-empty");
+  const elDashboardContent = document.getElementById("dashboard-content");
+  const elSumWeight = document.getElementById("sum-weight");
+  const elSumWeightDiff = document.getElementById("sum-weight-diff");
+  const elSumHealthDate = document.getElementById("sum-health-date");
+  const elSumNextVet = document.getElementById("sum-next-vet");
+  const elDashboardAlerts = document.getElementById("dashboard-alerts");
+  const elRecentChecks = document.getElementById("recent-checks");
+  const elRecentChecksList = document.getElementById("recent-checks-list");
+  const elDashboardChart = document.getElementById("dashboard-chart");
+
   let chart = null;
+  let dashboardChart = null;
   let data = loadData();
 
   // --- 初期化 ---
   function init() {
     elWeightDate.value = todayStr();
+    elHealthDate.value = todayStr();
+    elVetDate.value = todayStr();
     renderChinchillaSelect();
     if (data.selectedId) {
       elSelect.value = data.selectedId;
     }
     onSelectChange();
 
+    // イベントリスナー
     elBtnAdd.addEventListener("click", addChinchilla);
     elNewName.addEventListener("keydown", (e) => {
       if (e.key === "Enter") addChinchilla();
@@ -59,10 +96,48 @@
     elWeightValue.addEventListener("keydown", (e) => {
       if (e.key === "Enter") addWeight();
     });
+    elBtnAddHealth.addEventListener("click", addHealthCheck);
+    elBtnAddVet.addEventListener("click", addVetRecord);
+
+    // タブ切り替え
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const tabName = e.target.dataset.tab;
+        switchTab(tabName);
+      });
+    });
+
+    // Rating buttons
+    document.querySelectorAll(".rating-group").forEach((group) => {
+      group.querySelectorAll(".rating-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          group.querySelectorAll(".rating-btn").forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+      });
+    });
   }
 
   function todayStr() {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  function switchTab(tabName) {
+    // Update buttons
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.tab === tabName);
+    });
+
+    // Update content
+    document.querySelectorAll(".tab-content").forEach((content) => {
+      content.classList.remove("active");
+    });
+    document.getElementById(`tab-${tabName}`).classList.add("active");
+
+    // Render chart if switching to weight tab
+    if (tabName === "weight") {
+      setTimeout(() => renderChart(), 100);
+    }
   }
 
   // --- チンチラ管理 ---
@@ -89,6 +164,8 @@
       name,
       birthday: elNewBirthday.value || null,
       records: [],
+      healthChecks: [],
+      vetRecords: [],
     };
     data.chinchillas.push(chinchilla);
     data.selectedId = chinchilla.id;
@@ -103,7 +180,7 @@
   function deleteChinchilla() {
     const chin = getSelected();
     if (!chin) return;
-    if (!confirm(`「${chin.name}」を削除しますか？\nすべての体重記録も削除されます。`))
+    if (!confirm(`「${chin.name}」を削除しますか？\nすべてのデータが削除されます。`))
       return;
     data.chinchillas = data.chinchillas.filter((c) => c.id !== chin.id);
     data.selectedId = null;
@@ -126,7 +203,7 @@
         const age = calcAge(chin.birthday);
         if (age) infoHtml += `（${age}）`;
       }
-      if (chin.records.length > 0) {
+      if (chin.records && chin.records.length > 0) {
         const latest = chin.records[chin.records.length - 1];
         infoHtml += ` ／ 最新体重: <strong>${latest.weight}g</strong>（${latest.date}）`;
       }
@@ -136,8 +213,10 @@
       elInfo.classList.add("hidden");
     }
 
+    renderDashboard();
     renderTable();
-    renderChart();
+    renderHealthHistory();
+    renderVetHistory();
   }
 
   function calcAge(birthday) {
@@ -179,6 +258,7 @@
       return;
     }
 
+    if (!chin.records) chin.records = [];
     const record = {
       id: generateId(),
       date: dateVal,
@@ -201,10 +281,282 @@
     onSelectChange();
   }
 
+  // --- ヘルスチェック ---
+  function addHealthCheck() {
+    const chin = getSelected();
+    if (!chin) {
+      alert("チンチラを選択してください。");
+      return;
+    }
+
+    const dateVal = elHealthDate.value;
+    if (!dateVal) {
+      elHealthDate.focus();
+      return;
+    }
+
+    if (!chin.healthChecks) chin.healthChecks = [];
+
+    const check = {
+      id: generateId(),
+      date: dateVal,
+      appetite: getSelectedRating("appetite"),
+      water: getSelectedRating("water"),
+      poop: getSelectedRating("poop"),
+      activity: getSelectedRating("activity"),
+      fur: getSelectedRating("fur"),
+      eyeNose: getSelectedRating("eyeNose"),
+      memo: elHealthMemo.value.trim(),
+    };
+
+    chin.healthChecks.push(check);
+    chin.healthChecks.sort((a, b) => a.date.localeCompare(b.date));
+    saveData(data);
+
+    // Reset form
+    elHealthMemo.value = "";
+    document.querySelectorAll(".rating-btn").forEach((btn) => btn.classList.remove("selected"));
+
+    onSelectChange();
+  }
+
+  function getSelectedRating(fieldName) {
+    const group = document.querySelector(`[data-field="${fieldName}"]`);
+    const selected = group.querySelector(".rating-btn.selected");
+    return selected ? selected.dataset.value : null;
+  }
+
+  function deleteHealthCheck(checkId) {
+    const chin = getSelected();
+    if (!chin) return;
+    chin.healthChecks = chin.healthChecks.filter((c) => c.id !== checkId);
+    saveData(data);
+    onSelectChange();
+  }
+
+  // --- 通院記録 ---
+  function addVetRecord() {
+    const chin = getSelected();
+    if (!chin) {
+      alert("チンチラを選択してください。");
+      return;
+    }
+
+    const dateVal = elVetDate.value;
+    if (!dateVal) {
+      elVetDate.focus();
+      return;
+    }
+
+    if (!chin.vetRecords) chin.vetRecords = [];
+
+    const record = {
+      id: generateId(),
+      date: dateVal,
+      clinic: elVetClinic.value.trim(),
+      reason: elVetReason.value.trim(),
+      diagnosis: elVetDiagnosis.value.trim(),
+      treatment: elVetTreatment.value.trim(),
+      cost: parseInt(elVetCost.value) || 0,
+      nextDate: elVetNextDate.value || null,
+    };
+
+    chin.vetRecords.push(record);
+    chin.vetRecords.sort((a, b) => a.date.localeCompare(b.date));
+    saveData(data);
+
+    // Reset form
+    elVetClinic.value = "";
+    elVetReason.value = "";
+    elVetDiagnosis.value = "";
+    elVetTreatment.value = "";
+    elVetCost.value = "";
+    elVetNextDate.value = "";
+
+    onSelectChange();
+  }
+
+  function deleteVetRecord(recordId) {
+    const chin = getSelected();
+    if (!chin) return;
+    chin.vetRecords = chin.vetRecords.filter((r) => r.id !== recordId);
+    saveData(data);
+    onSelectChange();
+  }
+
+  // --- ダッシュボード ---
+  function renderDashboard() {
+    const chin = getSelected();
+
+    if (!chin) {
+      elDashboardEmpty.style.display = "block";
+      elDashboardContent.classList.add("hidden");
+      return;
+    }
+
+    elDashboardEmpty.style.display = "none";
+    elDashboardContent.classList.remove("hidden");
+
+    // 体重サマリー
+    if (chin.records && chin.records.length > 0) {
+      const latest = chin.records[chin.records.length - 1];
+      elSumWeight.textContent = `${latest.weight}g`;
+
+      if (chin.records.length > 1) {
+        const prev = chin.records[chin.records.length - 2];
+        const diff = latest.weight - prev.weight;
+        const sign = diff > 0 ? "+" : "";
+        elSumWeightDiff.textContent = `${sign}${diff.toFixed(1)}g`;
+        elSumWeightDiff.style.color = diff > 0 ? "#e57373" : diff < 0 ? "#64b5f6" : "#aaa";
+      } else {
+        elSumWeightDiff.textContent = "--";
+      }
+    } else {
+      elSumWeight.textContent = "--";
+      elSumWeightDiff.textContent = "--";
+    }
+
+    // ヘルスチェック日付
+    if (chin.healthChecks && chin.healthChecks.length > 0) {
+      const latest = chin.healthChecks[chin.healthChecks.length - 1];
+      elSumHealthDate.textContent = latest.date;
+    } else {
+      elSumHealthDate.textContent = "--";
+    }
+
+    // 次回通院予定
+    if (chin.vetRecords && chin.vetRecords.length > 0) {
+      const latestVet = chin.vetRecords[chin.vetRecords.length - 1];
+      elSumNextVet.textContent = latestVet.nextDate || "--";
+    } else {
+      elSumNextVet.textContent = "--";
+    }
+
+    // アラート
+    renderAlerts(chin);
+
+    // 最近のチェック
+    renderRecentChecks(chin);
+
+    // ダッシュボードグラフ
+    renderDashboardChart(chin);
+  }
+
+  function renderAlerts(chin) {
+    elDashboardAlerts.innerHTML = "";
+    let hasAlerts = false;
+
+    if (chin.healthChecks && chin.healthChecks.length > 0) {
+      const latest = chin.healthChecks[chin.healthChecks.length - 1];
+
+      // Check for concerns
+      const concerns = [];
+      if (latest.poop === "diarrhea") concerns.push("🚨 下痢が報告されています");
+      if (latest.poop === "soft") concerns.push("⚠️ うんちが軟らかい状態です");
+      if (latest.appetite === "poor") concerns.push("⚠️ 食欲が低下しています");
+      if (latest.water === "poor") concerns.push("⚠️ 水分摂取が低下しています");
+      if (latest.activity === "low") concerns.push("⚠️ 活動量が少なくなっています");
+      if (latest.fur === "loss") concerns.push("🚨 脱毛が報告されています");
+      if (latest.eyeNose === "discharge") concerns.push("⚠️ 目やに・鼻水があります");
+
+      concerns.forEach((concern) => {
+        hasAlerts = true;
+        const html = `<div class="alert-item alert-warning">${concern}</div>`;
+        elDashboardAlerts.innerHTML += html;
+      });
+    }
+
+    elDashboardAlerts.classList.toggle("hidden", !hasAlerts);
+  }
+
+  function renderRecentChecks(chin) {
+    if (!chin.healthChecks || chin.healthChecks.length === 0) {
+      elRecentChecks.classList.add("hidden");
+      return;
+    }
+
+    const recent = [...chin.healthChecks].slice(-3).reverse();
+    let html = "";
+
+    recent.forEach((check) => {
+      const icons = [];
+      if (check.appetite) icons.push(getHealthIcon("appetite", check.appetite));
+      if (check.water) icons.push(getHealthIcon("water", check.water));
+      if (check.poop) icons.push(getHealthIcon("poop", check.poop));
+      if (check.activity) icons.push(getHealthIcon("activity", check.activity));
+      if (check.fur) icons.push(getHealthIcon("fur", check.fur));
+      if (check.eyeNose) icons.push(getHealthIcon("eyeNose", check.eyeNose));
+
+      html += `<div class="recent-check-item">
+        <div class="check-date">${check.date}</div>
+        <div class="check-icons">${icons.join(" ")}</div>
+        ${check.memo ? `<div>${escapeHtml(check.memo)}</div>` : ""}
+      </div>`;
+    });
+
+    elRecentChecksList.innerHTML = html;
+    elRecentChecks.classList.remove("hidden");
+  }
+
+  function getHealthIcon(field, value) {
+    const icons = {
+      appetite: { good: "😊", normal: "😐", poor: "😟" },
+      water: { good: "😊", normal: "😐", poor: "😟" },
+      poop: { good: "😊", normal: "😐", soft: "😟", diarrhea: "🚨" },
+      activity: { active: "😊", normal: "😐", low: "😟" },
+      fur: { good: "😊", normal: "😐", rough: "😟", loss: "🚨" },
+      eyeNose: { good: "😊", discharge: "😟" },
+    };
+    return icons[field]?.[value] || "❓";
+  }
+
+  function renderDashboardChart(chin) {
+    if (dashboardChart) {
+      dashboardChart.destroy();
+      dashboardChart = null;
+    }
+
+    if (!chin.records || chin.records.length === 0) return;
+
+    const labels = chin.records.map((r) => r.date);
+    const values = chin.records.map((r) => r.weight);
+
+    dashboardChart = new Chart(elDashboardChart, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "体重 (g)",
+            data: values,
+            borderColor: "#a68b6b",
+            backgroundColor: "rgba(166,139,107,0.1)",
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointBackgroundColor: "#a68b6b",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}g` } },
+        },
+        scales: {
+          x: { ticks: { maxTicksLimit: 6, font: { size: 10 } }, grid: { display: false } },
+          y: { ticks: { callback: (v) => v + "g", font: { size: 10 } }, grid: { color: "#f0ebe5" } },
+        },
+      },
+    });
+  }
+
   // --- テーブル描画 ---
   function renderTable() {
     const chin = getSelected();
-    const records = chin ? chin.records : [];
+    const records = chin && chin.records ? chin.records : [];
 
     if (records.length === 0) {
       elTbody.innerHTML = "";
@@ -213,7 +565,6 @@
     }
     elNoData.style.display = "none";
 
-    // 新しい順に表示
     const sorted = [...records].reverse();
     elTbody.innerHTML = sorted
       .map((r, i) => {
@@ -222,8 +573,7 @@
         if (prevIdx >= 0) {
           const diff = r.weight - records[prevIdx].weight;
           const sign = diff > 0 ? "+" : "";
-          const cls =
-            diff > 0 ? "diff-up" : diff < 0 ? "diff-down" : "diff-same";
+          const cls = diff > 0 ? "diff-up" : diff < 0 ? "diff-down" : "diff-same";
           diffHtml = `<span class="${cls}">${sign}${diff.toFixed(1)}g</span>`;
         }
         return `<tr>
@@ -237,13 +587,12 @@
       .join("");
   }
 
-  // グローバル公開（テーブルのonclickから呼ぶため）
   window._deleteWeight = deleteWeight;
 
   // --- グラフ描画 ---
   function renderChart() {
     const chin = getSelected();
-    const records = chin ? chin.records : [];
+    const records = chin && chin.records ? chin.records : [];
 
     if (chart) {
       chart.destroy();
@@ -277,28 +626,107 @@
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `${ctx.parsed.y}g`,
-            },
-          },
+          tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.y}g` } },
         },
         scales: {
-          x: {
-            ticks: { maxTicksLimit: 10, font: { size: 11 } },
-            grid: { display: false },
-          },
+          x: { ticks: { maxTicksLimit: 10, font: { size: 11 } }, grid: { display: false } },
           y: {
-            ticks: {
-              callback: (v) => v + "g",
-              font: { size: 11 },
-            },
+            ticks: { callback: (v) => v + "g", font: { size: 11 } },
             grid: { color: "#f0ebe5" },
           },
         },
       },
     });
   }
+
+  // --- ヘルスチェック履歴 ---
+  function renderHealthHistory() {
+    const chin = getSelected();
+    const checks = chin && chin.healthChecks ? chin.healthChecks : [];
+
+    if (checks.length === 0) {
+      elHealthHistory.innerHTML = "";
+      elNoHealthMsg.style.display = "block";
+      return;
+    }
+    elNoHealthMsg.style.display = "none";
+
+    const sorted = [...checks].reverse();
+    elHealthHistory.innerHTML = sorted
+      .map((check) => {
+        const fields = [
+          { label: "食欲", value: check.appetite },
+          { label: "水分", value: check.water },
+          { label: "うんち", value: check.poop },
+          { label: "活動量", value: check.activity },
+          { label: "毛並み", value: check.fur },
+          { label: "目・鼻", value: check.eyeNose },
+        ];
+
+        const tags = fields
+          .filter((f) => f.value)
+          .map(
+            (f) =>
+              `<span class="health-tag tag-${getTagType(f.value)}">${f.label}: ${f.value}</span>`
+          )
+          .join("");
+
+        return `<div class="health-record">
+          <div class="health-record-header">
+            <div class="health-record-date">${check.date}</div>
+            <button class="btn btn-danger btn-sm" onclick="window._deleteHealthCheck('${check.id}')">削除</button>
+          </div>
+          <div class="health-record-items">${tags}</div>
+          ${check.memo ? `<div class="health-record-memo">${escapeHtml(check.memo)}</div>` : ""}
+        </div>`;
+      })
+      .join("");
+  }
+
+  function getTagType(value) {
+    if (["good", "active"].includes(value)) return "good";
+    if (["normal"].includes(value)) return "normal";
+    return "poor";
+  }
+
+  window._deleteHealthCheck = deleteHealthCheck;
+
+  // --- 通院履歴 ---
+  function renderVetHistory() {
+    const chin = getSelected();
+    const records = chin && chin.vetRecords ? chin.vetRecords : [];
+
+    if (records.length === 0) {
+      elVetHistory.innerHTML = "";
+      elNoVetMsg.style.display = "block";
+      return;
+    }
+    elNoVetMsg.style.display = "none";
+
+    const sorted = [...records].reverse();
+    elVetHistory.innerHTML = sorted
+      .map((record) => {
+        return `<div class="vet-record">
+          <div class="vet-record-header">
+            <div>
+              <div class="vet-record-date">${record.date}</div>
+              <div class="vet-record-clinic">${escapeHtml(record.clinic)}</div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="window._deleteVetRecord('${record.id}')">削除</button>
+          </div>
+          <div class="vet-record-body">
+            ${record.reason ? `<p><strong>受診理由:</strong> ${escapeHtml(record.reason)}</p>` : ""}
+            ${record.diagnosis ? `<p><strong>診断:</strong> ${escapeHtml(record.diagnosis)}</p>` : ""}
+            ${record.treatment ? `<p><strong>治療:</strong> ${escapeHtml(record.treatment)}</p>` : ""}
+            ${record.cost ? `<div class="vet-cost">費用: ${record.cost.toLocaleString()}円</div>` : ""}
+            ${record.nextDate ? `<p style="margin-top: 8px;"><strong>次回予定:</strong> ${record.nextDate}</p>` : ""}
+          </div>
+        </div>`;
+      })
+      .join("");
+  }
+
+  window._deleteVetRecord = deleteVetRecord;
 
   // --- ユーティリティ ---
   function escapeHtml(str) {

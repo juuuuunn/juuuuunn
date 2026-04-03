@@ -31,6 +31,12 @@ h2 {
   color: #5a3e2b;
 }
 
+h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #5a3e2b;
+}
+
 .card {
   background: #fff;
   border-radius: 12px;
@@ -78,6 +84,131 @@ h2 {
   display: none;
 }
 
+/* タブナビゲーション */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: #e8e0d8;
+  color: #7a6b5d;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background: #d4c9bc;
+}
+
+.tab-btn.active {
+  background: #a68b6b;
+  color: #fff;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ダッシュボード */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summary-item {
+  background: #faf6f1;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #8b7a6b;
+  margin-bottom: 4px;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #5a3e2b;
+}
+
+.alerts {
+  margin-bottom: 12px;
+}
+
+.alerts.hidden {
+  display: none;
+}
+
+.alert-item {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.alert-warning {
+  background: #fff3e0;
+  color: #e65100;
+  border-left: 4px solid #ff9800;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-left: 4px solid #42a5f5;
+}
+
+.recent-section {
+  margin-top: 16px;
+}
+
+.recent-section.hidden {
+  display: none;
+}
+
+.recent-check-item {
+  background: #faf6f1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.recent-check-item .check-date {
+  font-weight: 600;
+  color: #5a3e2b;
+  margin-bottom: 4px;
+}
+
+.recent-check-item .check-icons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 /* 体重フォーム */
 .weight-form {
   display: flex;
@@ -110,19 +241,178 @@ h2 {
   min-width: 100px;
 }
 
+/* ヘルスチェックフォーム */
+.health-form,
+.vet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b5544;
+}
+
+.rating-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rating-btn {
+  padding: 6px 12px;
+  border: 2px solid #e0d8d0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.rating-btn:hover {
+  border-color: #a68b6b;
+  background: #faf6f1;
+}
+
+.rating-btn.selected {
+  border-color: #a68b6b;
+  background: #a68b6b;
+  color: #fff;
+}
+
+/* ヘルスチェック履歴 */
+.health-record {
+  background: #faf6f1;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.health-record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.health-record-date {
+  font-weight: 700;
+  color: #5a3e2b;
+}
+
+.health-record-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.health-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tag-good {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tag-normal {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.tag-poor {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.health-record-memo {
+  font-size: 0.85rem;
+  color: #6b5544;
+  margin-top: 4px;
+}
+
+/* 通院履歴 */
+.vet-record {
+  background: #faf6f1;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.vet-record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vet-record-date {
+  font-weight: 700;
+  color: #5a3e2b;
+}
+
+.vet-record-clinic {
+  font-size: 0.85rem;
+  color: #8b7a6b;
+}
+
+.vet-record-body {
+  font-size: 0.9rem;
+  color: #6b5544;
+}
+
+.vet-record-body p {
+  margin-bottom: 4px;
+}
+
+.vet-record-body strong {
+  color: #5a3e2b;
+}
+
+.vet-cost {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 10px;
+  background: #e3f2fd;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #1565c0;
+  font-weight: 600;
+}
+
 /* 共通 input / select / button */
 input,
-select {
+select,
+textarea {
   padding: 8px 12px;
   border: 1px solid #d4ccc4;
   border-radius: 8px;
   font-size: 0.95rem;
   background: #fff;
   color: #333;
+  font-family: inherit;
+}
+
+textarea {
+  resize: vertical;
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: none;
   border-color: #a68b6b;
   box-shadow: 0 0 0 2px rgba(166, 139, 107, 0.2);
@@ -170,6 +460,10 @@ select:focus {
 .btn-sm {
   padding: 4px 10px;
   font-size: 0.8rem;
+}
+
+.hidden {
+  display: none;
 }
 
 /* グラフ */
@@ -244,5 +538,14 @@ td:nth-child(2) {
   .weight-input-group input {
     flex: 1;
     width: auto;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-btn {
+    font-size: 0.78rem;
+    padding: 8px 6px;
   }
 }

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>チンチラ体重管理</title>
+  <title>チンチラ体調管理</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>🐭 チンチラ体重管理</h1>
+    <h1>🐭 チンチラ体調管理</h1>
 
     <!-- チンチラ選択・追加 -->
     <section class="card">
@@ -28,8 +28,50 @@
       <div id="chinchilla-info" class="chinchilla-info hidden"></div>
     </section>
 
-    <!-- 体重記録 -->
-    <section class="card" id="weight-section">
+    <!-- タブナビゲーション -->
+    <nav class="tab-nav" id="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard">ダッシュボード</button>
+      <button class="tab-btn" data-tab="weight">体重記録</button>
+      <button class="tab-btn" data-tab="health-check">ヘルスチェック</button>
+      <button class="tab-btn" data-tab="vet">通院記録</button>
+    </nav>
+
+    <!-- ダッシュボード -->
+    <section class="card tab-content active" id="tab-dashboard">
+      <h2>ヘルスサマリー</h2>
+      <div id="dashboard-empty" class="no-data">チンチラを選択してください</div>
+      <div id="dashboard-content" class="hidden">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">最新体重</span>
+            <span class="summary-value" id="sum-weight">--</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">体重変化</span>
+            <span class="summary-value" id="sum-weight-diff">--</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">最新ヘルスチェック</span>
+            <span class="summary-value" id="sum-health-date">--</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">次回通院予定</span>
+            <span class="summary-value" id="sum-next-vet">--</span>
+          </div>
+        </div>
+        <div id="dashboard-alerts" class="alerts hidden"></div>
+        <div class="chart-container" style="margin-top: 16px;">
+          <canvas id="dashboard-chart"></canvas>
+        </div>
+        <div id="recent-checks" class="recent-section hidden">
+          <h3>最近のヘルスチェック</h3>
+          <div id="recent-checks-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 体重記録タブ -->
+    <section class="card tab-content" id="tab-weight">
       <h2>体重を記録</h2>
       <div class="weight-form">
         <input type="date" id="weight-date">
@@ -40,19 +82,13 @@
         <input type="text" id="weight-memo" placeholder="メモ（任意）">
         <button id="btn-add-weight" class="btn btn-primary">記録</button>
       </div>
-    </section>
 
-    <!-- グラフ -->
-    <section class="card" id="chart-section">
-      <h2>体重推移</h2>
+      <h2 style="margin-top: 20px;">体重推移</h2>
       <div class="chart-container">
         <canvas id="weight-chart"></canvas>
       </div>
-    </section>
 
-    <!-- 履歴テーブル -->
-    <section class="card" id="history-section">
-      <h2>記録履歴</h2>
+      <h2 style="margin-top: 20px;">記録履歴</h2>
       <div class="table-wrapper">
         <table id="weight-table">
           <thead>
@@ -68,6 +104,118 @@
         </table>
       </div>
       <p id="no-data-msg" class="no-data">データがありません</p>
+    </section>
+
+    <!-- ヘルスチェックタブ -->
+    <section class="card tab-content" id="tab-health-check">
+      <h2>日常ヘルスチェック</h2>
+      <div class="health-form">
+        <div class="form-row">
+          <label>日付</label>
+          <input type="date" id="health-date">
+        </div>
+        <div class="form-row">
+          <label>食欲</label>
+          <div class="rating-group" data-field="appetite">
+            <button class="rating-btn" data-value="good">😊 良い</button>
+            <button class="rating-btn" data-value="normal">😐 普通</button>
+            <button class="rating-btn" data-value="poor">😟 悪い</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>水分摂取</label>
+          <div class="rating-group" data-field="water">
+            <button class="rating-btn" data-value="good">😊 良い</button>
+            <button class="rating-btn" data-value="normal">😐 普通</button>
+            <button class="rating-btn" data-value="poor">😟 悪い</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>うんちの状態</label>
+          <div class="rating-group" data-field="poop">
+            <button class="rating-btn" data-value="good">😊 良い</button>
+            <button class="rating-btn" data-value="normal">😐 普通</button>
+            <button class="rating-btn" data-value="soft">😟 軟らかい</button>
+            <button class="rating-btn" data-value="diarrhea">🚨 下痢</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>活動量</label>
+          <div class="rating-group" data-field="activity">
+            <button class="rating-btn" data-value="active">😊 活発</button>
+            <button class="rating-btn" data-value="normal">😐 普通</button>
+            <button class="rating-btn" data-value="low">😟 少ない</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>毛並み</label>
+          <div class="rating-group" data-field="fur">
+            <button class="rating-btn" data-value="good">😊 良い</button>
+            <button class="rating-btn" data-value="normal">😐 普通</button>
+            <button class="rating-btn" data-value="rough">😟 毛並み悪い</button>
+            <button class="rating-btn" data-value="loss">🚨 脱毛あり</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>目・鼻の状態</label>
+          <div class="rating-group" data-field="eyeNose">
+            <button class="rating-btn" data-value="good">😊 異常なし</button>
+            <button class="rating-btn" data-value="discharge">😟 目やに・鼻水</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>メモ</label>
+          <textarea id="health-memo" rows="2" placeholder="気になることがあれば記入"></textarea>
+        </div>
+        <button id="btn-add-health" class="btn btn-primary" style="width: 100%;">ヘルスチェックを記録</button>
+      </div>
+
+      <h2 style="margin-top: 20px;">チェック履歴</h2>
+      <div id="health-history"></div>
+      <p id="no-health-msg" class="no-data">データがありません</p>
+    </section>
+
+    <!-- 通院記録タブ -->
+    <section class="card tab-content" id="tab-vet">
+      <h2>通院記録</h2>
+      <div class="vet-form">
+        <div class="form-row">
+          <label>受診日</label>
+          <input type="date" id="vet-date">
+        </div>
+        <div class="form-row">
+          <label>病院名</label>
+          <input type="text" id="vet-clinic" placeholder="病院名">
+        </div>
+        <div class="form-row">
+          <label>受診理由</label>
+          <input type="text" id="vet-reason" placeholder="定期検診・症状など">
+        </div>
+        <div class="form-row">
+          <label>診断内容</label>
+          <textarea id="vet-diagnosis" rows="2" placeholder="診断結果"></textarea>
+        </div>
+        <div class="form-row">
+          <label>処方・治療</label>
+          <textarea id="vet-treatment" rows="2" placeholder="薬・治療内容"></textarea>
+        </div>
+        <div class="form-row">
+          <label>費用</label>
+          <div class="weight-input-group">
+            <input type="number" id="vet-cost" placeholder="費用" min="0">
+            <span class="unit">円</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>次回予定日</label>
+          <input type="date" id="vet-next-date">
+        </div>
+        <button id="btn-add-vet" class="btn btn-primary" style="width: 100%;">通院記録を追加</button>
+      </div>
+
+      <h2 style="margin-top: 20px;">通院履歴</h2>
+      <div id="vet-history"></div>
+      <p id="no-vet-msg" class="no-data">データがありません</p>
     </section>
   </div>
 
