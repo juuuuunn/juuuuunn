@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>チンチラ体重管理</title>
+  <title>チンチラ体調管理</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>🐭 チンチラ体重管理</h1>
+    <h1>🐭 チンチラ体調管理</h1>
 
     <!-- チンチラ選択・追加 -->
     <section class="card">
@@ -28,47 +28,348 @@
       <div id="chinchilla-info" class="chinchilla-info hidden"></div>
     </section>
 
-    <!-- 体重記録 -->
-    <section class="card" id="weight-section">
-      <h2>体重を記録</h2>
-      <div class="weight-form">
-        <input type="date" id="weight-date">
-        <div class="weight-input-group">
-          <input type="number" id="weight-value" placeholder="体重" step="0.1" min="0">
-          <span class="unit">g</span>
+    <!-- タブナビゲーション -->
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="weight">体重</button>
+      <button class="tab-btn" data-tab="food">食事</button>
+      <button class="tab-btn" data-tab="health">健康チェック</button>
+      <button class="tab-btn" data-tab="behavior">行動</button>
+      <button class="tab-btn" data-tab="medical">医療</button>
+      <button class="tab-btn" data-tab="environment">環境</button>
+      <button class="tab-btn" data-tab="alerts">アラート</button>
+      <button class="tab-btn" data-tab="analytics">分析</button>
+    </nav>
+
+    <!-- 体重タブ -->
+    <div id="weight-tab" class="tab-content active">
+      <section class="card">
+        <h2>体重を記録</h2>
+        <div class="weight-form">
+          <input type="date" id="weight-date">
+          <div class="weight-input-group">
+            <input type="number" id="weight-value" placeholder="体重" step="0.1" min="0">
+            <span class="unit">g</span>
+          </div>
+          <input type="text" id="weight-memo" placeholder="メモ（任意）">
+          <button id="btn-add-weight" class="btn btn-primary">記録</button>
         </div>
-        <input type="text" id="weight-memo" placeholder="メモ（任意）">
-        <button id="btn-add-weight" class="btn btn-primary">記録</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- グラフ -->
-    <section class="card" id="chart-section">
-      <h2>体重推移</h2>
-      <div class="chart-container">
-        <canvas id="weight-chart"></canvas>
-      </div>
-    </section>
+      <section class="card" id="chart-section">
+        <h2>体重推移</h2>
+        <div class="chart-container">
+          <canvas id="weight-chart"></canvas>
+        </div>
+      </section>
 
-    <!-- 履歴テーブル -->
-    <section class="card" id="history-section">
-      <h2>記録履歴</h2>
-      <div class="table-wrapper">
-        <table id="weight-table">
-          <thead>
-            <tr>
-              <th>日付</th>
-              <th>体重 (g)</th>
-              <th>前回比</th>
-              <th>メモ</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="weight-tbody"></tbody>
-        </table>
-      </div>
-      <p id="no-data-msg" class="no-data">データがありません</p>
-    </section>
+      <section class="card">
+        <h2>記録履歴</h2>
+        <div class="table-wrapper">
+          <table id="weight-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>体重 (g)</th>
+                <th>前回比</th>
+                <th>メモ</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="weight-tbody"></tbody>
+          </table>
+        </div>
+        <p id="weight-no-data-msg" class="no-data">データがありません</p>
+      </section>
+    </div>
+
+    <!-- 食事タブ -->
+    <div id="food-tab" class="tab-content">
+      <section class="card">
+        <h2>食事を記録</h2>
+        <div class="form-group">
+          <input type="date" id="food-date">
+          <input type="time" id="food-time" placeholder="時間">
+          <select id="food-type">
+            <option value="">-- 食材を選択 --</option>
+            <option value="timothy">チモシー</option>
+            <option value="pellet">ペレット</option>
+            <option value="vegetable">野菜</option>
+            <option value="fruit">果物</option>
+            <option value="treat">おやつ</option>
+            <option value="water">水</option>
+            <option value="other">その他</option>
+          </select>
+          <div class="weight-input-group">
+            <input type="number" id="food-amount" placeholder="量" step="0.1" min="0">
+            <span class="unit">g</span>
+          </div>
+          <input type="text" id="food-memo" placeholder="メモ（任意）">
+          <button id="btn-add-food" class="btn btn-primary">記録</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>食事履歴</h2>
+        <div class="table-wrapper">
+          <table id="food-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>時間</th>
+                <th>食材</th>
+                <th>量</th>
+                <th>メモ</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="food-tbody"></tbody>
+          </table>
+        </div>
+        <p id="food-no-data-msg" class="no-data">データがありません</p>
+      </section>
+    </div>
+
+    <!-- 健康チェックタブ -->
+    <div id="health-tab" class="tab-content">
+      <section class="card">
+        <h2>健康チェックを記録</h2>
+        <div class="form-group">
+          <input type="date" id="health-date">
+          <label>毛並み:</label>
+          <select id="health-fur">
+            <option value="">-- 選択 --</option>
+            <option value="excellent">優秀（艶やか）</option>
+            <option value="good">良好</option>
+            <option value="normal">普通</option>
+            <option value="poor">悪い</option>
+          </select>
+          <label>目の状態:</label>
+          <select id="health-eyes">
+            <option value="">-- 選択 --</option>
+            <option value="bright">明るい</option>
+            <option value="normal">普通</option>
+            <option value="dull">曇りがち</option>
+          </select>
+          <label>便の状態:</label>
+          <select id="health-stool">
+            <option value="">-- 選択 --</option>
+            <option value="normal">普通</option>
+            <option value="soft">軟便</option>
+            <option value="hard">硬い</option>
+            <option value="abnormal">異常</option>
+          </select>
+          <label>食欲:</label>
+          <select id="health-appetite">
+            <option value="">-- 選択 --</option>
+            <option value="excellent">優秀</option>
+            <option value="good">良好</option>
+            <option value="normal">普通</option>
+            <option value="poor">食べない</option>
+          </select>
+          <label>その他の症状:</label>
+          <input type="text" id="health-notes" placeholder="異常があれば記入（例：鼻水、くしゃみ）">
+          <button id="btn-add-health" class="btn btn-primary">記録</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>健康チェック履歴</h2>
+        <div class="table-wrapper">
+          <table id="health-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>毛並み</th>
+                <th>目</th>
+                <th>便</th>
+                <th>食欲</th>
+                <th>備考</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="health-tbody"></tbody>
+          </table>
+        </div>
+        <p id="health-no-data-msg" class="no-data">データがありません</p>
+      </section>
+    </div>
+
+    <!-- 行動タブ -->
+    <div id="behavior-tab" class="tab-content">
+      <section class="card">
+        <h2>行動を記録</h2>
+        <div class="form-group">
+          <input type="date" id="behavior-date">
+          <label>活動度:</label>
+          <select id="behavior-activity">
+            <option value="">-- 選択 --</option>
+            <option value="very-active">非常に活発</option>
+            <option value="active">活発</option>
+            <option value="normal">普通</option>
+            <option value="quiet">静か</option>
+            <option value="sleeping">寝てばかり</option>
+          </select>
+          <label>睡眠:</label>
+          <div class="time-input-group">
+            <input type="number" id="behavior-sleep" placeholder="睡眠時間" min="0" max="24" step="0.5">
+            <span class="unit">時間</span>
+          </div>
+          <label>その他の行動:</label>
+          <input type="text" id="behavior-notes" placeholder="特記事項（例：砂浴びをした）">
+          <button id="btn-add-behavior" class="btn btn-primary">記録</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>行動履歴</h2>
+        <div class="table-wrapper">
+          <table id="behavior-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>活動度</th>
+                <th>睡眠</th>
+                <th>備考</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="behavior-tbody"></tbody>
+          </table>
+        </div>
+        <p id="behavior-no-data-msg" class="no-data">データがありません</p>
+      </section>
+    </div>
+
+    <!-- 医療タブ -->
+    <div id="medical-tab" class="tab-content">
+      <section class="card">
+        <h2>医療記録を追加</h2>
+        <div class="form-group">
+          <input type="date" id="medical-date">
+          <select id="medical-type">
+            <option value="">-- 記録タイプ --</option>
+            <option value="checkup">健康診断</option>
+            <option value="treatment">治療</option>
+            <option value="medication">投薬</option>
+            <option value="vaccination">予防接種</option>
+            <option value="other">その他</option>
+          </select>
+          <input type="text" id="medical-clinic" placeholder="病院名（任意）">
+          <input type="text" id="medical-doctor" placeholder="獣医師名（任意）">
+          <label>詳細:</label>
+          <textarea id="medical-details" placeholder="診察内容、症状、処置など"></textarea>
+          <button id="btn-add-medical" class="btn btn-primary">記録</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>医療記録</h2>
+        <div class="table-wrapper">
+          <table id="medical-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>タイプ</th>
+                <th>病院</th>
+                <th>詳細</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="medical-tbody"></tbody>
+          </table>
+        </div>
+        <p id="medical-no-data-msg" class="no-data">データがありません</p>
+      </section>
+    </div>
+
+    <!-- 環境タブ -->
+    <div id="environment-tab" class="tab-content">
+      <section class="card">
+        <h2>環境情報を記録</h2>
+        <div class="form-group">
+          <input type="date" id="environment-date">
+          <input type="time" id="environment-time" placeholder="時間">
+          <div class="temp-humidity-group">
+            <div>
+              <label>気温:</label>
+              <div class="temp-input-group">
+                <input type="number" id="environment-temp" placeholder="気温" step="0.1" min="-50" max="50">
+                <span class="unit">°C</span>
+              </div>
+            </div>
+            <div>
+              <label>湿度:</label>
+              <div class="humidity-input-group">
+                <input type="number" id="environment-humidity" placeholder="湿度" step="0.1" min="0" max="100">
+                <span class="unit">%</span>
+              </div>
+            </div>
+          </div>
+          <label>その他の環境情報:</label>
+          <input type="text" id="environment-notes" placeholder="照明状況、風など">
+          <button id="btn-add-environment" class="btn btn-primary">記録</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>環境記録</h2>
+        <div class="table-wrapper">
+          <table id="environment-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>時間</th>
+                <th>気温</th>
+                <th>湿度</th>
+                <th>備考</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="environment-tbody"></tbody>
+          </table>
+        </div>
+        <p id="environment-no-data-msg" class="no-data">データがありません</p>
+      </section>
+    </div>
+
+    <!-- アラートタブ -->
+    <div id="alerts-tab" class="tab-content">
+      <section class="card">
+        <h2>健康アラート</h2>
+        <div id="alerts-container">
+          <p id="alerts-empty" class="no-data">アラートはありません</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- 分析タブ -->
+    <div id="analytics-tab" class="tab-content">
+      <section class="card">
+        <h2>月間統計</h2>
+        <div id="analytics-summary"></div>
+      </section>
+
+      <section class="card">
+        <h2>体重グラフ（詳細）</h2>
+        <div class="chart-container">
+          <canvas id="analytics-weight-chart"></canvas>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>食事記録統計</h2>
+        <div class="chart-container">
+          <canvas id="analytics-food-chart"></canvas>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>健康スコア推移</h2>
+        <div class="chart-container">
+          <canvas id="analytics-health-chart"></canvas>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script src="app.js"></script>
