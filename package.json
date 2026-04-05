@@ -1,0 +1,28 @@
+{
+  "name": "juuuuunn",
+  "version": "1.0.0",
+  "description": "チンチラ体調管理アプリ",
+  "main": "app.js",
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "ios:build": "npx cap build ios",
+    "ios:open": "npx cap open ios",
+    "sync": "npx cap sync ios"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://local_proxy@127.0.0.1:37633/git/juuuuunn/juuuuunn"
+  },
+  "keywords": [
+    "chinchilla",
+    "health",
+    "ios"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/ios": "^8.3.0"
+  }
+}

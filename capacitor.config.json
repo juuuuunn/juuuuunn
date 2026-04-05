@@ -1,0 +1,10 @@
+{
+  "appId": "com.chinchilla.health",
+  "appName": "Chinchilla Health",
+  "webDir": "www",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
