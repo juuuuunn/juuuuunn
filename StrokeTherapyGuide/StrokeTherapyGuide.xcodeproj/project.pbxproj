@@ -9,14 +9,8 @@
 /* Begin PBXBuildFile section */
 		AA000001000000000000001A /* StrokeTherapyGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000001B /* StrokeTherapyGuideApp.swift */; };
 		AA000001000000000000002A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000002B /* ContentView.swift */; };
-		AA000001000000000000003A /* TherapyProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000003B /* TherapyProtocol.swift */; };
-		AA000001000000000000004A /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000004B /* Exercise.swift */; };
 		AA000001000000000000005A /* Assessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000005B /* Assessment.swift */; };
 		AA000001000000000000006A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000006B /* HomeView.swift */; };
-		AA000001000000000000007A /* ProtocolListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000007B /* ProtocolListView.swift */; };
-		AA000001000000000000008A /* ProtocolDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000008B /* ProtocolDetailView.swift */; };
-		AA000001000000000000009A /* ExerciseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000009B /* ExerciseListView.swift */; };
-		AA00000100000000000000AA /* ExerciseDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000100000000000000AB /* ExerciseDetailView.swift */; };
 		AA00000100000000000000BA /* AssessmentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000100000000000000BB /* AssessmentListView.swift */; };
 		AA00000100000000000000CA /* AssessmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000100000000000000CB /* AssessmentDetailView.swift */; };
 		AA00000100000000000000DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA00000100000000000000DB /* Assets.xcassets */; };
@@ -25,14 +19,8 @@
 /* Begin PBXFileReference section */
 		AA000001000000000000001B /* StrokeTherapyGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeTherapyGuideApp.swift; sourceTree = "<group>"; };
 		AA000001000000000000002B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AA000001000000000000003B /* TherapyProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TherapyProtocol.swift; sourceTree = "<group>"; };
-		AA000001000000000000004B /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 		AA000001000000000000005B /* Assessment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assessment.swift; sourceTree = "<group>"; };
 		AA000001000000000000006B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		AA000001000000000000007B /* ProtocolListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolListView.swift; sourceTree = "<group>"; };
-		AA000001000000000000008B /* ProtocolDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolDetailView.swift; sourceTree = "<group>"; };
-		AA000001000000000000009B /* ExerciseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseListView.swift; sourceTree = "<group>"; };
-		AA00000100000000000000AB /* ExerciseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDetailView.swift; sourceTree = "<group>"; };
 		AA00000100000000000000BB /* AssessmentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentListView.swift; sourceTree = "<group>"; };
 		AA00000100000000000000CB /* AssessmentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentDetailView.swift; sourceTree = "<group>"; };
 		AA00000100000000000000DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -75,8 +63,6 @@
 		AA000001000000000000013A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				AA000001000000000000003B /* TherapyProtocol.swift */,
-				AA000001000000000000004B /* Exercise.swift */,
 				AA000001000000000000005B /* Assessment.swift */,
 			);
 			path = Models;
@@ -86,8 +72,6 @@
 			isa = PBXGroup;
 			children = (
 				AA000001000000000000015A /* Home */,
-				AA000001000000000000016A /* Protocol */,
-				AA000001000000000000017A /* Exercise */,
 				AA000001000000000000018A /* Assessment */,
 			);
 			path = Views;
@@ -99,24 +83,6 @@
 				AA000001000000000000006B /* HomeView.swift */,
 			);
 			path = Home;
-			sourceTree = "<group>";
-		};
-		AA000001000000000000016A /* Protocol */ = {
-			isa = PBXGroup;
-			children = (
-				AA000001000000000000007B /* ProtocolListView.swift */,
-				AA000001000000000000008B /* ProtocolDetailView.swift */,
-			);
-			path = Protocol;
-			sourceTree = "<group>";
-		};
-		AA000001000000000000017A /* Exercise */ = {
-			isa = PBXGroup;
-			children = (
-				AA000001000000000000009B /* ExerciseListView.swift */,
-				AA00000100000000000000AB /* ExerciseDetailView.swift */,
-			);
-			path = Exercise;
 			sourceTree = "<group>";
 		};
 		AA000001000000000000018A /* Assessment */ = {
@@ -208,14 +174,8 @@
 			files = (
 				AA000001000000000000001A /* StrokeTherapyGuideApp.swift in Sources */,
 				AA000001000000000000002A /* ContentView.swift in Sources */,
-				AA000001000000000000003A /* TherapyProtocol.swift in Sources */,
-				AA000001000000000000004A /* Exercise.swift in Sources */,
 				AA000001000000000000005A /* Assessment.swift in Sources */,
 				AA000001000000000000006A /* HomeView.swift in Sources */,
-				AA000001000000000000007A /* ProtocolListView.swift in Sources */,
-				AA000001000000000000008A /* ProtocolDetailView.swift in Sources */,
-				AA000001000000000000009A /* ExerciseListView.swift in Sources */,
-				AA00000100000000000000AA /* ExerciseDetailView.swift in Sources */,
 				AA00000100000000000000BA /* AssessmentListView.swift in Sources */,
 				AA00000100000000000000CA /* AssessmentDetailView.swift in Sources */,
 			);
@@ -230,33 +190,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -270,12 +207,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -292,33 +224,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -326,12 +235,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -347,15 +251,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StrokeTherapyGuide/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -376,15 +275,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StrokeTherapyGuide/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -8,19 +8,9 @@ struct ContentView: View {
                     Label("ホーム", systemImage: "house.fill")
                 }
 
-            ProtocolListView()
-                .tabItem {
-                    Label("治療プロトコル", systemImage: "list.clipboard.fill")
-                }
-
-            ExerciseListView()
-                .tabItem {
-                    Label("運動メニュー", systemImage: "figure.strengthtraining.traditional")
-                }
-
             AssessmentListView()
                 .tabItem {
-                    Label("評価ツール", systemImage: "checkmark.seal.fill")
+                    Label("評価ツール", systemImage: "checklist")
                 }
         }
         .accentColor(.blue)

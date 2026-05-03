@@ -1,21 +1,28 @@
 import SwiftUI
 
+// MARK: - Router
+
 struct AssessmentDetailView: View {
     let assessmentType: AssessmentType
 
     var body: some View {
         switch assessmentType {
-        case .nihss, .bergBalance, .fuglMeyerUpper, .fuglMeyerLower:
-            ScoreAssessmentView(assessmentType: assessmentType)
-        case .tug:
-            TUGAssessmentView()
-        case .tenMeterWalk:
-            TenMeterWalkView()
-        case .fim:
-            FIMInfoView()
+        case .tug:          TimerAssessmentView(assessmentType: .tug)
+        case .tenMeterWalk: TimerAssessmentView(assessmentType: .tenMeterWalk)
+        case .sixMWT:       TimerAssessmentView(assessmentType: .sixMWT)
+        case .nhpt:         TimerAssessmentView(assessmentType: .nhpt)
+        case .bbt:          BBTView()
+        case .brunnstrom:   BrunnstromView()
+        case .vasNrs:       VASNRSView()
+        case .moca:         MoCAInfoView()
+        case .sis:          SISInfoView()
+        case .mas:          MASView()
+        default:            ScoreAssessmentView(assessmentType: assessmentType)
         }
     }
 }
+
+// MARK: - Generic Score Assessment
 
 struct ScoreAssessmentView: View {
     let assessmentType: AssessmentType
@@ -24,17 +31,20 @@ struct ScoreAssessmentView: View {
     private var items: [AssessmentItem] { assessmentType.items }
     private var totalScore: Int { scores.values.reduce(0, +) }
 
+    var swiftColor: Color { colorFromName(assessmentType.domain.color.rawValue) }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                AssessmentInfoCard(type: assessmentType, total: totalScore)
-                InterpretationCard(type: assessmentType, score: totalScore)
+                AssessmentSummaryCard(type: assessmentType, total: totalScore, color: swiftColor)
+                InterpretationCard(type: assessmentType, score: totalScore, color: swiftColor)
 
                 VStack(spacing: 10) {
                     ForEach(items) { item in
                         AssessmentItemCard(
                             item: item,
                             selectedScore: scores[item.id],
+                            color: swiftColor,
                             onSelect: { score in
                                 scores[item.id] = scores[item.id] == score ? nil : score
                             }
@@ -43,18 +53,19 @@ struct ScoreAssessmentView: View {
                 }
                 .padding(.horizontal)
 
-                ResetButton { scores = [:] }
+                ResetButton(color: swiftColor) { scores = [:] }
             }
             .padding(.bottom, 24)
         }
-        .navigationTitle(assessmentType.abbreviation)
+        .navigationTitle(assessmentType.rawValue)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-private struct AssessmentInfoCard: View {
+private struct AssessmentSummaryCard: View {
     let type: AssessmentType
     let total: Int
+    let color: Color
 
     var body: some View {
         HStack {
@@ -62,8 +73,8 @@ private struct AssessmentInfoCard: View {
                 Text(type.purpose)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                if type.maxScore > 0 {
-                    Text("採点範囲: 0〜\(type.maxScore)点")
+                if let max = type.maxScore {
+                    Text("採点範囲: 0〜\(max)点")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -71,8 +82,8 @@ private struct AssessmentInfoCard: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text("\(total)")
-                    .font(.system(size: 40, weight: .bold, design: .rounded))
-                    .foregroundColor(.blue)
+                    .font(.system(size: 44, weight: .bold, design: .rounded))
+                    .foregroundColor(color)
                 Text("合計点")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -86,39 +97,44 @@ private struct AssessmentInfoCard: View {
     }
 }
 
-private struct InterpretationCard: View {
+struct InterpretationCard: View {
     let type: AssessmentType
     let score: Int
+    let color: Color
 
-    private var currentInterpretation: (range: ClosedRange<Int>, label: String, description: String)? {
+    private var match: (range: ClosedRange<Int>, label: String, description: String)? {
         type.interpretation.first { $0.range.contains(score) }
     }
 
     var body: some View {
-        if let interp = currentInterpretation {
+        if let m = match {
             HStack(spacing: 12) {
                 Image(systemName: "chart.bar.xaxis")
-                    .foregroundColor(.blue)
+                    .foregroundColor(color)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(interp.label)
+                    Text(m.label)
                         .font(.headline)
-                    Text(interp.description)
+                    Text(m.description)
                         .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text("スコア \(m.range.lowerBound)〜\(m.range.upperBound)点の範囲")
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 Spacer()
             }
             .padding()
-            .background(Color.blue.opacity(0.07))
+            .background(color.opacity(0.08))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal)
         }
     }
 }
 
-private struct AssessmentItemCard: View {
+struct AssessmentItemCard: View {
     let item: AssessmentItem
     let selectedScore: Int?
+    let color: Color
     let onSelect: (Int) -> Void
     @State private var isExpanded = false
 
@@ -130,13 +146,14 @@ private struct AssessmentItemCard: View {
                         .font(.caption.bold())
                         .foregroundColor(.white)
                         .frame(width: 22, height: 22)
-                        .background(selectedScore != nil ? Color.blue : Color.gray)
+                        .background(selectedScore != nil ? color : Color.gray)
                         .clipShape(Circle())
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text(item.name)
                             .font(.subheadline.bold())
                             .foregroundColor(.primary)
+                            .multilineTextAlignment(.leading)
                         if !item.description.isEmpty {
                             Text(item.description)
                                 .font(.caption)
@@ -149,7 +166,7 @@ private struct AssessmentItemCard: View {
                     if let score = selectedScore {
                         Text("\(score)点")
                             .font(.headline.bold())
-                            .foregroundColor(.blue)
+                            .foregroundColor(color)
                     }
 
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
@@ -161,12 +178,12 @@ private struct AssessmentItemCard: View {
 
             if isExpanded {
                 Divider().padding(.horizontal, 12)
-
                 VStack(spacing: 6) {
                     ForEach(item.scoringCriteria) { criterion in
                         ScoringButton(
                             criterion: criterion,
                             isSelected: selectedScore == criterion.score,
+                            color: color,
                             onTap: { onSelect(criterion.score) }
                         )
                     }
@@ -180,19 +197,20 @@ private struct AssessmentItemCard: View {
     }
 }
 
-private struct ScoringButton: View {
+struct ScoringButton: View {
     let criterion: ScoringCriterion
     let isSelected: Bool
+    let color: Color
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 10) {
                 Text("\(criterion.score)")
-                    .font(.headline.bold())
-                    .foregroundColor(isSelected ? .white : .blue)
+                    .font(.subheadline.bold())
+                    .foregroundColor(isSelected ? .white : color)
                     .frame(width: 30, height: 30)
-                    .background(isSelected ? Color.blue : Color.blue.opacity(0.1))
+                    .background(isSelected ? color : color.opacity(0.1))
                     .clipShape(Circle())
 
                 Text(criterion.description)
@@ -204,17 +222,18 @@ private struct ScoringButton: View {
 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(color)
                 }
             }
             .padding(10)
-            .background(isSelected ? Color.blue.opacity(0.07) : Color(.secondarySystemBackground))
+            .background(isSelected ? color.opacity(0.07) : Color(.secondarySystemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }
 
-private struct ResetButton: View {
+struct ResetButton: View {
+    let color: Color
     let action: () -> Void
 
     var body: some View {
@@ -227,459 +246,74 @@ private struct ResetButton: View {
     }
 }
 
-struct TUGAssessmentView: View {
-    @State private var elapsedSeconds: Double = 0
-    @State private var isRunning = false
-    @State private var timer: Timer?
-    @State private var results: [Double] = []
+// MARK: - MAS View (per muscle group)
 
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                TimerCard(elapsed: elapsedSeconds, isRunning: isRunning)
+struct MASView: View {
+    @State private var scores: [UUID: Int] = [:]
 
-                HStack(spacing: 16) {
-                    Button(action: startStop) {
-                        Label(isRunning ? "ストップ" : "スタート",
-                              systemImage: isRunning ? "stop.fill" : "play.fill")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(isRunning ? Color.red : Color.green)
-                            .foregroundColor(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-
-                    Button(action: reset) {
-                        Label("リセット", systemImage: "arrow.counterclockwise")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(.systemGray4))
-                            .foregroundColor(.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                }
-                .padding(.horizontal)
-
-                if !isRunning && elapsedSeconds > 0 {
-                    Button(action: { results.append(elapsedSeconds); elapsedSeconds = 0 }) {
-                        Label("記録を保存", systemImage: "square.and.arrow.down.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding(.horizontal)
-                }
-
-                TUGInterpretationCard(seconds: elapsedSeconds)
-
-                if !results.isEmpty {
-                    ResultsCard(results: results)
-                }
-
-                TUGProtocol()
-            }
-            .padding(.bottom, 24)
-        }
-        .navigationTitle("TUG Test")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func startStop() {
-        if isRunning {
-            timer?.invalidate()
-            timer = nil
-            isRunning = false
-        } else {
-            isRunning = true
-            timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-                elapsedSeconds += 0.01
-            }
-        }
-    }
-
-    private func reset() {
-        timer?.invalidate()
-        timer = nil
-        isRunning = false
-        elapsedSeconds = 0
-    }
-}
-
-private struct TimerCard: View {
-    let elapsed: Double
-    let isRunning: Bool
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(String(format: "%05.2f", elapsed))
-                .font(.system(size: 64, weight: .thin, design: .monospaced))
-                .foregroundColor(isRunning ? .green : .primary)
-            Text("秒")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .padding(30)
-        .frame(maxWidth: .infinity)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.07), radius: 6, x: 0, y: 2)
-        .padding(.horizontal)
-    }
-}
-
-private struct TUGInterpretationCard: View {
-    let seconds: Double
-
-    private var interpretation: (label: String, detail: String, color: Color) {
-        switch seconds {
-        case 0..<1: return ("未計測", "計測してください", .gray)
-        case 1..<10: return ("正常範囲", "転倒リスク低（地域在住高齢者）", .green)
-        case 10..<12: return ("注意", "軽度の転倒リスク", .yellow)
-        case 12..<20: return ("要注意", "中等度の転倒リスク・歩行補助具を要することが多い", .orange)
-        default: return ("高リスク", "高い転倒リスク・ADL介助が必要なことが多い", .red)
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Circle()
-                .fill(interpretation.color)
-                .frame(width: 14, height: 14)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(interpretation.label)
-                    .font(.headline)
-                    .foregroundColor(interpretation.color)
-                Text(interpretation.detail)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            Spacer()
-        }
-        .padding()
-        .background(interpretation.color.opacity(0.07))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal)
-    }
-}
-
-private struct ResultsCard: View {
-    let results: [Double]
-
-    private var average: Double { results.reduce(0, +) / Double(results.count) }
-    private var best: Double { results.min() ?? 0 }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("計測履歴")
-                .font(.headline)
-                .padding(.horizontal)
-
-            VStack(spacing: 6) {
-                ForEach(Array(results.enumerated()), id: \.offset) { index, time in
-                    HStack {
-                        Text("試行 \(index + 1)")
-                            .font(.subheadline)
-                        Spacer()
-                        Text(String(format: "%.2f秒", time))
-                            .font(.subheadline.bold())
-                            .foregroundColor(.blue)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-
-                if results.count > 1 {
-                    Divider()
-                    HStack {
-                        Text("平均")
-                            .font(.subheadline)
-                        Spacer()
-                        Text(String(format: "%.2f秒", average))
-                            .font(.subheadline.bold())
-                            .foregroundColor(.green)
-                    }
-                    .padding(.horizontal, 14)
-                }
-            }
-            .padding(.horizontal)
-        }
-    }
-}
-
-private struct TUGProtocol: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("実施方法", systemImage: "info.circle.fill")
-                .font(.headline)
-                .padding(.horizontal)
-
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach([
-                    "患者は背もたれ付き椅子（座面高46cm）に深く腰掛ける",
-                    "「行ってください」の合図で立ち上がり、3m先の目印まで歩く",
-                    "折り返して椅子まで戻り、再び深く腰掛ける",
-                    "普段使用している補助具（杖など）の使用を許可する",
-                    "通常歩行速度で実施（最大速度は不要）",
-                    "練習試行を1回行った後、本番を2〜3回計測し平均値を使用"
-                ], id: \.self) { step in
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 5))
-                            .padding(.top, 7)
-                            .foregroundColor(.blue)
-                        Text(step)
-                            .font(.subheadline)
-                    }
-                }
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal)
-        }
-    }
-}
-
-struct TenMeterWalkView: View {
-    @State private var elapsedSeconds: Double = 0
-    @State private var isRunning = false
-    @State private var timer: Timer?
-    @State private var results: [Double] = []
-
-    private var speed: Double {
-        guard elapsedSeconds > 0 else { return 0 }
-        return 10.0 / elapsedSeconds
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                TimerCard(elapsed: elapsedSeconds, isRunning: isRunning)
-
-                VStack(spacing: 6) {
-                    Text(String(format: "%.3f m/s", speed))
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)
-                    Text("歩行速度")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-
-                HStack(spacing: 16) {
-                    Button(action: startStop) {
-                        Label(isRunning ? "ストップ" : "スタート",
-                              systemImage: isRunning ? "stop.fill" : "play.fill")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(isRunning ? Color.red : Color.green)
-                            .foregroundColor(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-
-                    Button(action: reset) {
-                        Label("リセット", systemImage: "arrow.counterclockwise")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(.systemGray4))
-                            .foregroundColor(.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
-                }
-                .padding(.horizontal)
-
-                if !isRunning && elapsedSeconds > 0 {
-                    Button(action: { results.append(elapsedSeconds); elapsedSeconds = 0 }) {
-                        Label("記録を保存", systemImage: "square.and.arrow.down.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .padding(.horizontal)
-                }
-
-                WalkSpeedInterpretationCard(speed: speed)
-                TenMeterWalkProtocol()
-            }
-            .padding(.bottom, 24)
-        }
-        .navigationTitle("10m歩行テスト")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func startStop() {
-        if isRunning {
-            timer?.invalidate()
-            timer = nil
-            isRunning = false
-        } else {
-            isRunning = true
-            timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-                elapsedSeconds += 0.01
-            }
-        }
-    }
-
-    private func reset() {
-        timer?.invalidate()
-        timer = nil
-        isRunning = false
-        elapsedSeconds = 0
-    }
-}
-
-private struct WalkSpeedInterpretationCard: View {
-    let speed: Double
-
-    private var interpretation: (label: String, detail: String, color: Color) {
-        switch speed {
-        case 0..<0.001: return ("未計測", "計測してください", .gray)
-        case 0.001..<0.4: return ("重度障害", "屋内歩行のみ・介助が必要", .red)
-        case 0.4..<0.6: return ("中等度障害", "限定的な地域歩行", .orange)
-        case 0.6..<0.8: return ("軽度障害", "監視下での地域歩行", .yellow)
-        case 0.8..<1.0: return ("ほぼ自立", "独立した地域歩行が可能", .green)
-        default: return ("正常範囲", "完全な地域歩行・社会復帰レベル", .blue)
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Circle()
-                    .fill(interpretation.color)
-                    .frame(width: 12, height: 12)
-                Text(interpretation.label)
-                    .font(.headline)
-                    .foregroundColor(interpretation.color)
-                Spacer()
-            }
-            Text(interpretation.detail)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-
-            Divider()
-
-            Text("MCID（最小臨床的重要変化量）: 0.16 m/s")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .background(interpretation.color.opacity(0.07))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal)
-    }
-}
-
-private struct TenMeterWalkProtocol: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("実施方法", systemImage: "info.circle.fill")
-                .font(.headline)
-                .padding(.horizontal)
-
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach([
-                    "14m のコースを準備（加速2m + 計測10m + 減速2m）",
-                    "スタート地点から歩き始める",
-                    "計測区間（2m地点）でタイマースタート",
-                    "計測終了地点（12m地点）でタイマーストップ",
-                    "通常歩行速度・最大歩行速度の両方を計測",
-                    "補助具使用の有無を記録する",
-                    "2〜3回計測し平均値を算出"
-                ], id: \.self) { step in
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "circle.fill")
-                            .font(.system(size: 5))
-                            .padding(.top, 7)
-                            .foregroundColor(.blue)
-                        Text(step)
-                            .font(.subheadline)
-                    }
-                }
-            }
-            .padding()
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal)
-        }
-    }
-}
-
-struct FIMInfoView: View {
-    private let domains: [(title: String, items: [String], color: Color)] = [
-        ("セルフケア（6項目）", ["食事", "整容", "清拭", "更衣（上半身）", "更衣（下半身）", "トイレ動作"], .blue),
-        ("排泄コントロール（2項目）", ["排尿管理", "排便管理"], .purple),
-        ("移乗（3項目）", ["ベッド・椅子・車椅子", "トイレ", "浴槽・シャワー"], .green),
-        ("移動（2項目）", ["歩行・車椅子", "階段"], .orange),
-        ("コミュニケーション（2項目）", ["理解", "表出"], .teal),
-        ("社会的認知（3項目）", ["社会的交流", "問題解決", "記憶"], .red)
-    ]
+    private let items = AssessmentType.mas.items
+    private var totalScore: Int { scores.values.reduce(0, +) }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                FIMScoringCard()
+                MASInfoCard()
 
-                VStack(alignment: .leading, spacing: 12) {
-                    Label("評価項目（全18項目）", systemImage: "list.number")
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("筋肉別評価")
                         .font(.headline)
                         .padding(.horizontal)
 
-                    ForEach(domains, id: \.title) { domain in
-                        FIMDomainCard(domain: domain)
+                    ForEach(items) { item in
+                        AssessmentItemCard(
+                            item: item,
+                            selectedScore: scores[item.id],
+                            color: .pink,
+                            onSelect: { score in
+                                scores[item.id] = scores[item.id] == score ? nil : score
+                            }
+                        )
                     }
+                    .padding(.horizontal)
                 }
 
-                FIMInterpretationCard()
+                ResetButton(color: .pink) { scores = [:] }
             }
             .padding(.bottom, 24)
         }
-        .navigationTitle("FIM")
+        .navigationTitle("Modified Ashworth Scale")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-private struct FIMScoringCard: View {
-    let levels = [
-        (score: 7, label: "完全自立", description: "補助具不要・安全・適切な時間"),
-        (score: 6, label: "修正自立", description: "補助具使用・安全・適切な時間"),
-        (score: 5, label: "監視・準備", description: "身体介助不要だが監視が必要"),
-        (score: 4, label: "最小介助", description: "自分で75%以上実施"),
-        (score: 3, label: "中等度介助", description: "自分で50〜74%実施"),
-        (score: 2, label: "最大介助", description: "自分で25〜49%実施"),
-        (score: 1, label: "全介助", description: "自分で25%未満しか実施できない")
-    ]
-
+private struct MASInfoCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label("採点基準（各項目1〜7点）", systemImage: "star.circle.fill")
+            Label("採点基準", systemImage: "info.circle.fill")
                 .font(.headline)
                 .padding(.horizontal)
 
             VStack(spacing: 0) {
-                ForEach(levels, id: \.score) { level in
+                ForEach([
+                    (label: "0",   desc: "筋緊張の亢進なし"),
+                    (label: "1",   desc: "軽度：可動域末端で引っかかり感"),
+                    (label: "1+",  desc: "軽度：引っかかりの後に軽微な抵抗"),
+                    (label: "2",   desc: "全可動域で抵抗あるが可動域制限なし"),
+                    (label: "3",   desc: "可動域制限を伴う著明な筋緊張亢進"),
+                    (label: "4",   desc: "強直（屈曲または伸展位で固定）")
+                ], id: \.label) { item in
                     HStack(spacing: 12) {
-                        Text("\(level.score)")
+                        Text(item.label)
                             .font(.headline.bold())
-                            .foregroundColor(.white)
-                            .frame(width: 28, height: 28)
-                            .background(scoreColor(level.score))
-                            .clipShape(Circle())
-
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text(level.label)
-                                .font(.subheadline.bold())
-                            Text(level.description)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                            .frame(width: 28)
+                            .foregroundColor(.pink)
+                        Text(item.desc)
+                            .font(.subheadline)
                         Spacer()
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-
-                    if level.score > 1 {
-                        Divider().padding(.leading, 54)
-                    }
+                    Divider().padding(.leading, 54)
                 }
             }
             .background(Color(.systemBackground))
@@ -688,79 +322,104 @@ private struct FIMScoringCard: View {
             .padding(.horizontal)
         }
     }
+}
 
-    private func scoreColor(_ score: Int) -> Color {
-        switch score {
-        case 7: return .blue
-        case 6: return .cyan
-        case 5: return .green
-        case 4: return .yellow
-        case 3: return .orange
-        case 2: return .red.opacity(0.7)
-        default: return .red
+// MARK: - Brunnstrom Stage View
+
+struct BrunnstromView: View {
+    @State private var armStage: Int = 0
+    @State private var handStage: Int = 0
+    @State private var legStage: Int = 0
+
+    private let stages: [(Int, String)] = [
+        (0, "未評価"),
+        (1, "Stage I — 弛緩性麻痺、随意運動なし"),
+        (2, "Stage II — 連合反応出現、最小限の随意運動"),
+        (3, "Stage III — 随意的な共同運動が出現"),
+        (4, "Stage IV — 共同運動パターンから逸脱した運動が一部可能"),
+        (5, "Stage V — 共同運動パターンに依存しない独立した運動が増加"),
+        (6, "Stage VI — ほぼ正常。協調運動は正常または近正常")
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                BrunnstromInfoCard()
+                BrunnstromSelector(label: "上肢", selection: $armStage, stages: stages)
+                BrunnstromSelector(label: "手", selection: $handStage, stages: stages)
+                BrunnstromSelector(label: "下肢", selection: $legStage, stages: stages)
+                BrunnstromResultCard(arm: armStage, hand: handStage, leg: legStage)
+            }
+            .padding(.bottom, 24)
         }
+        .navigationTitle("Brunnstrom Stage")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
-private struct FIMDomainCard: View {
-    let domain: (title: String, items: [String], color: Color)
-
+private struct BrunnstromInfoCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(domain.title)
-                .font(.subheadline.bold())
-                .foregroundColor(domain.color)
+            Label("評価の目的", systemImage: "info.circle.fill")
+                .font(.headline)
 
-            ForEach(domain.items, id: \.self) { item in
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(domain.color.opacity(0.5))
-                        .frame(width: 6, height: 6)
-                    Text(item)
-                        .font(.subheadline)
-                }
-            }
+            Text("脳卒中後の上肢・手・下肢それぞれの運動回復ステージを評価します。共同運動パターンから正常運動への回復過程を Stage I〜VI で分類します。")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
         .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(domain.color.opacity(0.06))
+        .background(Color.orange.opacity(0.07))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal)
     }
 }
 
-private struct FIMInterpretationCard: View {
-    let ranges: [(label: String, range: String, description: String)] = [
-        ("完全自立", "108〜126点", "全項目で自立"),
-        ("修正自立〜軽度障害", "73〜107点", "一部で補助具使用または介助"),
-        ("中等度障害", "37〜72点", "大部分の項目で何らかの介助"),
-        ("重度障害", "18〜36点", "ほとんど全項目で介助")
-    ]
+private struct BrunnstromSelector: View {
+    let label: String
+    @Binding var selection: Int
+    let stages: [(Int, String)]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label("解釈基準（総合計: 18〜126点）", systemImage: "chart.bar.fill")
-                .font(.headline)
-                .padding(.horizontal)
+            HStack {
+                Text(label)
+                    .font(.headline)
+                Spacer()
+                if selection > 0 {
+                    Text("Stage \(selection)")
+                        .font(.headline.bold())
+                        .foregroundColor(.orange)
+                }
+            }
+            .padding(.horizontal)
 
-            VStack(spacing: 8) {
-                ForEach(ranges, id: \.label) { item in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(item.label)
-                                .font(.subheadline.bold())
-                            Text(item.description)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
+            VStack(spacing: 6) {
+                ForEach(stages, id: \.0) { stage in
+                    Button(action: { selection = stage.0 }) {
+                        HStack(spacing: 12) {
+                            Text(stage.0 == 0 ? "—" : "\(stage.0)")
+                                .font(.headline.bold())
+                                .foregroundColor(selection == stage.0 ? .white : .orange)
+                                .frame(width: 28, height: 28)
+                                .background(selection == stage.0 ? Color.orange : Color.orange.opacity(0.1))
+                                .clipShape(Circle())
+
+                            Text(stage.1)
+                                .font(.subheadline)
+                                .foregroundColor(selection == stage.0 ? .primary : .secondary)
+                                .multilineTextAlignment(.leading)
+
+                            Spacer()
+
+                            if selection == stage.0 {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.orange)
+                            }
                         }
-                        Spacer()
-                        Text(item.range)
-                            .font(.subheadline.bold())
-                            .foregroundColor(.blue)
+                        .padding(10)
+                        .background(selection == stage.0 ? Color.orange.opacity(0.08) : Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    .padding(10)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
             .padding(.horizontal)
@@ -768,8 +427,892 @@ private struct FIMInterpretationCard: View {
     }
 }
 
+private struct BrunnstromResultCard: View {
+    let arm: Int
+    let hand: Int
+    let leg: Int
+
+    var body: some View {
+        if arm > 0 || hand > 0 || leg > 0 {
+            VStack(spacing: 10) {
+                Text("評価結果")
+                    .font(.headline)
+
+                HStack(spacing: 0) {
+                    ResultPill(label: "上肢", value: arm > 0 ? "Stage \(arm)" : "—")
+                    Divider().frame(height: 36)
+                    ResultPill(label: "手", value: hand > 0 ? "Stage \(hand)" : "—")
+                    Divider().frame(height: 36)
+                    ResultPill(label: "下肢", value: leg > 0 ? "Stage \(leg)" : "—")
+                }
+                .background(Color.orange.opacity(0.06))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .shadow(color: .black.opacity(0.07), radius: 5, x: 0, y: 2)
+            .padding(.horizontal)
+        }
+    }
+}
+
+private struct ResultPill: View {
+    let label: String
+    let value: String
+
+    var body: some View {
+        VStack(spacing: 3) {
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.subheadline.bold())
+                .foregroundColor(.orange)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+    }
+}
+
+// MARK: - Timer Assessment (TUG / 10m / 6MWT / NHPT)
+
+struct TimerAssessmentView: View {
+    let assessmentType: AssessmentType
+    @State private var elapsed: Double = 0
+    @State private var isRunning = false
+    @State private var timer: Timer?
+    @State private var results: [Double] = []
+
+    var swiftColor: Color { colorFromName(assessmentType.domain.color.rawValue) }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                TimerDisplayCard(elapsed: elapsed, isRunning: isRunning, color: swiftColor)
+                DerivedValueCard(type: assessmentType, elapsed: elapsed, color: swiftColor)
+                TimerControlRow(
+                    isRunning: isRunning,
+                    elapsed: elapsed,
+                    onStartStop: startStop,
+                    onReset: reset,
+                    onSave: {
+                        if elapsed > 0 { results.append(elapsed); elapsed = 0 }
+                    }
+                )
+                InterpretationBanner(type: assessmentType, elapsed: elapsed, color: swiftColor)
+                if !results.isEmpty { SavedResultsCard(results: results, color: swiftColor) }
+                ProtocolCard(type: assessmentType)
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle(assessmentType.rawValue)
+        .navigationBarTitleDisplayMode(.inline)
+        .onDisappear { timer?.invalidate() }
+    }
+
+    private func startStop() {
+        if isRunning {
+            timer?.invalidate(); timer = nil; isRunning = false
+        } else {
+            isRunning = true
+            timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in elapsed += 0.01 }
+        }
+    }
+
+    private func reset() {
+        timer?.invalidate(); timer = nil; isRunning = false; elapsed = 0
+    }
+}
+
+private struct TimerDisplayCard: View {
+    let elapsed: Double
+    let isRunning: Bool
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(String(format: "%06.2f", elapsed))
+                .font(.system(size: 60, weight: .thin, design: .monospaced))
+                .foregroundColor(isRunning ? color : .primary)
+            Text("秒")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(28)
+        .frame(maxWidth: .infinity)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.07), radius: 6, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+}
+
+private struct DerivedValueCard: View {
+    let type: AssessmentType
+    let elapsed: Double
+    let color: Color
+
+    var body: some View {
+        switch type {
+        case .tenMeterWalk:
+            let speed = elapsed > 0 ? 10.0 / elapsed : 0
+            derivedRow(label: "歩行速度", value: String(format: "%.3f m/s", speed), color: color)
+        case .sixMWT:
+            let dist = elapsed > 0 ? (elapsed / 360.0) * 1.2 * 60 : 0
+            derivedRow(label: "推定歩行距離（参考）", value: String(format: "%.0f m", dist), color: color)
+        default:
+            EmptyView()
+        }
+    }
+
+    private func derivedRow(label: String, value: String, color: Color) -> some View {
+        HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+            Text(value)
+                .font(.title2.bold())
+                .foregroundColor(color)
+        }
+        .padding()
+        .background(color.opacity(0.07))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+private struct TimerControlRow: View {
+    let isRunning: Bool
+    let elapsed: Double
+    let onStartStop: () -> Void
+    let onReset: () -> Void
+    let onSave: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 16) {
+                Button(action: onStartStop) {
+                    Label(isRunning ? "ストップ" : "スタート",
+                          systemImage: isRunning ? "stop.fill" : "play.fill")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(isRunning ? Color.red : Color.green)
+                        .foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                Button(action: onReset) {
+                    Label("リセット", systemImage: "arrow.counterclockwise")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemGray4))
+                        .foregroundColor(.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
+
+            if !isRunning && elapsed > 0 {
+                Button(action: onSave) {
+                    Label("記録を保存", systemImage: "square.and.arrow.down.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding(.horizontal)
+    }
+}
+
+private struct InterpretationBanner: View {
+    let type: AssessmentType
+    let elapsed: Double
+    let color: Color
+
+    private var info: (label: String, detail: String, color: Color)? {
+        switch type {
+        case .tug:
+            if elapsed < 0.1 { return nil }
+            switch elapsed {
+            case 0..<10: return ("正常〜低リスク", "転倒リスク低（地域在住高齢者）", .green)
+            case 10..<12: return ("軽度注意", "軽度の転倒リスク", .yellow)
+            case 12..<20: return ("要注意", "中等度の転倒リスク", .orange)
+            default:     return ("高リスク", "高い転倒リスク・ADL介助が必要なことが多い", .red)
+            }
+        case .tenMeterWalk:
+            let speed = elapsed > 0 ? 10.0 / elapsed : 0
+            if speed < 0.001 { return nil }
+            switch speed {
+            case 0..<0.4:  return ("重度障害", "屋内歩行のみ・介助が必要", .red)
+            case 0.4..<0.6: return ("中等度障害", "限定的な地域歩行", .orange)
+            case 0.6..<0.8: return ("軽度障害", "監視下での地域歩行", .yellow)
+            case 0.8..<1.0: return ("ほぼ自立", "独立した地域歩行が可能", .green)
+            default:        return ("正常範囲", "完全な地域歩行・社会復帰レベル", .blue)
+            }
+        default:
+            return nil
+        }
+    }
+
+    var body: some View {
+        if let i = info {
+            HStack(spacing: 12) {
+                Circle().fill(i.color).frame(width: 12, height: 12)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(i.label).font(.headline).foregroundColor(i.color)
+                    Text(i.detail).font(.caption).foregroundColor(.secondary)
+                }
+                Spacer()
+            }
+            .padding()
+            .background(i.color.opacity(0.07))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal)
+        }
+    }
+}
+
+private struct SavedResultsCard: View {
+    let results: [Double]
+    let color: Color
+
+    private var average: Double { results.reduce(0, +) / Double(results.count) }
+    private var best: Double { results.min() ?? 0 }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("計測履歴").font(.headline).padding(.horizontal)
+
+            VStack(spacing: 6) {
+                ForEach(Array(results.enumerated()), id: \.offset) { i, t in
+                    HStack {
+                        Text("試行 \(i + 1)").font(.subheadline)
+                        Spacer()
+                        Text(String(format: "%.2f秒", t)).font(.subheadline.bold()).foregroundColor(color)
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 8)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                if results.count > 1 {
+                    Divider()
+                    HStack {
+                        Text("平均").font(.subheadline)
+                        Spacer()
+                        Text(String(format: "%.2f秒", average)).font(.subheadline.bold()).foregroundColor(.green)
+                    }
+                    .padding(.horizontal, 14)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+
+private struct ProtocolCard: View {
+    let type: AssessmentType
+
+    private var steps: [String] {
+        switch type {
+        case .tug:
+            return [
+                "背もたれ付き椅子（座面高46cm）に深く腰掛ける",
+                "「行ってください」の合図で立ち上がり、3m先の目印まで歩く",
+                "折り返して椅子まで戻り、再び深く腰掛ける",
+                "普段使用している補助具（杖等）の使用を許可する",
+                "通常歩行速度で実施（最大速度は不要）",
+                "練習1回の後、本番を2〜3回計測し平均値を使用"
+            ]
+        case .tenMeterWalk:
+            return [
+                "14m のコースを準備（加速2m＋計測10m＋減速2m）",
+                "計測区間（2m地点）でタイマースタート",
+                "計測終了地点（12m地点）でタイマーストップ",
+                "通常歩行速度・最大歩行速度の両方を計測",
+                "2〜3回計測し平均値を算出",
+                "MCID（最小臨床的重要変化量）: 0.16 m/s"
+            ]
+        case .sixMWT:
+            return [
+                "30m の平坦な廊下を準備（折り返しコース可）",
+                "「できるだけ速く・長く歩いてください」と説明",
+                "歩行中は標準的な励ましのみ行う",
+                "6分後に停止、歩行距離（m）を記録",
+                "RPE（ボルグスケール）と SpO2 も計測する",
+                "MCID: 約54m（脳卒中患者の場合）"
+            ]
+        case .nhpt:
+            return [
+                "ペグボードを固定し、9本のペグを側方の容器に準備",
+                "「できるだけ速く9本全てのペグを穴に差し込んでください」",
+                "全て差し込んだら、今度は全て取り出す",
+                "ペグを落とした場合は拾って続ける",
+                "利き手・非利き手の両方を計測（秒）",
+                "2〜3回実施し最良値を記録"
+            ]
+        default:
+            return []
+        }
+    }
+
+    var body: some View {
+        if !steps.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                Label("実施プロトコル", systemImage: "list.number").font(.headline).padding(.horizontal)
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(steps.enumerated()), id: \.offset) { i, step in
+                        HStack(alignment: .top, spacing: 10) {
+                            Text("\(i+1)")
+                                .font(.caption.bold()).foregroundColor(.white)
+                                .frame(width: 20, height: 20)
+                                .background(Color.blue).clipShape(Circle())
+                                .padding(.top, 1)
+                            Text(step).font(.subheadline)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+// MARK: - BBT View
+
+struct BBTView: View {
+    @State private var dominantCount: Int = 0
+    @State private var nonDominantCount: Int = 0
+    @State private var isRunning = false
+    @State private var elapsed: Double = 0
+    @State private var timer: Timer?
+    @State private var activeHand: HandSide = .dominant
+
+    enum HandSide { case dominant, nonDominant }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                BBTInfoCard()
+                BBTTimerCard(elapsed: elapsed, isRunning: isRunning, activeHand: activeHand)
+                BBTControlRow(
+                    isRunning: isRunning,
+                    onStart: { isRunning = true; timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in elapsed += 0.01 } },
+                    onStop: { timer?.invalidate(); timer = nil; isRunning = false; elapsed = 0 }
+                )
+                BBTCounterRow(
+                    dominantCount: $dominantCount,
+                    nonDominantCount: $nonDominantCount
+                )
+                BBTInterpretationCard(dominant: dominantCount, nonDominant: nonDominantCount)
+                Button("リセット") { dominantCount = 0; nonDominantCount = 0; elapsed = 0 }
+                    .buttonStyle(.bordered)
+                    .foregroundColor(.red)
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("Box and Block Test")
+        .navigationBarTitleDisplayMode(.inline)
+        .onDisappear { timer?.invalidate() }
+    }
+}
+
+private struct BBTInfoCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("実施方法", systemImage: "info.circle.fill").font(.headline)
+            Text("150個のブロック（2.5cm角）を箱から箱へ1分間で移動させる個数を計測。片手ずつ実施し、利き手・非利き手の巧緻性を評価します。")
+                .font(.subheadline).foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.blue.opacity(0.07))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+private struct BBTTimerCard: View {
+    let elapsed: Double
+    let isRunning: Bool
+    let activeHand: BBTView.HandSide
+
+    var body: some View {
+        VStack(spacing: 4) {
+            let remaining = max(0, 60.0 - elapsed)
+            Text(String(format: "%04.1f", remaining))
+                .font(.system(size: 56, weight: .thin, design: .monospaced))
+                .foregroundColor(isRunning ? (remaining < 10 ? .red : .green) : .primary)
+            Text("残り秒数")
+                .font(.subheadline).foregroundColor(.secondary)
+        }
+        .padding(24).frame(maxWidth: .infinity)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.07), radius: 6, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+}
+
+private struct BBTControlRow: View {
+    let isRunning: Bool
+    let onStart: () -> Void
+    let onStop: () -> Void
+
+    var body: some View {
+        HStack(spacing: 16) {
+            Button(action: isRunning ? onStop : onStart) {
+                Label(isRunning ? "ストップ" : "1分計測スタート",
+                      systemImage: isRunning ? "stop.fill" : "play.fill")
+                    .frame(maxWidth: .infinity).padding()
+                    .background(isRunning ? Color.red : Color.green)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+        .padding(.horizontal)
+    }
+}
+
+private struct BBTCounterRow: View {
+    @Binding var dominantCount: Int
+    @Binding var nonDominantCount: Int
+
+    var body: some View {
+        HStack(spacing: 16) {
+            CounterCard(title: "利き手", count: $dominantCount, color: .blue)
+            CounterCard(title: "非利き手", count: $nonDominantCount, color: .purple)
+        }
+        .padding(.horizontal)
+    }
+}
+
+private struct CounterCard: View {
+    let title: String
+    @Binding var count: Int
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Text(title).font(.subheadline.bold())
+            Text("\(count)")
+                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .foregroundColor(color)
+            HStack(spacing: 16) {
+                Button(action: { if count > 0 { count -= 1 } }) {
+                    Image(systemName: "minus.circle.fill")
+                        .font(.title2).foregroundColor(color.opacity(0.5))
+                }
+                Button(action: { count += 1 }) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title2).foregroundColor(color)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
+    }
+}
+
+private struct BBTInterpretationCard: View {
+    let dominant: Int
+    let nonDominant: Int
+
+    var body: some View {
+        if dominant > 0 || nonDominant > 0 {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("参考値（健常者平均）").font(.subheadline.bold()).padding(.horizontal)
+                VStack(spacing: 6) {
+                    HStack {
+                        Text("利き手").font(.subheadline)
+                        Spacer()
+                        Text("\(dominant)個").font(.subheadline.bold()).foregroundColor(.blue)
+                        Text("(健常者平均: 65〜70個/分)").font(.caption).foregroundColor(.secondary)
+                    }
+                    HStack {
+                        Text("非利き手").font(.subheadline)
+                        Spacer()
+                        Text("\(nonDominant)個").font(.subheadline.bold()).foregroundColor(.purple)
+                        Text("(健常者平均: 60〜65個/分)").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+// MARK: - VAS/NRS View
+
+struct VASNRSView: View {
+    @State private var nrsScore: Double = 0
+    @State private var selectedLocation = "患側上肢"
+    @State private var selectedType = "安静時痛"
+
+    private let locations = ["患側上肢", "患側下肢", "肩関節", "手関節", "股関節", "膝関節", "足関節", "体幹", "頭部", "その他"]
+    private let painTypes = ["安静時痛", "運動時痛", "夜間痛", "神経障害性疼痛"]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                NRSCard(score: $nrsScore)
+                PainLocationCard(location: $selectedLocation, locations: locations,
+                                 painType: $selectedType, painTypes: painTypes)
+                PainInterpretationCard(score: Int(nrsScore))
+                CPSPInfoCard()
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("VAS / NRS")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct NRSCard: View {
+    @Binding var score: Double
+
+    var color: Color {
+        switch score {
+        case 0..<1:  return .green
+        case 1..<4:  return .yellow
+        case 4..<7:  return .orange
+        default:     return .red
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 14) {
+            Text("NRS（Numeric Rating Scale）")
+                .font(.subheadline).foregroundColor(.secondary)
+
+            Text(String(format: "%.0f", score))
+                .font(.system(size: 72, weight: .bold, design: .rounded))
+                .foregroundColor(color)
+
+            Text(nrsLabel)
+                .font(.headline).foregroundColor(color)
+
+            Slider(value: $score, in: 0...10, step: 1)
+                .accentColor(color)
+                .padding(.horizontal)
+
+            HStack {
+                Text("0\n痛みなし").font(.caption).foregroundColor(.secondary).multilineTextAlignment(.center)
+                Spacer()
+                Text("5\n中等度").font(.caption).foregroundColor(.secondary).multilineTextAlignment(.center)
+                Spacer()
+                Text("10\n想像最大").font(.caption).foregroundColor(.secondary).multilineTextAlignment(.center)
+            }
+            .padding(.horizontal)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.07), radius: 5, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+
+    private var nrsLabel: String {
+        switch score {
+        case 0:     return "痛みなし"
+        case 1..<4: return "軽度の疼痛"
+        case 4..<7: return "中等度の疼痛"
+        case 7..<10: return "重度の疼痛"
+        default:    return "最大の疼痛"
+        }
+    }
+}
+
+private struct PainLocationCard: View {
+    @Binding var location: String
+    let locations: [String]
+    @Binding var painType: String
+    let painTypes: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("疼痛部位").font(.headline).padding(.horizontal)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(locations, id: \.self) { loc in
+                        Button(action: { location = loc }) {
+                            Text(loc).font(.caption.bold())
+                                .padding(.horizontal, 10).padding(.vertical, 6)
+                                .background(location == loc ? Color.yellow : Color(.systemGray5))
+                                .foregroundColor(location == loc ? .black : .primary)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+
+            Text("疼痛の種類").font(.headline).padding(.horizontal)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(painTypes, id: \.self) { pt in
+                        Button(action: { painType = pt }) {
+                            Text(pt).font(.caption.bold())
+                                .padding(.horizontal, 10).padding(.vertical, 6)
+                                .background(painType == pt ? Color.orange : Color(.systemGray5))
+                                .foregroundColor(painType == pt ? .white : .primary)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+private struct PainInterpretationCard: View {
+    let score: Int
+
+    private var info: (label: String, desc: String, color: Color) {
+        switch score {
+        case 0:    return ("疼痛なし", "現在疼痛を認めない", .green)
+        case 1...3: return ("軽度疼痛", "日常生活への支障は少ない", .yellow)
+        case 4...6: return ("中等度疼痛", "日常生活・リハに支障をきたす", .orange)
+        case 7...9: return ("重度疼痛", "著明な機能障害・即時対応を検討", .red)
+        default:   return ("最大疼痛", "緊急の疼痛管理が必要", .red)
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Circle().fill(info.color).frame(width: 14, height: 14)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(info.label).font(.headline).foregroundColor(info.color)
+                Text(info.desc).font(.subheadline).foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding()
+        .background(info.color.opacity(0.07))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+private struct CPSPInfoCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("脳卒中後疼痛（CPSP）について", systemImage: "exclamationmark.triangle.fill")
+                .font(.subheadline.bold()).foregroundColor(.orange)
+            Text("脳卒中後の中枢性疼痛（CPSP）は発症後2〜6週頃から出現することが多く、灼熱感・冷感・異痛症などが特徴です。肩手症候群（CRPS type I）との鑑別が重要です。")
+                .font(.subheadline).foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.06))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+// MARK: - MoCA Info View
+
+struct MoCAInfoView: View {
+    private let domains: [(name: String, max: Int, desc: String)] = [
+        ("視空間・遂行機能", 5, "Trail Making B / 立方体模写 / 時計描画"),
+        ("命名", 3, "ライオン・サイ・ラクダの命名"),
+        ("記憶（即時）", 0, "5単語の即時再生（スコアなし）"),
+        ("注意", 6, "数字の順唱逆唱・サステインド・計算"),
+        ("言語", 3, "文章反復・語音流暢性"),
+        ("抽象化", 2, "類似性の判断"),
+        ("遅延再生", 5, "5単語の遅延再生"),
+        ("見当識", 6, "日付・月・年・曜日・場所・都市")
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                MoCAHeaderCard()
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("評価領域（合計30点）").font(.headline).padding(.horizontal)
+                    ForEach(domains, id: \.name) { d in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(d.name).font(.subheadline.bold())
+                                Text(d.desc).font(.caption).foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            if d.max > 0 {
+                                Text("\(d.max)点").font(.subheadline.bold()).foregroundColor(.purple)
+                            } else {
+                                Text("採点なし").font(.caption).foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(10)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding(.horizontal)
+                    }
+                }
+
+                MoCAInterpretationCard()
+                MoCANoteCard()
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("MoCA")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct MoCAHeaderCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("評価の目的", systemImage: "lightbulb.fill").font(.headline).foregroundColor(.purple)
+            Text("MoCA（Montreal Cognitive Assessment）は軽度認知障害（MCI）のスクリーニングに特化した評価ツールです。MMSEより感度が高く、脳卒中後の認知機能評価に推奨されています。")
+                .font(.subheadline).foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.purple.opacity(0.07))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+private struct MoCAInterpretationCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("解釈基準").font(.headline).padding(.horizontal)
+            VStack(spacing: 8) {
+                ForEach([
+                    ("≥ 26点", "正常", Color.blue),
+                    ("22〜25点", "軽度認知障害（MCI）疑い", Color.yellow),
+                    ("18〜21点", "中等度認知機能低下", Color.orange),
+                    ("< 18点", "重度認知機能低下", Color.red)
+                ], id: \.0) { range, label, color in
+                    HStack {
+                        Text(range).font(.subheadline.bold()).foregroundColor(color).frame(width: 80, alignment: .leading)
+                        Text(label).font(.subheadline)
+                        Spacer()
+                    }
+                    .padding(10)
+                    .background(color.opacity(0.07))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+            .padding(.horizontal)
+            Text("教育歴12年未満の場合は1点加算").font(.caption).foregroundColor(.secondary).padding(.horizontal)
+        }
+    }
+}
+
+private struct MoCANoteCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("使用上の注意", systemImage: "exclamationmark.triangle.fill")
+                .font(.subheadline.bold).foregroundColor(.orange)
+            Text("MoCAの実際の試験用紙はwww.mocatest.orgから正式に入手してください。著作権により、試験内容の無断複製・掲載は禁じられています。本アプリは構造と解釈基準の参照のみを提供します。")
+                .font(.caption).foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.06))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+// MARK: - SIS Info View
+
+struct SISInfoView: View {
+    private let domains: [(name: String, items: Int, desc: String)] = [
+        ("筋力", 4, "患側上肢・下肢の筋力"),
+        ("手の機能", 5, "患側の手・指の機能"),
+        ("ADL/IADL", 10, "日常・手段的日常生活活動"),
+        ("移動", 9, "室内外の移動・歩行"),
+        ("コミュニケーション", 7, "言語・読み書き・理解"),
+        ("情動", 9, "気分・感情・意欲"),
+        ("記憶と思考", 7, "記憶・集中力・問題解決"),
+        ("参加", 8, "社会参加・役割遂行")
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                SISHeaderCard()
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("評価領域（全\(domains.map{$0.items}.reduce(0,+))項目）")
+                        .font(.headline).padding(.horizontal)
+                    ForEach(domains, id: \.name) { d in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(d.name).font(.subheadline.bold())
+                                Text(d.desc).font(.caption).foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Text("\(d.items)項目").font(.caption.bold()).foregroundColor(.teal)
+                        }
+                        .padding(10)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding(.horizontal)
+                    }
+                }
+                SISScoringSummary()
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("SIS（脳卒中影響スケール）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct SISHeaderCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("評価の目的", systemImage: "heart.fill").font(.headline).foregroundColor(.teal)
+            Text("Stroke Impact Scale（SIS）は脳卒中後の健康状態・QOL・機能的アウトカムを患者自身が評価するアウトカム尺度です。身体機能だけでなく認知・情動・社会参加も含む包括的評価ができます。")
+                .font(.subheadline).foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.teal.opacity(0.07))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+}
+
+private struct SISScoringSummary: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("採点方法").font(.headline).padding(.horizontal)
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach([
+                    "各項目: 1〜5点のLikertスケールで回答",
+                    "各領域スコア = (合計−最低値)/(最高値−最低値) × 100",
+                    "スコアが高いほど良好な健康状態・QOL",
+                    "また、全体的な回復度（0〜100%）も別途聴取"
+                ], id: \.self) { item in
+                    HStack(alignment: .top, spacing: 8) {
+                        Circle().fill(Color.teal).frame(width: 6, height: 6).padding(.top, 7)
+                        Text(item).font(.subheadline)
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal)
+        }
+    }
+}
+
 #Preview {
     NavigationStack {
-        AssessmentDetailView(assessmentType: .bergBalance)
+        AssessmentDetailView(assessmentType: .brunnstrom)
     }
 }

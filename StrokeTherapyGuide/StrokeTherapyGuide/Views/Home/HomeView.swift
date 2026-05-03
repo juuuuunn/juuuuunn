@@ -6,34 +6,35 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     HeaderBannerView()
-                    PhaseQuickAccessSection()
-                    QuickToolsSection()
-                    GuidelineReferenceSection()
+                    DomainGridSection()
+                    QuickTimerSection()
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, 24)
             }
-            .navigationTitle("脳卒中理学療法ガイド")
+            .navigationTitle("脳卒中評価ガイド")
             .navigationBarTitleDisplayMode(.large)
         }
     }
 }
 
+// MARK: - Header
+
 private struct HeaderBannerView: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             LinearGradient(
-                colors: [Color.blue.opacity(0.8), Color.cyan.opacity(0.6)],
+                colors: [.blue.opacity(0.85), .cyan.opacity(0.6)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             VStack(alignment: .leading, spacing: 6) {
-                Text("脳卒中標準理学療法")
+                Text("脳卒中病態別 評価ツール集")
                     .font(.title2.bold())
                     .foregroundColor(.white)
                 Text("理学療法士のための臨床支援ツール")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.9))
-                Text("脳卒中治療ガイドライン 2021（改訂2023）準拠")
+                Text("脳卒中治療ガイドライン 2021（改訂2023）準拠 ｜ 全\(AssessmentType.allCases.count)評価ツール収録")
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.8))
             }
@@ -45,16 +46,77 @@ private struct HeaderBannerView: View {
     }
 }
 
-private struct PhaseQuickAccessSection: View {
+// MARK: - Domain Grid
+
+private struct DomainGridSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "病期別プロトコル", systemImage: "calendar.badge.clock")
+            SectionHeader(title: "障害領域から評価を選ぶ", systemImage: "square.grid.3x3.fill")
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                ForEach(StrokeDomain.allCases) { domain in
+                    NavigationLink(destination: AssessmentListView(domain: domain)) {
+                        DomainCard(domain: domain)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+
+private struct DomainCard: View {
+    let domain: StrokeDomain
+
+    var swiftColor: Color { colorFromName(domain.color.rawValue) }
+
+    var count: Int {
+        AssessmentType.allCases.filter { $0.domain == domain }.count
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: domain.iconName)
+                .font(.title3)
+                .foregroundColor(.white)
+                .frame(width: 40, height: 40)
+                .background(swiftColor)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(domain.rawValue)
+                    .font(.caption.bold())
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\(count)ツール")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding(10)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.07), radius: 4, x: 0, y: 2)
+    }
+}
+
+// MARK: - Quick Timer Section
+
+private struct QuickTimerSection: View {
+    let timerTools: [AssessmentType] = [.tug, .tenMeterWalk, .sixMWT, .nhpt]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "タイマー計測ツール", systemImage: "stopwatch.fill")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(TherapyPhase.allCases) { phase in
-                        NavigationLink(destination: ProtocolListView(filter: phase)) {
-                            PhaseCard(phase: phase)
+                    ForEach(timerTools) { type in
+                        NavigationLink(destination: AssessmentDetailView(assessmentType: type)) {
+                            TimerToolCard(type: type)
                         }
                         .buttonStyle(.plain)
                     }
@@ -65,149 +127,37 @@ private struct PhaseQuickAccessSection: View {
     }
 }
 
-private struct PhaseCard: View {
-    let phase: TherapyPhase
-
-    var color: Color {
-        switch phase {
-        case .acute: return .red
-        case .subacute: return .orange
-        case .chronic: return .green
-        }
-    }
+private struct TimerToolCard: View {
+    let type: AssessmentType
+    var swiftColor: Color { colorFromName(type.domain.color.rawValue) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: phase.iconName)
+            Image(systemName: "stopwatch.fill")
                 .font(.title2)
                 .foregroundColor(.white)
                 .frame(width: 44, height: 44)
-                .background(color.opacity(0.9))
+                .background(swiftColor)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
-            Text(phase.rawValue)
-                .font(.headline)
+            Text(type.rawValue)
+                .font(.subheadline.bold())
                 .foregroundColor(.primary)
 
-            Text(phase.durationDescription)
+            Text(type.purpose)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
         }
-        .frame(width: 130)
+        .frame(width: 150)
         .padding()
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.07), radius: 4, x: 0, y: 2)
     }
 }
 
-private struct QuickToolsSection: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "評価ツール（クイックアクセス）", systemImage: "checkmark.seal.fill")
-
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ForEach([AssessmentType.nihss, .bergBalance, .fuglMeyerUpper, .tug], id: \.self) { type in
-                    NavigationLink(destination: AssessmentDetailView(assessmentType: type)) {
-                        AssessmentQuickCard(type: type)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.horizontal)
-        }
-    }
-}
-
-private struct AssessmentQuickCard: View {
-    let type: AssessmentType
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: type.iconName)
-                .font(.title3)
-                .foregroundColor(.blue)
-                .frame(width: 36, height: 36)
-                .background(Color.blue.opacity(0.1))
-                .clipShape(Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(type.abbreviation)
-                    .font(.subheadline.bold())
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                if type.maxScore > 0 {
-                    Text("最大 \(type.maxScore)点")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-            }
-            Spacer()
-        }
-        .padding(10)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
-    }
-}
-
-private struct GuidelineReferenceSection: View {
-    let guidelines = [
-        GuidelineItem(title: "脳卒中治療ガイドライン 2021（改訂2023）", publisher: "日本脳卒中学会", color: .blue),
-        GuidelineItem(title: "脳卒中理学療法診療ガイドライン", publisher: "日本理学療法士協会", color: .purple),
-        GuidelineItem(title: "AHA/ASA 脳卒中リハビリテーションガイドライン", publisher: "American Heart Association", color: .red)
-    ]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: "参照ガイドライン", systemImage: "book.fill")
-
-            VStack(spacing: 8) {
-                ForEach(guidelines) { item in
-                    GuidelineRow(item: item)
-                }
-            }
-            .padding(.horizontal)
-        }
-    }
-}
-
-private struct GuidelineItem: Identifiable {
-    let id = UUID()
-    let title: String
-    let publisher: String
-    let color: Color
-}
-
-private struct GuidelineRow: View {
-    let item: GuidelineItem
-
-    var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 3)
-                .fill(item.color)
-                .frame(width: 4, height: 44)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(item.title)
-                    .font(.subheadline.bold())
-                    .foregroundColor(.primary)
-                Text(item.publisher)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding(12)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)
-    }
-}
+// MARK: - Shared helpers
 
 struct SectionHeader: View {
     let title: String
@@ -221,6 +171,21 @@ struct SectionHeader: View {
                 .font(.headline)
         }
         .padding(.horizontal)
+    }
+}
+
+func colorFromName(_ name: String) -> Color {
+    switch name {
+    case "red":    return .red
+    case "orange": return .orange
+    case "pink":   return .pink
+    case "green":  return .green
+    case "blue":   return .blue
+    case "teal":   return .teal
+    case "purple": return .purple
+    case "yellow": return .yellow
+    case "cyan":   return .cyan
+    default:       return .blue
     }
 }
 
