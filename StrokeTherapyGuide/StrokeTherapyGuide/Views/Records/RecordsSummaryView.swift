@@ -157,6 +157,11 @@ private struct RecordRow: View {
                 Text(record.displayLabel)
                     .font(.subheadline)
                     .foregroundColor(color)
+                if let firstBenchmark = record.assessmentType.benchmarks.first {
+                    Text("\(firstBenchmark.label): \(firstBenchmark.value)")
+                        .font(.caption)
+                        .foregroundColor(.teal)
+                }
                 Text(record.assessmentType.domain.rawValue)
                     .font(.caption)
                     .foregroundColor(.secondary)

@@ -23,6 +23,8 @@ struct AssessmentDetailView: View {
         case .tmt:          TMTView()
         case .cat:          CATInfoView()
         case .digitalCancellation: DigitalCancellationView()
+        case .stef:         STEFView()
+        case .mal:          MALView()
         default:            ScoreAssessmentView(assessmentType: assessmentType)
         }
     }
@@ -45,6 +47,7 @@ struct ScoreAssessmentView: View {
             VStack(alignment: .leading, spacing: 16) {
                 AssessmentSummaryCard(type: assessmentType, total: totalScore, color: swiftColor)
                 InterpretationCard(type: assessmentType, score: totalScore, color: swiftColor)
+                ClinicalBenchmarkCard(type: assessmentType)
 
                 VStack(spacing: 10) {
                     ForEach(items) { item in
@@ -550,6 +553,7 @@ struct TimerAssessmentView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                ClinicalBenchmarkCard(type: assessmentType)
                 TimerDisplayCard(elapsed: elapsed, isRunning: isRunning, color: swiftColor)
                 DerivedValueCard(type: assessmentType, elapsed: elapsed, color: swiftColor)
                 TimerControlRow(
@@ -1680,6 +1684,25 @@ struct BITView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
 
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("デジタルテスト実施", systemImage: "display")
+                        .font(.headline).padding(.horizontal)
+                    VStack(spacing: 8) {
+                        NavigationLink(destination: BITLineCancellationView()) {
+                            BITDigitalTestRow(title: "線分抹消テスト", subtitle: "画面上の40本の線分をタップして抹消", icon: "line.diagonal")
+                        }
+                        NavigationLink(destination: BITStarCancellationView()) {
+                            BITDigitalTestRow(title: "星印抹消テスト", subtitle: "54個の小さな★を探してタップ", icon: "star")
+                        }
+                        NavigationLink(destination: BITLineBisectionView()) {
+                            BITDigitalTestRow(title: "線分二等分テスト", subtitle: "3本の線の中点をタップ", icon: "arrow.left.and.right")
+                        }
+                        NavigationLink(destination: BITCopyDrawView()) {
+                            BITDigitalTestRow(title: "模写・描画テスト", subtitle: "図形を模写してセラピストが採点", icon: "pencil.and.scribble")
+                        }
+                    }.padding(.horizontal)
+                }
+
                 BITSubtestSection(
                     title: "通常検査（合計147点、カットオフ: 129点）",
                     items: [("線分二等分検査", 9), ("文字抹消検査", 40), ("星印抹消検査", 54),
@@ -2292,6 +2315,1121 @@ private struct CancellationSideCard: View {
         .padding(10)
         .background(isHighlighted ? Color.red.opacity(0.08) : Color(.tertiarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+// MARK: - Clinical Benchmark Card
+
+struct ClinicalBenchmarkCard: View {
+    let type: AssessmentType
+
+    var body: some View {
+        let bmarks = type.benchmarks
+        if !bmarks.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("臨床基準値（MCID / MDC）", systemImage: "chart.line.uptrend.xyaxis")
+                    .font(.headline)
+                    .padding(.horizontal)
+                VStack(spacing: 6) {
+                    ForEach(bmarks) { b in
+                        HStack(alignment: .top) {
+                            Text(b.label)
+                                .font(.caption.bold())
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(Color.teal)
+                                .clipShape(Capsule())
+                                .fixedSize()
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(b.value)
+                                    .font(.subheadline.bold())
+                                if !b.note.isEmpty {
+                                    Text(b.note)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(10)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+}
+
+// MARK: - BIT Digital Test Row
+
+private struct BITDigitalTestRow: View {
+    let title: String
+    let subtitle: String
+    let icon: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(.purple)
+                .frame(width: 36, height: 36)
+                .background(Color.purple.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.subheadline.bold()).foregroundColor(.primary)
+                Text(subtitle).font(.caption).foregroundColor(.secondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right").font(.caption).foregroundColor(.secondary)
+        }
+        .padding(12)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// MARK: - BIT Line Cancellation View
+
+struct BITLineCancellationView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+
+    struct CancelLine: Identifiable {
+        let id = UUID()
+        let x: CGFloat; let y: CGFloat
+        let angleDeg: Double
+        var cancelled = false
+        let region: Int  // 0=left, 1=center, 2=right
+    }
+
+    @State private var lines: [CancelLine] = []
+    @State private var testStarted = false
+    @State private var testFinished = false
+    private let totalLines = 40
+    private let hitRadius: CGFloat = 22
+
+    var body: some View {
+        if !testStarted {
+            bitLineCancellationIntro
+        } else if testFinished {
+            bitLineCancellationResults
+        } else {
+            bitLineCancellationCanvas
+        }
+    }
+
+    private var bitLineCancellationIntro: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Image(systemName: "line.diagonal").font(.system(size: 60)).foregroundColor(.purple)
+                Text("線分抹消テスト").font(.title2.bold())
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("画面上に40本の線分がランダムに配置されます。").font(.subheadline)
+                    Text("見つけた線分を全てタップして抹消してください。").font(.subheadline)
+                    Text("左・中央・右の3領域で見落とし数を自動集計します。").font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                Button(action: startTest) {
+                    Label("テスト開始", systemImage: "play.fill")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal)
+            }
+            .padding()
+        }
+        .navigationTitle("線分抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var bitLineCancellationCanvas: some View {
+        VStack(spacing: 0) {
+            HStack {
+                let cancelled = lines.filter { $0.cancelled }.count
+                Text("抹消: \(cancelled) / \(totalLines)")
+                    .font(.subheadline.bold())
+                Spacer()
+                Button(action: { testFinished = true }) {
+                    Text("終了").font(.subheadline.bold())
+                        .padding(.horizontal, 16).padding(.vertical, 6)
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+
+            GeometryReader { geo in
+                ZStack {
+                    Color(.systemGray6)
+                    ForEach($lines) { $line in
+                        lineShape(for: line, geo: geo)
+                            .onTapGesture { line.cancelled = true }
+                    }
+                }
+            }
+        }
+        .navigationTitle("線分抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    @ViewBuilder
+    private func lineShape(for line: CancelLine, geo: GeometryProxy) -> some View {
+        let px = line.x * geo.size.width
+        let py = line.y * geo.size.height
+        ZStack {
+            Rectangle()
+                .fill(line.cancelled ? Color.green : Color.black)
+                .frame(width: 32, height: 3)
+                .rotationEffect(.degrees(line.angleDeg))
+                .opacity(line.cancelled ? 0.4 : 1.0)
+            if line.cancelled {
+                Image(systemName: "checkmark").font(.caption2).foregroundColor(.green)
+            }
+        }
+        .frame(width: hitRadius * 2, height: hitRadius * 2)
+        .contentShape(Rectangle())
+        .position(x: px, y: py)
+    }
+
+    private var bitLineCancellationResults: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 50)).foregroundColor(.green)
+                Text("テスト完了").font(.title2.bold())
+
+                let leftMissed = lines.filter { $0.region == 0 && !$0.cancelled }.count
+                let centerMissed = lines.filter { $0.region == 1 && !$0.cancelled }.count
+                let rightMissed = lines.filter { $0.region == 2 && !$0.cancelled }.count
+                let leftHit = lines.filter { $0.region == 0 && $0.cancelled }.count
+                let centerHit = lines.filter { $0.region == 1 && $0.cancelled }.count
+                let rightHit = lines.filter { $0.region == 2 && $0.cancelled }.count
+                let totalCancelled = lines.filter { $0.cancelled }.count
+
+                HStack(spacing: 8) {
+                    CancellationSideCard(side: "左", hit: leftHit, missed: leftMissed, isHighlighted: leftMissed > rightMissed + 1)
+                    CancellationSideCard(side: "中央", hit: centerHit, missed: centerMissed, isHighlighted: false)
+                    CancellationSideCard(side: "右", hit: rightHit, missed: rightMissed, isHighlighted: rightMissed > leftMissed + 1)
+                }
+                .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    let neglectSide = leftMissed > rightMissed + 2 ? "左側空間無視の疑い" :
+                                      rightMissed > leftMissed + 2 ? "右側空間無視の疑い" : "左右差なし（正常範囲）"
+                    HStack {
+                        Image(systemName: leftMissed != rightMissed ? "exclamationmark.triangle" : "checkmark.circle")
+                            .foregroundColor(leftMissed != rightMissed ? .orange : .green)
+                        Text(neglectSide).font(.subheadline.bold())
+                    }
+                    Text("抹消数: \(totalCancelled)/\(totalLines)本").font(.caption).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                SaveRecordButton(color: .purple, isEnabled: true) {
+                    let leftMissed = lines.filter { $0.region == 0 && !$0.cancelled }.count
+                    let rightMissed = lines.filter { $0.region == 2 && !$0.cancelled }.count
+                    let totalCancelled = lines.filter { $0.cancelled }.count
+                    var label = "抹消:\(totalCancelled)/\(totalLines)"
+                    if leftMissed > rightMissed + 2 { label += " 左無視疑い" }
+                    else if rightMissed > leftMissed + 2 { label += " 右無視疑い" }
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .bit,
+                        primaryValue: Double(totalCancelled),
+                        secondaryValue: Double(totalLines),
+                        displayLabel: "線分抹消: " + label
+                    ))
+                }
+                Button(action: { testFinished = false; testStarted = false }) {
+                    Label("もう一度", systemImage: "arrow.counterclockwise")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("線分抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func startTest() {
+        lines = (0..<totalLines).map { i in
+            let region = i < 13 ? 0 : i < 27 ? 1 : 2
+            return CancelLine(
+                x: CGFloat.random(in: 0.06...0.94),
+                y: CGFloat.random(in: 0.04...0.96),
+                angleDeg: Double.random(in: -75...75),
+                region: region
+            )
+        }.shuffled()
+        testStarted = true
+        testFinished = false
+    }
+}
+
+// MARK: - BIT Star Cancellation View
+
+struct BITStarCancellationView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+
+    struct StarSymbol: Identifiable {
+        let id = UUID()
+        let x: CGFloat; let y: CGFloat
+        let isTarget: Bool
+        let character: String
+        var tapped = false
+        let region: Int  // 0=left, 1=center, 2=right
+    }
+
+    @State private var symbols: [StarSymbol] = []
+    @State private var testStarted = false
+    @State private var testFinished = false
+    private let targetCount = 54
+    private let distractorCount = 75
+
+    var body: some View {
+        if !testStarted {
+            starCancellationIntro
+        } else if testFinished {
+            starCancellationResults
+        } else {
+            starCancellationCanvas
+        }
+    }
+
+    private var starCancellationIntro: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Text("★").font(.system(size: 60))
+                Text("星印抹消テスト").font(.title2.bold())
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("画面上に小さな★（ターゲット54個）と記号・文字（妨害刺激）が混在して表示されます。").font(.subheadline)
+                    Text("★だけを全てタップしてください。").font(.subheadline)
+                    Text("左右の見落とし分布でUSNを評価します。").font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                Button(action: startStarTest) {
+                    Label("テスト開始", systemImage: "play.fill")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal)
+            }
+            .padding()
+        }
+        .navigationTitle("星印抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var starCancellationCanvas: some View {
+        VStack(spacing: 0) {
+            HStack {
+                let tapped = symbols.filter { $0.isTarget && $0.tapped }.count
+                Text("発見: \(tapped) / \(targetCount)")
+                    .font(.subheadline.bold())
+                Spacer()
+                Button(action: { testFinished = true }) {
+                    Text("終了").font(.subheadline.bold())
+                        .padding(.horizontal, 16).padding(.vertical, 6)
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(Capsule())
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+
+            GeometryReader { geo in
+                ZStack {
+                    Color(.systemGray6)
+                    ForEach($symbols) { $sym in
+                        Button(action: {
+                            if sym.isTarget && !sym.tapped { sym.tapped = true }
+                        }) {
+                            Text(sym.tapped ? "✓" : sym.character)
+                                .font(.system(size: sym.isTarget ? 20 : 16))
+                                .foregroundColor(sym.tapped ? .green : sym.isTarget ? .black : .gray)
+                        }
+                        .disabled(!sym.isTarget || sym.tapped)
+                        .position(x: sym.x * geo.size.width, y: sym.y * geo.size.height)
+                    }
+                }
+            }
+        }
+        .navigationTitle("星印抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var starCancellationResults: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 50)).foregroundColor(.green)
+                Text("テスト完了").font(.title2.bold())
+
+                let leftMissed = symbols.filter { $0.isTarget && !$0.tapped && $0.region == 0 }.count
+                let rightMissed = symbols.filter { $0.isTarget && !$0.tapped && $0.region == 2 }.count
+                let leftHit = symbols.filter { $0.isTarget && $0.tapped && $0.region == 0 }.count
+                let centerHit = symbols.filter { $0.isTarget && $0.tapped && $0.region == 1 }.count
+                let centerMissed = symbols.filter { $0.isTarget && !$0.tapped && $0.region == 1 }.count
+                let rightHit = symbols.filter { $0.isTarget && $0.tapped && $0.region == 2 }.count
+                let totalFound = symbols.filter { $0.isTarget && $0.tapped }.count
+
+                HStack(spacing: 8) {
+                    CancellationSideCard(side: "左", hit: leftHit, missed: leftMissed, isHighlighted: leftMissed > rightMissed + 1)
+                    CancellationSideCard(side: "中央", hit: centerHit, missed: centerMissed, isHighlighted: false)
+                    CancellationSideCard(side: "右", hit: rightHit, missed: rightMissed, isHighlighted: rightMissed > leftMissed + 1)
+                }
+                .padding(.horizontal)
+
+                let neglectSide = leftMissed > rightMissed + 4 ? "左側空間無視の疑い" :
+                                  rightMissed > leftMissed + 4 ? "右側空間無視の疑い" : "有意な左右差なし"
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Image(systemName: abs(leftMissed - rightMissed) > 4 ? "exclamationmark.triangle" : "checkmark.circle")
+                            .foregroundColor(abs(leftMissed - rightMissed) > 4 ? .orange : .green)
+                        Text(neglectSide).font(.subheadline.bold())
+                    }
+                    Text("発見数: \(totalFound)/\(targetCount)個").font(.caption).foregroundColor(.secondary)
+                    Text("カットオフ: 44個未満で星印抹消テスト異常").font(.caption).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                SaveRecordButton(color: .purple, isEnabled: true) {
+                    let leftMissed = symbols.filter { $0.isTarget && !$0.tapped && $0.region == 0 }.count
+                    let rightMissed = symbols.filter { $0.isTarget && !$0.tapped && $0.region == 2 }.count
+                    let totalFound = symbols.filter { $0.isTarget && $0.tapped }.count
+                    var label = "★発見:\(totalFound)/\(targetCount)"
+                    if leftMissed > rightMissed + 4 { label += " 左無視疑い" }
+                    else if rightMissed > leftMissed + 4 { label += " 右無視疑い" }
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .bit,
+                        primaryValue: Double(totalFound),
+                        secondaryValue: Double(targetCount),
+                        displayLabel: "星印抹消: " + label
+                    ))
+                }
+                Button(action: { testFinished = false; testStarted = false }) {
+                    Label("もう一度", systemImage: "arrow.counterclockwise")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("星印抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func startStarTest() {
+        let distractors = ["△","◇","☆","○","□","◁","▷","♦","♣","♠"]
+        var result: [StarSymbol] = []
+        let total = targetCount + distractorCount
+        for i in 0..<total {
+            let isTarget = i < targetCount
+            let region = i < (total / 3) ? 0 : i < (2 * total / 3) ? 1 : 2
+            let ch = isTarget ? "★" : distractors[Int.random(in: 0..<distractors.count)]
+            result.append(StarSymbol(
+                x: CGFloat.random(in: 0.04...0.96),
+                y: CGFloat.random(in: 0.04...0.96),
+                isTarget: isTarget,
+                character: ch,
+                region: region
+            ))
+        }
+        symbols = result.shuffled()
+        testStarted = true
+        testFinished = false
+    }
+}
+
+// MARK: - BIT Line Bisection View
+
+struct BITLineBisectionView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+
+    struct BisectionLine: Identifiable {
+        let id = UUID()
+        let startX: CGFloat
+        let endX: CGFloat
+        let y: CGFloat
+        var tapX: CGFloat? = nil
+        var deviation: CGFloat? {
+            guard let tx = tapX else { return nil }
+            let mid = (startX + endX) / 2.0
+            return tx - mid
+        }
+    }
+
+    @State private var lines: [BisectionLine] = [
+        BisectionLine(startX: 0.1, endX: 0.9, y: 0.25),
+        BisectionLine(startX: 0.15, endX: 0.85, y: 0.5),
+        BisectionLine(startX: 0.08, endX: 0.92, y: 0.75),
+    ]
+    @State private var testDone = false
+
+    private var allTapped: Bool { lines.allSatisfy { $0.tapX != nil } }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if !testDone {
+                VStack(spacing: 8) {
+                    Text("各線分の中点と思う場所をタップしてください")
+                        .font(.subheadline).foregroundColor(.secondary)
+                    Text("残り: \(lines.filter { $0.tapX == nil }.count) / \(lines.count)")
+                        .font(.caption).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+            }
+
+            GeometryReader { geo in
+                ZStack {
+                    Color(.systemGray6)
+                    Canvas { ctx, size in
+                        for line in lines {
+                            let sx = line.startX * size.width
+                            let ex = line.endX * size.width
+                            let ly = line.y * size.height
+                            var path = Path()
+                            path.move(to: CGPoint(x: sx, y: ly))
+                            path.addLine(to: CGPoint(x: ex, y: ly))
+                            ctx.stroke(path, with: .color(.black), lineWidth: 3)
+                            let midX = (sx + ex) / 2
+                            var midMark = Path()
+                            midMark.move(to: CGPoint(x: midX, y: ly - 10))
+                            midMark.addLine(to: CGPoint(x: midX, y: ly + 10))
+                            ctx.stroke(midMark, with: .color(.blue.opacity(0.35)), lineWidth: 1)
+                            if let tx = line.tapX {
+                                let tapX = tx * size.width
+                                var dot = Path()
+                                dot.addEllipse(in: CGRect(x: tapX - 7, y: ly - 7, width: 14, height: 14))
+                                ctx.fill(dot, with: .color(.red))
+                            }
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture { loc in
+                        let nx = loc.x / geo.size.width
+                        let ny = loc.y / geo.size.height
+                        var bestIdx: Int? = nil
+                        var bestDist: CGFloat = 0.12
+                        for i in lines.indices where lines[i].tapX == nil {
+                            let dist = abs(ny - lines[i].y)
+                            if dist < bestDist { bestDist = dist; bestIdx = i }
+                        }
+                        if let idx = bestIdx { lines[idx].tapX = nx }
+                    }
+                }
+            }
+
+            if allTapped && !testDone {
+                Button(action: { testDone = true }) {
+                    Label("結果を見る", systemImage: "chart.bar")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding()
+            }
+
+            if testDone {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(lines) { line in
+                            if let dev = line.deviation {
+                                let devPct = dev * 100
+                                let devCm = dev * 24
+                                HStack {
+                                    Text("線分 \(lines.firstIndex(where: { $0.id == line.id })! + 1)")
+                                        .font(.subheadline.bold())
+                                    Spacer()
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text(String(format: "%+.1f%%", devPct))
+                                            .font(.subheadline.bold())
+                                            .foregroundColor(abs(devPct) > 5 ? .red : .green)
+                                        Text(String(format: "約%+.1fcm（24cm線）", devCm))
+                                            .font(.caption).foregroundColor(.secondary)
+                                    }
+                                }
+                                .padding(10)
+                                .background(Color(.secondarySystemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                        let avgDev = lines.compactMap { $0.deviation }.reduce(0, +) / CGFloat(lines.count)
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text("平均偏位").font(.subheadline.bold())
+                                Spacer()
+                                Text(String(format: "%+.1f%%", avgDev * 100))
+                                    .font(.headline.bold())
+                                    .foregroundColor(abs(avgDev) > 0.05 ? .red : .green)
+                            }
+                            let interpretation = avgDev < -0.05 ? "左偏位（右半球障害・左無視疑い）" :
+                                                 avgDev > 0.05 ? "右偏位（左半球障害・右無視疑い）" : "正常範囲（±5%以内）"
+                            Text(interpretation).font(.subheadline).foregroundColor(.secondary)
+                            Text("カットオフ: ±6.1mm（約2.5%）を超えると異常").font(.caption).foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        SaveRecordButton(color: .purple, isEnabled: true) {
+                            let avgDev = lines.compactMap { $0.deviation }.reduce(0, +) / CGFloat(lines.count)
+                            let devPct = avgDev * 100
+                            let label = String(format: "線分二等分: 平均偏位%+.1f%%", devPct)
+                            recordsStore.add(AssessmentRecord(
+                                assessmentType: .bit,
+                                primaryValue: Double(avgDev * 100),
+                                displayLabel: label
+                            ))
+                        }
+                        Button(action: {
+                            lines = [
+                                BisectionLine(startX: 0.1, endX: 0.9, y: 0.25),
+                                BisectionLine(startX: 0.15, endX: 0.85, y: 0.5),
+                                BisectionLine(startX: 0.08, endX: 0.92, y: 0.75),
+                            ]
+                            testDone = false
+                        }) {
+                            Label("もう一度", systemImage: "arrow.counterclockwise")
+                                .font(.headline).frame(maxWidth: .infinity).padding()
+                                .background(Color.purple).foregroundColor(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding()
+                }
+            }
+        }
+        .navigationTitle("線分二等分テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - BIT Copy Draw View
+
+struct BITCopyDrawView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+
+    struct DrawnStroke: Identifiable {
+        let id = UUID()
+        var points: [CGPoint]
+    }
+
+    @State private var strokes: [DrawnStroke] = []
+    @State private var currentStroke: DrawnStroke?
+    @State private var selectedFigure = 0
+    @State private var therapistScore: Int? = nil
+    private let figures = ["星（4点）", "立方体（4点）", "花（4点）", "自由模写"]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("図形を選択").font(.headline).padding(.horizontal)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(figures.indices, id: \.self) { i in
+                                Button(action: { selectedFigure = i; strokes = [] }) {
+                                    Text(figures[i]).font(.caption.bold())
+                                        .padding(.horizontal, 12).padding(.vertical, 6)
+                                        .background(selectedFigure == i ? Color.purple : Color(.systemGray5))
+                                        .foregroundColor(selectedFigure == i ? .white : .primary)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }.padding(.horizontal)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("描画エリア").font(.subheadline.bold()).padding(.leading)
+                        Spacer()
+                        Button(action: { if !strokes.isEmpty { strokes.removeLast() } }) {
+                            Label("消す", systemImage: "arrow.uturn.backward").font(.caption)
+                        }.padding(.trailing)
+                        Button(action: { strokes = [] }) {
+                            Label("全消去", systemImage: "trash").font(.caption).foregroundColor(.red)
+                        }.padding(.trailing)
+                    }
+
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white)
+                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.gray.opacity(0.4)))
+                            .frame(height: 300)
+
+                        Canvas { ctx, size in
+                            for stroke in strokes {
+                                var path = Path()
+                                guard let first = stroke.points.first else { continue }
+                                path.move(to: first)
+                                stroke.points.dropFirst().forEach { path.addLine(to: $0) }
+                                ctx.stroke(path, with: .color(.black), lineWidth: 2.5)
+                            }
+                            if let cur = currentStroke {
+                                var path = Path()
+                                guard let first = cur.points.first else { return }
+                                path.move(to: first)
+                                cur.points.dropFirst().forEach { path.addLine(to: $0) }
+                                ctx.stroke(path, with: .color(.black), lineWidth: 2.5)
+                            }
+                        }
+                        .frame(height: 300)
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { val in
+                                    if currentStroke == nil {
+                                        currentStroke = DrawnStroke(points: [val.location])
+                                    } else {
+                                        currentStroke?.points.append(val.location)
+                                    }
+                                }
+                                .onEnded { _ in
+                                    if let stroke = currentStroke { strokes.append(stroke) }
+                                    currentStroke = nil
+                                }
+                        )
+                    }
+                    .padding(.horizontal)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("セラピスト採点（0〜4点）").font(.headline).padding(.horizontal)
+                    HStack(spacing: 12) {
+                        ForEach(0...4, id: \.self) { score in
+                            Button(action: { therapistScore = therapistScore == score ? nil : score }) {
+                                Text("\(score)点")
+                                    .font(.subheadline.bold())
+                                    .frame(maxWidth: .infinity).padding(.vertical, 10)
+                                    .background(therapistScore == score ? Color.purple : Color(.systemGray5))
+                                    .foregroundColor(therapistScore == score ? .white : .primary)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }.padding(.horizontal)
+                    Text("採点基準: 0=描けない、1=ほぼ不可、2=不完全、3=ほぼ正確、4=正確").font(.caption).foregroundColor(.secondary).padding(.horizontal)
+                }
+
+                SaveRecordButton(color: .purple, isEnabled: therapistScore != nil) {
+                    let score = therapistScore ?? 0
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .bit,
+                        primaryValue: Double(score),
+                        displayLabel: "模写・描画(\(figures[selectedFigure])): \(score)点"
+                    ))
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("模写・描画テスト")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Radar Chart View
+
+struct RadarChartView: View {
+    let values: [Double]
+    let maxValue: Double
+    let labels: [String]
+    let color: Color
+
+    private let axes: Int
+    init(values: [Double], maxValue: Double, labels: [String], color: Color = .blue) {
+        self.values = values
+        self.maxValue = maxValue
+        self.labels = labels
+        self.color = color
+        self.axes = values.count
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let size = min(geo.size.width, geo.size.height)
+            let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
+            let radius = size * 0.38
+            let labelRadius = size * 0.50
+
+            ZStack {
+                ForEach([0.25, 0.5, 0.75, 1.0], id: \.self) { fraction in
+                    radarPolygon(fraction: fraction, center: center, radius: radius)
+                        .stroke(Color.gray.opacity(0.25), lineWidth: 1)
+                }
+
+                ForEach(0..<axes, id: \.self) { i in
+                    let angle = axisAngle(i)
+                    Path { p in
+                        p.move(to: center)
+                        p.addLine(to: pointOnCircle(center: center, radius: radius, angle: angle))
+                    }
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                }
+
+                radarDataPath(center: center, radius: radius)
+                    .fill(color.opacity(0.25))
+                radarDataPath(center: center, radius: radius)
+                    .stroke(color, lineWidth: 2)
+
+                ForEach(0..<axes, id: \.self) { i in
+                    let angle = axisAngle(i)
+                    let pt = pointOnCircle(center: center, radius: labelRadius, angle: angle)
+                    Text(i < labels.count ? labels[i] : "")
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(width: 52)
+                        .position(pt)
+                }
+            }
+        }
+    }
+
+    private func axisAngle(_ i: Int) -> Double {
+        Double(i) * 2 * .pi / Double(axes) - .pi / 2
+    }
+
+    private func pointOnCircle(center: CGPoint, radius: CGFloat, angle: Double) -> CGPoint {
+        CGPoint(x: center.x + radius * CGFloat(cos(angle)),
+                y: center.y + radius * CGFloat(sin(angle)))
+    }
+
+    private func radarPolygon(fraction: Double, center: CGPoint, radius: CGFloat) -> Path {
+        Path { p in
+            let r = radius * fraction
+            for i in 0..<axes {
+                let pt = pointOnCircle(center: center, radius: r, angle: axisAngle(i))
+                i == 0 ? p.move(to: pt) : p.addLine(to: pt)
+            }
+            p.closeSubpath()
+        }
+    }
+
+    private func radarDataPath(center: CGPoint, radius: CGFloat) -> Path {
+        Path { p in
+            for i in 0..<axes {
+                let fraction = maxValue > 0 ? min(values[i] / maxValue, 1.0) : 0
+                let pt = pointOnCircle(center: center, radius: radius * fraction, angle: axisAngle(i))
+                i == 0 ? p.move(to: pt) : p.addLine(to: pt)
+            }
+            p.closeSubpath()
+        }
+    }
+}
+
+// MARK: - STEF View
+
+struct STEFView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+
+    private let itemNames = ["大球", "中球", "小球", "把持", "側方つまみ", "2点つまみ", "精密つまみ", "大型物体", "碁石", "カード"]
+    private let itemFullNames = [
+        "大球（直径6.5cm）", "中球（直径3cm）", "小球（直径1.5cm）",
+        "把持（円筒形把握）", "側方つまみ（鍵つまみ）", "2点つまみ（指頭つまみ）",
+        "精密つまみ（三指）", "大型物体移動", "碁石（薄型ディスク）", "カードめくり"
+    ]
+    private let scoreOptions = [10, 8, 6, 4, 2, 0]
+    private let timeLabels = ["≤15秒", "16-20秒", "21-30秒", "31-60秒", "61-120秒", "不能/>120秒"]
+
+    @State private var scores: [Int?] = Array(repeating: nil, count: 10)
+
+    private var totalScore: Int { scores.compactMap { $0 }.reduce(0, +) }
+    private var allEntered: Bool { scores.allSatisfy { $0 != nil } }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("STEF（簡易上肢機能検査）", systemImage: "info.circle.fill")
+                        .font(.headline).foregroundColor(.orange)
+                    Text("10種の物体操作課題の所要時間を点数（0/2/4/6/8/10点）に変換し合計100点で評価します。各課題の点数分布をレーダーチャートで視覚化できます。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                    ClinicalBenchmarkCard(type: .stef)
+                }
+                .padding()
+                .background(Color.orange.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                if allEntered {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("合計スコア").font(.headline)
+                            Spacer()
+                            Text("\(totalScore) / 100点")
+                                .font(.title2.bold()).foregroundColor(.orange)
+                        }
+                        .padding(.horizontal)
+
+                        let interpretation = totalScore <= 49 ? "重度障害" :
+                                             totalScore <= 74 ? "中等度障害" :
+                                             totalScore <= 89 ? "軽度障害" : "正常〜軽度"
+                        Text("判定: \(interpretation)").font(.subheadline).foregroundColor(.secondary).padding(.horizontal)
+
+                        RadarChartView(
+                            values: scores.map { Double($0 ?? 0) },
+                            maxValue: 10,
+                            labels: itemNames,
+                            color: .orange
+                        )
+                        .frame(height: 260)
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
+                    }
+                }
+
+                VStack(spacing: 12) {
+                    ForEach(0..<10, id: \.self) { i in
+                        STEFItemCard(
+                            index: i,
+                            name: itemFullNames[i],
+                            scoreOptions: scoreOptions,
+                            timeLabels: timeLabels,
+                            score: $scores[i]
+                        )
+                    }
+                }
+                .padding(.horizontal)
+
+                SaveRecordButton(color: .orange, isEnabled: scores.contains(where: { $0 != nil })) {
+                    let entered = scores.compactMap { $0 }
+                    let total = entered.reduce(0, +)
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .stef,
+                        primaryValue: Double(total),
+                        displayLabel: "STEF合計: \(total)点（\(entered.count)/10項目）"
+                    ))
+                }
+                ResetButton(color: .orange) { scores = Array(repeating: nil, count: 10) }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("STEF（簡易上肢機能検査）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct STEFItemCard: View {
+    let index: Int
+    let name: String
+    let scoreOptions: [Int]
+    let timeLabels: [String]
+    @Binding var score: Int?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("\(index + 1)").font(.caption.bold()).foregroundColor(.white)
+                    .frame(width: 22, height: 22)
+                    .background(score != nil ? Color.orange : Color.gray)
+                    .clipShape(Circle())
+                Text(name).font(.subheadline.bold())
+                Spacer()
+                if let s = score {
+                    Text("\(s)点").font(.headline.bold()).foregroundColor(.orange)
+                }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(Array(zip(scoreOptions, timeLabels)), id: \.0) { pts, time in
+                        Button(action: { score = score == pts ? nil : pts }) {
+                            VStack(spacing: 2) {
+                                Text("\(pts)点").font(.caption.bold())
+                                Text(time).font(.system(size: 9))
+                            }
+                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .background(score == pts ? Color.orange : Color(.systemGray5))
+                            .foregroundColor(score == pts ? .white : .primary)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// MARK: - MAL View
+
+struct MALView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+
+    private let malItems = [
+        "ドアを開ける（ドアノブを回す）", "キャビネットやドアを開ける（引く動作）",
+        "洗面台を使う", "スプーンで食べる", "フォークで食べる", "食器を運ぶ",
+        "ひざの上で物を安定させる", "ボタンをとめる", "コップや缶で飲む",
+        "歯ブラシを使う", "本や新聞を読む（持つ動作）", "電話を使う",
+        "テーブルを拭く", "タイプまたはキーボードを使う"
+    ]
+
+    @State private var aouScores: [Double] = Array(repeating: 0, count: 14)
+    @State private var qomScores: [Double] = Array(repeating: 0, count: 14)
+    @State private var anyEdited = false
+
+    private var avgAOU: Double { aouScores.reduce(0, +) / Double(aouScores.count) }
+    private var avgQOM: Double { qomScores.reduce(0, +) / Double(qomScores.count) }
+
+    private let aouLabels = ["0: 全く使わない", "1: まれに使う", "2: 半分程度使う", "3: 以前より少し少ない", "4: 以前とほぼ同じ", "5: 以前と同じ"]
+    private let qomLabels = ["0: 動かない", "1: 非常に困難", "2: 困難だがある程度可能", "3: 少し困難", "4: ほぼ正常", "5: 正常と同じ"]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("MAL（Motor Activity Log）", systemImage: "info.circle.fill")
+                        .font(.headline).foregroundColor(.teal)
+                    Text("14項目の上肢動作について、使用量（AOU）と動作の質（QOM）をそれぞれ0〜5点で評価します。患者・家族への問診形式で実施します。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                    ClinicalBenchmarkCard(type: .mal)
+                }
+                .padding()
+                .background(Color.teal.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                if anyEdited {
+                    VStack(spacing: 8) {
+                        HStack(spacing: 16) {
+                            VStack(spacing: 4) {
+                                Text("AOU平均").font(.caption).foregroundColor(.secondary)
+                                Text(String(format: "%.2f", avgAOU))
+                                    .font(.title2.bold()).foregroundColor(.teal)
+                                Text("/ 5.0").font(.caption).foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity)
+                            Divider().frame(height: 60)
+                            VStack(spacing: 4) {
+                                Text("QOM平均").font(.caption).foregroundColor(.secondary)
+                                Text(String(format: "%.2f", avgQOM))
+                                    .font(.title2.bold()).foregroundColor(.blue)
+                                Text("/ 5.0").font(.caption).foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
+
+                        Text("MCID: AOU・QOM ともに 1.0点の改善が臨床的に意味のある変化")
+                            .font(.caption).foregroundColor(.secondary).padding(.horizontal)
+                    }
+                }
+
+                VStack(spacing: 12) {
+                    ForEach(malItems.indices, id: \.self) { i in
+                        MALItemCard(
+                            index: i,
+                            name: malItems[i],
+                            aouLabels: aouLabels,
+                            qomLabels: qomLabels,
+                            aou: $aouScores[i],
+                            qom: $qomScores[i],
+                            onEdit: { anyEdited = true }
+                        )
+                    }
+                }
+                .padding(.horizontal)
+
+                SaveRecordButton(color: .teal, isEnabled: anyEdited) {
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .mal,
+                        primaryValue: avgAOU,
+                        secondaryValue: avgQOM,
+                        displayLabel: String(format: "AOU: %.2f / QOM: %.2f", avgAOU, avgQOM)
+                    ))
+                }
+                ResetButton(color: .teal) {
+                    aouScores = Array(repeating: 0, count: 14)
+                    qomScores = Array(repeating: 0, count: 14)
+                    anyEdited = false
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("MAL（Motor Activity Log）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct MALItemCard: View {
+    let index: Int
+    let name: String
+    let aouLabels: [String]
+    let qomLabels: [String]
+    @Binding var aou: Double
+    @Binding var qom: Double
+    let onEdit: () -> Void
+    @State private var isExpanded = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button(action: { withAnimation { isExpanded.toggle() } }) {
+                HStack {
+                    Text("\(index + 1)").font(.caption.bold()).foregroundColor(.white)
+                        .frame(width: 22, height: 22)
+                        .background(Color.teal)
+                        .clipShape(Circle())
+                    Text(name).font(.subheadline.bold()).foregroundColor(.primary)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 1) {
+                        Text("AOU: \(String(format: "%.0f", aou))").font(.caption).foregroundColor(.teal)
+                        Text("QOM: \(String(format: "%.0f", qom))").font(.caption).foregroundColor(.blue)
+                    }
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.caption).foregroundColor(.secondary)
+                }
+            }
+
+            if isExpanded {
+                Divider()
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("AOU（使用量）: \(aouLabels[Int(aou)])").font(.caption).foregroundColor(.secondary)
+                    Slider(value: $aou, in: 0...5, step: 1)
+                        .tint(.teal)
+                        .onChange(of: aou) { _ in onEdit() }
+                    Text("QOM（動作の質）: \(qomLabels[Int(qom)])").font(.caption).foregroundColor(.secondary)
+                    Slider(value: $qom, in: 0...5, step: 1)
+                        .tint(.blue)
+                        .onChange(of: qom) { _ in onEdit() }
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

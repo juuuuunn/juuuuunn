@@ -89,10 +89,12 @@ enum AssessmentType: String, CaseIterable, Identifiable, Codable {
     // 上肢機能・巧緻性
     case nhpt           = "9穴ペグテスト（NHPT）"
     case bbt            = "Box and Block Test（BBT）"
+    case stef           = "STEF（簡易上肢機能検査）"
 
     // ADL
     case fim            = "FIM"
     case barthelIndex   = "Barthel Index"
+    case mal            = "MAL（Motor Activity Log）"
 
     // 高次脳機能・認知・注意
     case mmse           = "MMSE"
@@ -123,8 +125,8 @@ enum AssessmentType: String, CaseIterable, Identifiable, Codable {
         case .bergBalance, .fuglMeyerBalance, .tug,
              .tenMeterWalk, .sixMWT, .fac:                 return .balanceGait
         case .tct, .tis, .fact:                            return .trunk
-        case .nhpt, .bbt:                                  return .upperLimb
-        case .fim, .barthelIndex:                          return .adl
+        case .nhpt, .bbt, .stef:                           return .upperLimb
+        case .fim, .barthelIndex, .mal:                    return .adl
         case .mmse, .moca, .cbs, .bit, .tmt,
              .cat, .digitalCancellation:                   return .cognition
         case .vasNrs:                                      return .pain
@@ -156,8 +158,10 @@ enum AssessmentType: String, CaseIterable, Identifiable, Codable {
         case .fact:              return "坐位・移乗・立位における体幹制御機能の評価"
         case .nhpt:              return "手指巧緻性・上肢協調性の評価"
         case .bbt:               return "上肢把持機能・移動速度の評価"
+        case .stef:              return "10項目の上肢機能を時間で定量評価（レーダーチャート付き）"
         case .fim:               return "ADL自立度・介護量の包括的評価"
         case .barthelIndex:      return "ADL自立度の評価（10項目）"
+        case .mal:               return "日常生活での麻痺上肢の使用量（AOU）と動作質（QOM）の評価"
         case .mmse:              return "認知機能スクリーニング（30点）"
         case .moca:              return "軽度認知障害（MCI）のスクリーニング"
         case .cbs:               return "半側空間無視の日常生活への影響評価"
@@ -194,8 +198,10 @@ enum AssessmentType: String, CaseIterable, Identifiable, Codable {
         case .fact:              return 34
         case .nhpt:              return nil
         case .bbt:               return nil
+        case .stef:              return 100
         case .fim:               return 126
         case .barthelIndex:      return 100
+        case .mal:               return nil
         case .mmse:              return 30
         case .moca:              return 30
         case .cbs:               return 30
@@ -220,6 +226,81 @@ enum AssessmentType: String, CaseIterable, Identifiable, Codable {
             return true
         default:
             return false
+        }
+    }
+
+    // MARK: - Clinical Benchmarks (MCID / MDC / Reference)
+
+    struct Benchmark: Identifiable {
+        let id = UUID()
+        let label: String   // e.g. "MCID", "MDC₉₅"
+        let value: String   // e.g. "4.0点"
+        let note: String    // context
+    }
+
+    var benchmarks: [Benchmark] {
+        switch self {
+        case .tug:
+            return [Benchmark(label: "MCID", value: "1.4秒", note: "脳卒中・地域在住"),
+                    Benchmark(label: "MDC₉₅", value: "3.5秒", note: "最小可検変化量"),
+                    Benchmark(label: "参考", value: "< 10秒", note: "正常〜低転倒リスク")]
+        case .tenMeterWalk:
+            return [Benchmark(label: "MCID", value: "0.16 m/s", note: "脳卒中患者"),
+                    Benchmark(label: "MDC₉₅", value: "0.18 m/s", note: "最小可検変化量")]
+        case .sixMWT:
+            return [Benchmark(label: "MCID", value: "54 m", note: "脳卒中患者"),
+                    Benchmark(label: "MDC₉₅", value: "61 m", note: "最小可検変化量")]
+        case .bergBalance:
+            return [Benchmark(label: "MCID", value: "6〜8点", note: "脳卒中患者"),
+                    Benchmark(label: "MDC₉₅", value: "5点", note: "最小可検変化量"),
+                    Benchmark(label: "転倒リスク", value: "≤ 45点", note: "転倒リスク上昇のカットオフ")]
+        case .fuglMeyerUpper:
+            return [Benchmark(label: "MCID", value: "4〜9点", note: "重症度により異なる"),
+                    Benchmark(label: "MDC₉₅", value: "5.25点", note: "最小可検変化量")]
+        case .fuglMeyerLower:
+            return [Benchmark(label: "MCID", value: "6点", note: "脳卒中患者")]
+        case .nihss:
+            return [Benchmark(label: "MCID", value: "4点の改善", note: "神経学的改善基準"),
+                    Benchmark(label: "参考", value: "0点", note: "神経学的欠損なし")]
+        case .nhpt:
+            return [Benchmark(label: "MCID", value: "約7秒の短縮", note: "脳卒中患者"),
+                    Benchmark(label: "MDC₉₅", value: "約12秒", note: "最小可検変化量")]
+        case .bbt:
+            return [Benchmark(label: "MCID", value: "5.5個/分", note: "脳卒中患者"),
+                    Benchmark(label: "参考", value: "65〜70個/分", note: "健常者・利き手平均")]
+        case .stef:
+            return [Benchmark(label: "参考", value: "100点", note: "全項目正常完了"),
+                    Benchmark(label: "健常者平均", value: "95〜100点", note: "成人健常者"),
+                    Benchmark(label: "採点", value: "0/2/4/6/8/10点", note: "時間により変換（≤15秒=10点）")]
+        case .fim:
+            return [Benchmark(label: "MCID", value: "22点", note: "総合スコア"),
+                    Benchmark(label: "MDC₉₅", value: "17点", note: "最小可検変化量"),
+                    Benchmark(label: "実用的自立", value: "≥ 80点", note: "実用的ADL自立の目安")]
+        case .barthelIndex:
+            return [Benchmark(label: "MCID", value: "10〜15点", note: "臨床的に意味のある変化"),
+                    Benchmark(label: "自立の目安", value: "≥ 60点", note: "部分自立"),
+                    Benchmark(label: "完全自立", value: "100点", note: "全ADL自立")]
+        case .mal:
+            return [Benchmark(label: "MCID (AOU)", value: "1.0点", note: "使用量の臨床的改善"),
+                    Benchmark(label: "MCID (QOM)", value: "1.0点", note: "動作質の臨床的改善")]
+        case .mmse:
+            return [Benchmark(label: "MCID", value: "4点", note: "認知機能変化"),
+                    Benchmark(label: "カットオフ", value: "≤ 23点", note: "認知症スクリーニング陽性")]
+        case .moca:
+            return [Benchmark(label: "MCID", value: "1.22点", note: "脳卒中患者"),
+                    Benchmark(label: "MDC₉₅", value: "1.7点", note: "最小可検変化量"),
+                    Benchmark(label: "カットオフ", value: "< 26点", note: "MCI疑い（教育歴12年未満は+1点）")]
+        case .vasNrs:
+            return [Benchmark(label: "MCID", value: "2点 または30%改善", note: "疼痛強度の臨床的改善"),
+                    Benchmark(label: "介入基準", value: "NRS ≥ 4", note: "鎮痛介入を考慮")]
+        case .bit:
+            return [Benchmark(label: "通常検査カットオフ", value: "< 129点", note: "USN陽性（最大147点）"),
+                    Benchmark(label: "行動検査カットオフ", value: "< 67点", note: "USN陽性（最大81点）")]
+        case .cbs:
+            return [Benchmark(label: "カットオフ", value: "≥ 5点", note: "臨床的に有意な半側空間無視"),
+                    Benchmark(label: "重症度", value: "1〜10軽度、11〜20中等度、21〜30重度", note: "")]
+        default:
+            return []
         }
     }
 
@@ -282,6 +363,7 @@ extension AssessmentType {
         case .cbs:               return cbsItems
         case .fac:               return facItems
         case .mnasf:             return mnaSFItems
+        case .stef:              return stefItems
         default:                 return []
         }
     }
@@ -345,6 +427,11 @@ extension AssessmentType {
         case .mnasf:
             return [(0...7,"低栄養","栄養的介入が必要"),(8...11,"低栄養リスク","栄養状態の詳細評価を要する"),
                     (12...14,"正常","低栄養リスクなし")]
+        case .stef:
+            return [(0...49,"重度障害","多くの項目で把握・つまみ動作困難"),
+                    (50...74,"中等度障害","複数項目で時間がかかる"),
+                    (75...89,"軽度障害","一部の動作に制限あり"),
+                    (90...100,"正常〜軽度","概ね正常な上肢機能")]
         default:
             return []
         }
@@ -920,3 +1007,28 @@ private let mnaSFItems: [AssessmentItem] = [
         .init(score: 2, description: "2: 21 ≤ BMI < 23"),
         .init(score: 3, description: "3: BMI ≥ 23")]),
 ]
+
+// MARK: - STEF（簡易上肢機能検査）
+// 採点基準: ≤15秒=10点, 16-20秒=8点, 21-30秒=6点, 31-60秒=4点, 61-120秒=2点, 不能=0点
+
+private let stefItems: [AssessmentItem] = [
+    .init(number: 1,  name: "大球（直径6.5cm）",      description: "大きなボールを容器から容器へ移す", scoringCriteria: stefScale()),
+    .init(number: 2,  name: "中球（直径3cm）",         description: "中サイズのボールを移す",           scoringCriteria: stefScale()),
+    .init(number: 3,  name: "小球（直径1.5cm）",       description: "小さなボールを移す",               scoringCriteria: stefScale()),
+    .init(number: 4,  name: "把持（円筒形把握）",       description: "円柱を把持し容器間を移す",         scoringCriteria: stefScale()),
+    .init(number: 5,  name: "側方つまみ（鍵つまみ）",   description: "扁平な物体を側方から挟んで移す",   scoringCriteria: stefScale()),
+    .init(number: 6,  name: "2点つまみ（指頭つまみ）",  description: "母指・示指で小物を挟んで移す",     scoringCriteria: stefScale()),
+    .init(number: 7,  name: "精密つまみ（三指）",       description: "母指・示指・中指で細い物を操作",   scoringCriteria: stefScale()),
+    .init(number: 8,  name: "大型物体移動",             description: "形状の複雑な大型物体を移動させる", scoringCriteria: stefScale()),
+    .init(number: 9,  name: "碁石（薄型ディスク）",     description: "薄型の碁石を積み上げる",           scoringCriteria: stefScale()),
+    .init(number: 10, name: "カードめくり",             description: "カードを1枚ずつめくる",           scoringCriteria: stefScale()),
+]
+
+private func stefScale() -> [ScoringCriterion] {
+    [.init(score: 10, description: "10点: ≤ 15秒で完了"),
+     .init(score: 8,  description: "8点: 16〜20秒"),
+     .init(score: 6,  description: "6点: 21〜30秒"),
+     .init(score: 4,  description: "4点: 31〜60秒"),
+     .init(score: 2,  description: "2点: 61〜120秒"),
+     .init(score: 0,  description: "0点: 不能 または 120秒超")]
+}
