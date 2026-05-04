@@ -12,6 +12,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("評価ツール", systemImage: "checklist")
                 }
+
+            RecordsSummaryView()
+                .tabItem {
+                    Label("評価記録", systemImage: "chart.bar.doc.horizontal")
+                }
         }
         .accentColor(.blue)
     }
@@ -19,4 +24,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(RecordsStore())
 }

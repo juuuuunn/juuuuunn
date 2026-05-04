@@ -10,6 +10,8 @@
 		AA000001000000000000001A /* StrokeTherapyGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000001B /* StrokeTherapyGuideApp.swift */; };
 		AA000001000000000000002A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000002B /* ContentView.swift */; };
 		AA000001000000000000005A /* Assessment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000005B /* Assessment.swift */; };
+		AA000001000000000000030A /* AssessmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000030B /* AssessmentRecord.swift */; };
+		AA000001000000000000031A /* RecordsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000031B /* RecordsSummaryView.swift */; };
 		AA000001000000000000006A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000000000006B /* HomeView.swift */; };
 		AA00000100000000000000BA /* AssessmentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000100000000000000BB /* AssessmentListView.swift */; };
 		AA00000100000000000000CA /* AssessmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000100000000000000CB /* AssessmentDetailView.swift */; };
@@ -20,6 +22,8 @@
 		AA000001000000000000001B /* StrokeTherapyGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeTherapyGuideApp.swift; sourceTree = "<group>"; };
 		AA000001000000000000002B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA000001000000000000005B /* Assessment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assessment.swift; sourceTree = "<group>"; };
+		AA000001000000000000030B /* AssessmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentRecord.swift; sourceTree = "<group>"; };
+		AA000001000000000000031B /* RecordsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordsSummaryView.swift; sourceTree = "<group>"; };
 		AA000001000000000000006B /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		AA00000100000000000000BB /* AssessmentListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentListView.swift; sourceTree = "<group>"; };
 		AA00000100000000000000CB /* AssessmentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentDetailView.swift; sourceTree = "<group>"; };
@@ -64,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000001000000000000005B /* Assessment.swift */,
+				AA000001000000000000030B /* AssessmentRecord.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -73,8 +78,17 @@
 			children = (
 				AA000001000000000000015A /* Home */,
 				AA000001000000000000018A /* Assessment */,
+				AA000001000000000000032A /* Records */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		AA000001000000000000032A /* Records */ = {
+			isa = PBXGroup;
+			children = (
+				AA000001000000000000031B /* RecordsSummaryView.swift */,
+			);
+			path = Records;
 			sourceTree = "<group>";
 		};
 		AA000001000000000000015A /* Home */ = {
@@ -178,6 +192,8 @@
 				AA000001000000000000006A /* HomeView.swift in Sources */,
 				AA00000100000000000000BA /* AssessmentListView.swift in Sources */,
 				AA00000100000000000000CA /* AssessmentDetailView.swift in Sources */,
+				AA000001000000000000030A /* AssessmentRecord.swift in Sources */,
+				AA000001000000000000031A /* RecordsSummaryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

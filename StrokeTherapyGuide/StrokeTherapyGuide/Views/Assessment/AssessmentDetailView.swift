@@ -32,6 +32,7 @@ struct AssessmentDetailView: View {
 
 struct ScoreAssessmentView: View {
     let assessmentType: AssessmentType
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var scores: [UUID: Int] = [:]
 
     private var items: [AssessmentItem] { assessmentType.items }
@@ -59,6 +60,13 @@ struct ScoreAssessmentView: View {
                 }
                 .padding(.horizontal)
 
+                SaveRecordButton(color: swiftColor, isEnabled: !scores.isEmpty) {
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: assessmentType,
+                        primaryValue: Double(totalScore),
+                        displayLabel: "合計: \(totalScore)点"
+                    ))
+                }
                 ResetButton(color: swiftColor) { scores = [:] }
             }
             .padding(.bottom, 24)
@@ -252,9 +260,37 @@ struct ResetButton: View {
     }
 }
 
+// MARK: - Save Record Button
+
+struct SaveRecordButton: View {
+    let color: Color
+    let isEnabled: Bool
+    let onSave: () -> Void
+    @State private var saved = false
+
+    var body: some View {
+        Button(action: {
+            guard isEnabled && !saved else { return }
+            onSave()
+            saved = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { saved = false }
+        }) {
+            Label(saved ? "保存しました" : "記録を保存",
+                  systemImage: saved ? "checkmark.circle.fill" : "square.and.arrow.down")
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(saved ? .green : color)
+        .disabled(!isEnabled || saved)
+        .padding(.horizontal)
+        .animation(.easeInOut(duration: 0.3), value: saved)
+    }
+}
+
 // MARK: - MAS View (per muscle group)
 
 struct MASView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var scores: [UUID: Int] = [:]
 
     private let items = AssessmentType.mas.items
@@ -283,6 +319,13 @@ struct MASView: View {
                     .padding(.horizontal)
                 }
 
+                SaveRecordButton(color: .pink, isEnabled: !scores.isEmpty) {
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .mas,
+                        primaryValue: Double(totalScore),
+                        displayLabel: "合計: \(totalScore)点"
+                    ))
+                }
                 ResetButton(color: .pink) { scores = [:] }
             }
             .padding(.bottom, 24)
@@ -333,6 +376,7 @@ private struct MASInfoCard: View {
 // MARK: - Brunnstrom Stage View
 
 struct BrunnstromView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var armStage: Int = 0
     @State private var handStage: Int = 0
     @State private var legStage: Int = 0
@@ -355,6 +399,16 @@ struct BrunnstromView: View {
                 BrunnstromSelector(label: "手", selection: $handStage, stages: stages)
                 BrunnstromSelector(label: "下肢", selection: $legStage, stages: stages)
                 BrunnstromResultCard(arm: armStage, hand: handStage, leg: legStage)
+                SaveRecordButton(color: .orange, isEnabled: armStage > 0 || handStage > 0 || legStage > 0) {
+                    let a = armStage > 0 ? "S\(armStage)" : "—"
+                    let h = handStage > 0 ? "S\(handStage)" : "—"
+                    let l = legStage > 0 ? "S\(legStage)" : "—"
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .brunnstrom,
+                        primaryValue: Double(armStage * 100 + handStage * 10 + legStage),
+                        displayLabel: "上肢:\(a) 手:\(h) 下肢:\(l)"
+                    ))
+                }
             }
             .padding(.bottom, 24)
         }
@@ -485,6 +539,7 @@ private struct ResultPill: View {
 
 struct TimerAssessmentView: View {
     let assessmentType: AssessmentType
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var elapsed: Double = 0
     @State private var isRunning = false
     @State private var timer: Timer?
@@ -503,7 +558,17 @@ struct TimerAssessmentView: View {
                     onStartStop: startStop,
                     onReset: reset,
                     onSave: {
-                        if elapsed > 0 { results.append(elapsed); elapsed = 0 }
+                        if elapsed > 0 {
+                            results.append(elapsed)
+                            var label = String(format: "%.2f秒", elapsed)
+                            if assessmentType == .tenMeterWalk { label += String(format: " (%.3fm/s)", 10.0 / elapsed) }
+                            recordsStore.add(AssessmentRecord(
+                                assessmentType: assessmentType,
+                                primaryValue: elapsed,
+                                displayLabel: label
+                            ))
+                            elapsed = 0
+                        }
                     }
                 )
                 InterpretationBanner(type: assessmentType, elapsed: elapsed, color: swiftColor)
@@ -790,6 +855,7 @@ private struct ProtocolCard: View {
 // MARK: - BBT View
 
 struct BBTView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var dominantCount: Int = 0
     @State private var nonDominantCount: Int = 0
     @State private var isRunning = false
@@ -814,6 +880,14 @@ struct BBTView: View {
                     nonDominantCount: $nonDominantCount
                 )
                 BBTInterpretationCard(dominant: dominantCount, nonDominant: nonDominantCount)
+                SaveRecordButton(color: .blue, isEnabled: dominantCount > 0 || nonDominantCount > 0) {
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .bbt,
+                        primaryValue: Double(dominantCount),
+                        secondaryValue: Double(nonDominantCount),
+                        displayLabel: "利き手:\(dominantCount)個 非利き手:\(nonDominantCount)個"
+                    ))
+                }
                 Button("リセット") { dominantCount = 0; nonDominantCount = 0; elapsed = 0 }
                     .buttonStyle(.bordered)
                     .foregroundColor(.red)
@@ -959,6 +1033,7 @@ private struct BBTInterpretationCard: View {
 // MARK: - VAS/NRS View
 
 struct VASNRSView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var nrsScore: Double = 0
     @State private var selectedLocation = "患側上肢"
     @State private var selectedType = "安静時痛"
@@ -974,6 +1049,13 @@ struct VASNRSView: View {
                                  painType: $selectedType, painTypes: painTypes)
                 PainInterpretationCard(score: Int(nrsScore))
                 CPSPInfoCard()
+                SaveRecordButton(color: .yellow, isEnabled: nrsScore > 0) {
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .vasNrs,
+                        primaryValue: nrsScore,
+                        displayLabel: "NRS: \(Int(nrsScore)) (\(selectedLocation)・\(selectedType))"
+                    ))
+                }
             }
             .padding(.bottom, 24)
         }
@@ -1126,9 +1208,42 @@ private struct CPSPInfoCard: View {
     }
 }
 
+// MARK: - Shared manual score picker (for info-only views that need score recording)
+
+struct ManualScoreEntry: View {
+    let label: String
+    let range: ClosedRange<Int>
+    @Binding var score: Int?
+    let color: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label).font(.caption).foregroundColor(.secondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    let step = max(1, (range.upperBound - range.lowerBound) / 20)
+                    ForEach(Array(stride(from: range.lowerBound, through: range.upperBound, by: step)), id: \.self) { v in
+                        Button(action: { score = score == v ? nil : v }) {
+                            Text("\(v)").font(.caption.bold())
+                                .padding(.horizontal, 8).padding(.vertical, 6)
+                                .background(score == v ? color : Color(.systemGray5))
+                                .foregroundColor(score == v ? .white : .primary)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .padding(.horizontal)
+    }
+}
+
 // MARK: - MoCA Info View
 
 struct MoCAInfoView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
+    @State private var manualScore: Int? = nil
     private let domains: [(name: String, max: Int, desc: String)] = [
         ("視空間・遂行機能", 5, "Trail Making B / 立方体模写 / 時計描画"),
         ("命名", 3, "ライオン・サイ・ラクダの命名"),
@@ -1169,6 +1284,17 @@ struct MoCAInfoView: View {
 
                 MoCAInterpretationCard()
                 MoCANoteCard()
+                ManualScoreEntry(label: "実施後スコアを入力（0〜30）",
+                                 range: 0...30, score: $manualScore, color: .purple)
+                SaveRecordButton(color: .purple, isEnabled: manualScore != nil) {
+                    if let s = manualScore {
+                        recordsStore.add(AssessmentRecord(
+                            assessmentType: .moca,
+                            primaryValue: Double(s),
+                            displayLabel: "合計: \(s)点"
+                        ))
+                    }
+                }
             }
             .padding(.bottom, 24)
         }
@@ -1320,6 +1446,7 @@ private struct SISScoringSummary: View {
 // MARK: - mRS View
 
 struct MRSView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var selectedGrade: Int? = nil
 
     private let grades: [(grade: Int, label: String, detail: String)] = [
@@ -1404,7 +1531,14 @@ struct MRSView: View {
                 }
                 .padding(.horizontal)
 
-                if selectedGrade != nil {
+                if let g = selectedGrade {
+                    SaveRecordButton(color: gradeColor(g), isEnabled: true) {
+                        recordsStore.add(AssessmentRecord(
+                            assessmentType: .mrs,
+                            primaryValue: Double(g),
+                            displayLabel: "mRS \(g): \(grades[g].label)"
+                        ))
+                    }
                     Button("選択をリセット") { selectedGrade = nil }
                         .buttonStyle(.bordered).foregroundColor(.red)
                 }
@@ -1419,6 +1553,7 @@ struct MRSView: View {
 // MARK: - TCT View
 
 struct TCTView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var scores: [Int: Int] = [:]
     private let color = Color.indigo
     private var totalScore: Int { scores.values.reduce(0, +) }
@@ -1459,6 +1594,13 @@ struct TCTView: View {
                 }
                 .padding(.horizontal)
 
+                SaveRecordButton(color: color, isEnabled: !scores.isEmpty) {
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .tct,
+                        primaryValue: Double(totalScore),
+                        displayLabel: "合計: \(totalScore)点"
+                    ))
+                }
                 ResetButton(color: color) { scores = [:] }
             }
             .padding(.bottom, 24)
@@ -1518,6 +1660,7 @@ private struct TCTItemCard: View {
 // MARK: - BIT View
 
 struct BITView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var conventionalScore: Int? = nil
     @State private var behavioralScore: Int? = nil
 
@@ -1569,6 +1712,17 @@ struct BITView: View {
                         }
                         .padding(.horizontal)
                     }
+                }
+                SaveRecordButton(color: .purple, isEnabled: conventionalScore != nil || behavioralScore != nil) {
+                    let c = conventionalScore.map { "通常:\($0)" } ?? ""
+                    let b = behavioralScore.map { "行動:\($0)" } ?? ""
+                    let label = [c, b].filter { !$0.isEmpty }.joined(separator: " ")
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .bit,
+                        primaryValue: Double(conventionalScore ?? 0),
+                        secondaryValue: behavioralScore.map { Double($0) },
+                        displayLabel: label
+                    ))
                 }
             }
             .padding(.bottom, 24)
@@ -1649,6 +1803,7 @@ private struct BITJudgementRow: View {
 // MARK: - TMT View
 
 struct TMTView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     @State private var elapsedA: Double = 0
     @State private var elapsedB: Double = 0
     @State private var isRunningA = false
@@ -1724,6 +1879,17 @@ struct TMTView: View {
                     .padding(.horizontal)
                     Text("脳卒中患者は年齢・教育歴を考慮した標準化スコアで解釈すること。")
                         .font(.caption).foregroundColor(.secondary).padding(.horizontal)
+                }
+                SaveRecordButton(color: .purple, isEnabled: elapsedA > 0.5 || elapsedB > 0.5) {
+                    var parts: [String] = []
+                    if elapsedA > 0.5 { parts.append(String(format: "A: %.1f秒", elapsedA)) }
+                    if elapsedB > 0.5 { parts.append(String(format: "B: %.1f秒", elapsedB)) }
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .tmt,
+                        primaryValue: elapsedA,
+                        secondaryValue: elapsedB > 0.5 ? elapsedB : nil,
+                        displayLabel: parts.joined(separator: " / ")
+                    ))
                 }
             }
             .padding(.bottom, 24)
@@ -1860,6 +2026,7 @@ struct CancellationSymbol: Identifiable {
 }
 
 struct DigitalCancellationView: View {
+    @EnvironmentObject var recordsStore: RecordsStore
     enum TestState { case ready, playing, finished }
 
     @State private var testState: TestState = .ready
@@ -1965,6 +2132,21 @@ struct DigitalCancellationView: View {
                 }
                 .padding()
                 CancellationResultCard(symbols: symbols)
+                SaveRecordButton(color: .purple, isEnabled: true) {
+                    let tapped = symbols.filter { $0.isTarget && $0.isTapped }.count
+                    let total = symbols.filter { $0.isTarget }.count
+                    let leftMissed = symbols.filter { $0.isTarget && !$0.isTapped && $0.normalizedX < 0.5 }.count
+                    let rightMissed = symbols.filter { $0.isTarget && !$0.isTapped && $0.normalizedX >= 0.5 }.count
+                    var label = "発見:\(tapped)/\(total)"
+                    if leftMissed > rightMissed + 1 { label += " 左無視疑い" }
+                    else if rightMissed > leftMissed + 1 { label += " 右無視疑い" }
+                    recordsStore.add(AssessmentRecord(
+                        assessmentType: .digitalCancellation,
+                        primaryValue: Double(tapped),
+                        secondaryValue: Double(total),
+                        displayLabel: label
+                    ))
+                }
                 Button(action: resetCancellationTest) {
                     Label("もう一度", systemImage: "arrow.counterclockwise")
                         .font(.headline).frame(maxWidth: .infinity).padding()
