@@ -17,6 +17,12 @@ struct AssessmentDetailView: View {
         case .moca:         MoCAInfoView()
         case .sis:          SISInfoView()
         case .mas:          MASView()
+        case .mrs:          MRSView()
+        case .tct:          TCTView()
+        case .bit:          BITView()
+        case .tmt:          TMTView()
+        case .cat:          CATInfoView()
+        case .digitalCancellation: DigitalCancellationView()
         default:            ScoreAssessmentView(assessmentType: assessmentType)
         }
     }
@@ -1308,6 +1314,802 @@ private struct SISScoringSummary: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal)
         }
+    }
+}
+
+// MARK: - mRS View
+
+struct MRSView: View {
+    @State private var selectedGrade: Int? = nil
+
+    private let grades: [(grade: Int, label: String, detail: String)] = [
+        (0, "症状なし",        "完全回復。神経学的症状・制限なし"),
+        (1, "軽症",           "症状はあるが日常業務に明らかな障害なし"),
+        (2, "軽度障害",        "以前の全活動はできないが、介助なしに身の回りのことはできる"),
+        (3, "中等度障害",      "何らかの介助は必要だが、介助なしに歩行はできる"),
+        (4, "中等度〜重度障害", "自力歩行不能。身体的要求に対して介助なしでは対応できない"),
+        (5, "重度障害",        "常時介護。失禁あり。終日ベッド生活"),
+        (6, "死亡",           "")
+    ]
+
+    private func gradeColor(_ g: Int) -> Color {
+        switch g {
+        case 0: return .green
+        case 1: return .blue
+        case 2: return .teal
+        case 3: return .yellow
+        case 4: return .orange
+        case 5: return .red
+        default: return .gray
+        }
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("modified Rankin Scale", systemImage: "info.circle.fill")
+                        .font(.headline).foregroundColor(.red)
+                    Text("脳卒中後の全体的な障害・依存度を0〜6で評価するグローバルアウトカム指標。臨床研究・治験で最も広く使用されます。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.red.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                if let g = selectedGrade {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("選択中: mRS \(g)").font(.subheadline).foregroundColor(.secondary)
+                            Text(grades[g].label).font(.headline)
+                        }
+                        Spacer()
+                        Text("\(g)")
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundColor(gradeColor(g))
+                    }
+                    .padding()
+                    .background(gradeColor(g).opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal)
+                }
+
+                VStack(spacing: 8) {
+                    ForEach(grades, id: \.grade) { item in
+                        Button(action: { selectedGrade = selectedGrade == item.grade ? nil : item.grade }) {
+                            HStack(spacing: 14) {
+                                Text("\(item.grade)")
+                                    .font(.title3.bold())
+                                    .foregroundColor(selectedGrade == item.grade ? .white : gradeColor(item.grade))
+                                    .frame(width: 40, height: 40)
+                                    .background(selectedGrade == item.grade ? gradeColor(item.grade) : gradeColor(item.grade).opacity(0.12))
+                                    .clipShape(Circle())
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(item.label).font(.subheadline.bold()).foregroundColor(.primary)
+                                    if !item.detail.isEmpty {
+                                        Text(item.detail).font(.caption).foregroundColor(.secondary).multilineTextAlignment(.leading)
+                                    }
+                                }
+                                Spacer()
+                                if selectedGrade == item.grade {
+                                    Image(systemName: "checkmark.circle.fill").foregroundColor(gradeColor(item.grade))
+                                }
+                            }
+                            .padding(12)
+                            .background(selectedGrade == item.grade ? gradeColor(item.grade).opacity(0.07) : Color(.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                }
+                .padding(.horizontal)
+
+                if selectedGrade != nil {
+                    Button("選択をリセット") { selectedGrade = nil }
+                        .buttonStyle(.bordered).foregroundColor(.red)
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("mRS（modified Rankin Scale）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - TCT View
+
+struct TCTView: View {
+    @State private var scores: [Int: Int] = [:]
+    private let color = Color.indigo
+    private var totalScore: Int { scores.values.reduce(0, +) }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("寝返り・起き上がり・坐位バランスの評価")
+                            .font(.subheadline).foregroundColor(.secondary)
+                        Text("採点: 各項目 0 / 12 / 25点（4項目 合計100点）")
+                            .font(.caption).foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("\(totalScore)")
+                            .font(.system(size: 44, weight: .bold, design: .rounded))
+                            .foregroundColor(color)
+                        Text("合計点").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .shadow(color: .black.opacity(0.07), radius: 5, x: 0, y: 2)
+                .padding(.horizontal)
+
+                InterpretationCard(type: .tct, score: totalScore, color: color)
+
+                VStack(spacing: 10) {
+                    ForEach(tctItemNames.indices, id: \.self) { i in
+                        TCTItemCard(index: i, name: tctItemNames[i],
+                                    selectedScore: scores[i], color: color) { score in
+                            scores[i] = scores[i] == score ? nil : score
+                        }
+                    }
+                }
+                .padding(.horizontal)
+
+                ResetButton(color: color) { scores = [:] }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("TCT（体幹コントロールテスト）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct TCTItemCard: View {
+    let index: Int
+    let name: String
+    let selectedScore: Int?
+    let color: Color
+    let onSelect: (Int) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("\(index + 1)")
+                    .font(.caption.bold()).foregroundColor(.white)
+                    .frame(width: 22, height: 22)
+                    .background(selectedScore != nil ? color : Color.gray)
+                    .clipShape(Circle())
+                Text(name).font(.subheadline.bold())
+                Spacer()
+                if let s = selectedScore {
+                    Text("\(s)点").font(.headline.bold()).foregroundColor(color)
+                }
+            }
+            HStack(spacing: 8) {
+                ForEach(tctScoreOptions.indices, id: \.self) { idx in
+                    let score = tctScoreOptions[idx]
+                    let labelPart = tctScoreLabels[idx].components(separatedBy: ": ").last ?? ""
+                    Button(action: { onSelect(score) }) {
+                        VStack(spacing: 4) {
+                            Text("\(score)")
+                                .font(.headline.bold())
+                                .foregroundColor(selectedScore == score ? .white : color)
+                                .frame(maxWidth: .infinity).padding(.vertical, 10)
+                                .background(selectedScore == score ? color : color.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            Text(labelPart)
+                                .font(.caption2).foregroundColor(.secondary).multilineTextAlignment(.center)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.06), radius: 3, x: 0, y: 1)
+    }
+}
+
+// MARK: - BIT View
+
+struct BITView: View {
+    @State private var conventionalScore: Int? = nil
+    @State private var behavioralScore: Int? = nil
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("行動性無視検査（BIT）", systemImage: "info.circle.fill")
+                        .font(.headline).foregroundColor(.purple)
+                    Text("半側空間無視（USN）を紙面作業と日常行動の両面から評価する標準化検査。通常検査6種（合計147点、カットオフ129点）と行動検査9種（合計81点、カットオフ67点）からなります。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                    Text("※ BITの実施には公式検査用紙が必要です。")
+                        .font(.caption.bold()).foregroundColor(.orange)
+                }
+                .padding()
+                .background(Color.purple.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                BITSubtestSection(
+                    title: "通常検査（合計147点、カットオフ: 129点）",
+                    items: [("線分二等分検査", 9), ("文字抹消検査", 40), ("星印抹消検査", 54),
+                            ("図形・形抹消検査", 18), ("線分検出検査", 18), ("模写・描画検査", 6)],
+                    range: 0...147,
+                    score: $conventionalScore,
+                    cutoff: 129
+                )
+
+                BITSubtestSection(
+                    title: "行動検査（合計81点、カットオフ: 67点）",
+                    items: [("写真の顔の判別", 9), ("電話番号の読み上げ", 9), ("メニューの読み上げ", 9),
+                            ("記事の読み上げ", 9), ("時計の読み取り", 9), ("コインの整理", 9),
+                            ("写し書き", 9), ("住所と文章の書き取り", 9), ("地図上の道案内", 9)],
+                    range: 0...81,
+                    score: $behavioralScore,
+                    cutoff: 67
+                )
+
+                if conventionalScore != nil || behavioralScore != nil {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("判定").font(.headline).padding(.horizontal)
+                        VStack(spacing: 6) {
+                            if let s = conventionalScore {
+                                BITJudgementRow(label: "通常検査", score: s, cutoff: 129)
+                            }
+                            if let s = behavioralScore {
+                                BITJudgementRow(label: "行動検査", score: s, cutoff: 67)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("BIT（行動性無視検査）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct BITSubtestSection: View {
+    let title: String
+    let items: [(String, Int)]
+    let range: ClosedRange<Int>
+    @Binding var score: Int?
+    let cutoff: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title).font(.headline).padding(.horizontal)
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(items, id: \.0) { item in
+                    HStack {
+                        Circle().fill(Color.purple).frame(width: 6, height: 6)
+                        Text(item.0).font(.subheadline)
+                        Spacer()
+                        Text("max \(item.1)点").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("合計スコアを入力（0〜\(range.upperBound)）").font(.caption).foregroundColor(.secondary)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        let step = max(1, (range.upperBound) / 20)
+                        ForEach(Array(stride(from: range.lowerBound, through: range.upperBound, by: step)), id: \.self) { v in
+                            Button(action: { score = score == v ? nil : v }) {
+                                Text("\(v)").font(.caption.bold())
+                                    .padding(.horizontal, 8).padding(.vertical, 6)
+                                    .background(score == v ? Color.purple : Color(.systemGray5))
+                                    .foregroundColor(score == v ? .white : .primary)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+
+private struct BITJudgementRow: View {
+    let label: String
+    let score: Int
+    let cutoff: Int
+    var isAbnormal: Bool { score < cutoff }
+
+    var body: some View {
+        HStack {
+            Text("\(label): \(score)点").font(.subheadline)
+            Spacer()
+            Text(isAbnormal ? "カットオフ以下（USN疑い）" : "正常範囲")
+                .font(.subheadline.bold())
+                .foregroundColor(isAbnormal ? .red : .green)
+        }
+        .padding(10)
+        .background((isAbnormal ? Color.red : Color.green).opacity(0.07))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+// MARK: - TMT View
+
+struct TMTView: View {
+    @State private var elapsedA: Double = 0
+    @State private var elapsedB: Double = 0
+    @State private var isRunningA = false
+    @State private var isRunningB = false
+    @State private var timerA: Timer?
+    @State private var timerB: Timer?
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("実施方法", systemImage: "info.circle.fill")
+                        .font(.headline).foregroundColor(.purple)
+                    Text("紙面上の数字（Part A）または数字・文字（Part B）を順に線で結ぶ時間を計測。注意機能・処理速度・実行機能を評価します。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.purple.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                TMTPartCard(part: "A", description: "数字 1〜25 を順に線で結ぶ",
+                            elapsed: $elapsedA, isRunning: $isRunningA, timerRef: $timerA, color: .blue)
+                TMTPartCard(part: "B", description: "数字と文字を交互に結ぶ（1-あ-2-い-3-う…）",
+                            elapsed: $elapsedB, isRunning: $isRunningB, timerRef: $timerB, color: .purple)
+
+                if elapsedA > 0.5 && elapsedB > 0.5 {
+                    let ratio = elapsedB / elapsedA
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("B / A 比分析").font(.headline).padding(.horizontal)
+                        HStack {
+                            VStack(spacing: 4) {
+                                Text("B / A 比").font(.caption).foregroundColor(.secondary)
+                                Text(String(format: "%.2f", ratio))
+                                    .font(.title2.bold()).foregroundColor(ratio > 3.0 ? .red : .green)
+                            }
+                            .frame(maxWidth: .infinity)
+                            Divider().frame(height: 50)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(ratio > 3.0 ? "実行機能障害の疑い" : "B/A比 正常範囲")
+                                    .font(.subheadline.bold()).foregroundColor(ratio > 3.0 ? .red : .green)
+                                Text("B/A比 > 3.0 で実行機能障害を疑う")
+                                    .font(.caption).foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("参考値（健常者中央値）").font(.headline).padding(.horizontal)
+                    VStack(spacing: 6) {
+                        ForEach([("Part A", "20〜40代: 約28秒", "60〜79歳: 約50秒"),
+                                 ("Part B", "20〜40代: 約65秒", "60〜79歳: 約130秒")],
+                                id: \.0) { row in
+                            HStack(alignment: .top) {
+                                Text(row.0).font(.subheadline.bold()).frame(width: 70, alignment: .leading)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(row.1).font(.caption).foregroundColor(.secondary)
+                                    Text(row.2).font(.caption).foregroundColor(.secondary)
+                                }
+                                Spacer()
+                            }
+                            .padding(10)
+                            .background(Color(.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                    .padding(.horizontal)
+                    Text("脳卒中患者は年齢・教育歴を考慮した標準化スコアで解釈すること。")
+                        .font(.caption).foregroundColor(.secondary).padding(.horizontal)
+                }
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("TMT（Trail Making Test）")
+        .navigationBarTitleDisplayMode(.inline)
+        .onDisappear { timerA?.invalidate(); timerB?.invalidate() }
+    }
+}
+
+private struct TMTPartCard: View {
+    let part: String
+    let description: String
+    @Binding var elapsed: Double
+    @Binding var isRunning: Bool
+    @Binding var timerRef: Timer?
+    let color: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Part \(part)").font(.headline).foregroundColor(color)
+                Spacer()
+                if elapsed > 0 {
+                    Text(String(format: "%.1f 秒", elapsed)).font(.title3.bold()).foregroundColor(color)
+                }
+            }
+            Text(description).font(.subheadline).foregroundColor(.secondary)
+            Text(String(format: "%06.2f", elapsed))
+                .font(.system(size: 44, weight: .thin, design: .monospaced))
+                .foregroundColor(isRunning ? color : .primary)
+                .frame(maxWidth: .infinity, alignment: .center)
+            HStack(spacing: 12) {
+                Button(action: {
+                    if isRunning {
+                        timerRef?.invalidate(); timerRef = nil; isRunning = false
+                    } else {
+                        isRunning = true
+                        timerRef = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in elapsed += 0.01 }
+                    }
+                }) {
+                    Label(isRunning ? "ストップ" : "スタート", systemImage: isRunning ? "stop.fill" : "play.fill")
+                        .frame(maxWidth: .infinity).padding(.vertical, 10)
+                        .background(isRunning ? Color.red : color)
+                        .foregroundColor(.white).clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                Button(action: { timerRef?.invalidate(); timerRef = nil; isRunning = false; elapsed = 0 }) {
+                    Label("リセット", systemImage: "arrow.counterclockwise")
+                        .frame(maxWidth: .infinity).padding(.vertical, 10)
+                        .background(Color(.systemGray4)).foregroundColor(.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .shadow(color: .black.opacity(0.07), radius: 5, x: 0, y: 2)
+        .padding(.horizontal)
+    }
+}
+
+// MARK: - CAT Info View
+
+struct CATInfoView: View {
+    private let subtests: [(name: String, desc: String, fn: String)] = [
+        ("数唱（Span）", "数字の順唱・逆唱", "注意の容量・ワーキングメモリ"),
+        ("抹消・検出課題①（視覚）", "ランダム文字列から標的を抹消", "選択性注意（視覚）"),
+        ("抹消・検出課題②（聴覚）", "音声で呈示された数列から標的を検出", "選択性注意（聴覚）"),
+        ("SDMT（Symbol Digit Modalities Test）", "記号と数字の対応を速く書く", "処理速度・注意の持続"),
+        ("PASAT（聴覚連続加算課題）", "逐次呈示された数字の連続加算", "持続性注意・処理速度・WM"),
+        ("TMT-A（Trail Making Test A）", "数字を順に線で結ぶ", "処理速度・視覚探索"),
+        ("持続性注意課題", "持続的な標的検出課題", "注意の持続・警戒"),
+        ("分割性注意課題", "視覚・聴覚の二重課題", "分割性注意")
+    ]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("標準注意検査法（CAT）", systemImage: "lightbulb.fill")
+                        .font(.headline).foregroundColor(.purple)
+                    Text("CAT（Clinical Assessment for Attention）は日本で標準化された注意機能の包括的検査です。8つのサブテストで選択性・持続性・分割性・転換性注意を多面的に評価します。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.purple.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("検査構成（8サブテスト）").font(.headline).padding(.horizontal)
+                    ForEach(subtests, id: \.name) { t in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(t.name).font(.subheadline.bold())
+                            Text(t.desc).font(.caption).foregroundColor(.secondary)
+                            Text("評価機能: \(t.fn)").font(.caption).foregroundColor(.purple)
+                        }
+                        .padding(10)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .padding(.horizontal)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("実施上の注意", systemImage: "exclamationmark.triangle.fill")
+                        .font(.subheadline.bold()).foregroundColor(.orange)
+                    Text("CATの実施には公式の検査キット（新興医学出版社）が必要です。各サブテストは標準化された手順で実施し、年齢・教育歴による規準値と比較してください。SDMT・PASATは脳卒中後の認知機能評価に特に有用です。")
+                        .font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.orange.opacity(0.06))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 24)
+        }
+        .navigationTitle("CAT（標準注意検査法）")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Digital Cancellation View
+
+struct CancellationSymbol: Identifiable {
+    let id = UUID()
+    let character: String
+    let isTarget: Bool
+    let normalizedX: Double
+    let normalizedY: Double
+    var isTapped: Bool = false
+}
+
+struct DigitalCancellationView: View {
+    enum TestState { case ready, playing, finished }
+
+    @State private var testState: TestState = .ready
+    @State private var symbols: [CancellationSymbol] = []
+    @State private var timeRemaining: Int = 90
+    @State private var countdownTimer: Timer?
+
+    private let distractors = ["●", "▲", "■", "◆"]
+    private let totalSymbols = 63
+    private let targetCount = 18
+    private let columns = 9
+    private let rows = 7
+
+    var body: some View {
+        Group {
+            switch testState {
+            case .ready:    cancellationReadyView
+            case .playing:  cancellationPlayingView
+            case .finished: cancellationFinishedView
+            }
+        }
+        .navigationTitle("デジタル抹消テスト")
+        .navigationBarTitleDisplayMode(.inline)
+        .onDisappear { countdownTimer?.invalidate() }
+    }
+
+    private var cancellationReadyView: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                VStack(spacing: 12) {
+                    Image(systemName: "star.fill").font(.system(size: 60)).foregroundColor(.purple)
+                    Text("デジタル抹消テスト").font(.title2.bold())
+                    Text("画面上の ★ を全て探してタップしてください。\n制限時間は90秒です。")
+                        .font(.subheadline).foregroundColor(.secondary).multilineTextAlignment(.center)
+                }
+                .padding()
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("実施方法", systemImage: "info.circle.fill").font(.headline).foregroundColor(.purple)
+                    Text("• 画面に ★ と ●▲■◆ が表示されます\n• ★ をできるだけ速く全てタップしてください\n• 左側と右側それぞれの成績から半側空間無視をスクリーニングします")
+                        .font(.subheadline).foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color.purple.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                Button(action: startCancellationTest) {
+                    Label("テスト開始", systemImage: "play.fill")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 24)
+        }
+    }
+
+    private var cancellationPlayingView: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Label("残り \(timeRemaining)秒", systemImage: "clock")
+                    .font(.headline).foregroundColor(timeRemaining <= 15 ? .red : .primary)
+                Spacer()
+                let tapped = symbols.filter { $0.isTarget && $0.isTapped }.count
+                let total = symbols.filter { $0.isTarget }.count
+                Text("★ \(tapped) / \(total)").font(.headline).foregroundColor(.purple)
+            }
+            .padding()
+            .background(Color(.systemBackground))
+            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+
+            GeometryReader { geo in
+                ZStack {
+                    Color(.systemGray6)
+                    ForEach($symbols) { $sym in
+                        Button(action: {
+                            if sym.isTarget && !sym.isTapped { sym.isTapped = true }
+                        }) {
+                            Text(sym.isTapped ? "✓" : sym.character)
+                                .font(.system(size: 22, weight: sym.isTarget ? .bold : .regular))
+                                .foregroundColor(
+                                    sym.isTapped ? .green :
+                                    sym.isTarget ? .purple : .gray
+                                )
+                                .frame(width: 36, height: 36)
+                        }
+                        .disabled(!sym.isTarget || sym.isTapped)
+                        .position(x: sym.normalizedX * geo.size.width,
+                                  y: sym.normalizedY * geo.size.height)
+                    }
+                }
+            }
+        }
+    }
+
+    private var cancellationFinishedView: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                VStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 60)).foregroundColor(.green)
+                    Text("テスト終了").font(.title2.bold())
+                }
+                .padding()
+                CancellationResultCard(symbols: symbols)
+                Button(action: resetCancellationTest) {
+                    Label("もう一度", systemImage: "arrow.counterclockwise")
+                        .font(.headline).frame(maxWidth: .infinity).padding()
+                        .background(Color.purple).foregroundColor(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .padding(.horizontal)
+            }
+            .padding(.bottom, 24)
+        }
+    }
+
+    private func startCancellationTest() {
+        var result: [CancellationSymbol] = []
+        let colSpacing = 1.0 / Double(columns)
+        let rowSpacing = 1.0 / Double(rows)
+        var isTarget = Array(repeating: false, count: totalSymbols)
+        Array(0..<totalSymbols).shuffled().prefix(targetCount).forEach { isTarget[$0] = true }
+        for idx in 0..<totalSymbols {
+            let col = idx % columns
+            let row = idx / columns
+            let baseX = (Double(col) + 0.5) * colSpacing
+            let baseY = (Double(row) + 0.5) * rowSpacing
+            let jX = Double.random(in: -colSpacing * 0.22...colSpacing * 0.22)
+            let jY = Double.random(in: -rowSpacing * 0.22...rowSpacing * 0.22)
+            let ch = isTarget[idx] ? "★" : distractors[Int.random(in: 0..<distractors.count)]
+            result.append(CancellationSymbol(
+                character: ch, isTarget: isTarget[idx],
+                normalizedX: min(max(baseX + jX, 0.05), 0.95),
+                normalizedY: min(max(baseY + jY, 0.05), 0.95)
+            ))
+        }
+        symbols = result
+        timeRemaining = 90
+        testState = .playing
+        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            if timeRemaining > 0 {
+                timeRemaining -= 1
+            } else {
+                countdownTimer?.invalidate(); countdownTimer = nil
+                testState = .finished
+            }
+        }
+    }
+
+    private func resetCancellationTest() {
+        countdownTimer?.invalidate(); countdownTimer = nil
+        symbols = []; timeRemaining = 90; testState = .ready
+    }
+}
+
+private struct CancellationResultCard: View {
+    let symbols: [CancellationSymbol]
+
+    private var targets:       [CancellationSymbol] { symbols.filter { $0.isTarget } }
+    private var tapped:        [CancellationSymbol] { targets.filter { $0.isTapped } }
+    private var missed:        [CancellationSymbol] { targets.filter { !$0.isTapped } }
+    private var leftMissed:    Int { missed.filter { $0.normalizedX < 0.5 }.count }
+    private var rightMissed:   Int { missed.filter { $0.normalizedX >= 0.5 }.count }
+    private var leftHit:       Int { tapped.filter { $0.normalizedX < 0.5 }.count }
+    private var rightHit:      Int { tapped.filter { $0.normalizedX >= 0.5 }.count }
+    private var neglectSide: String? {
+        let diff = leftMissed - rightMissed
+        if diff >= 2 { return "左側" }
+        if -diff >= 2 { return "右側" }
+        return nil
+    }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 20) {
+                VStack(spacing: 4) {
+                    Text("発見").font(.caption).foregroundColor(.secondary)
+                    HStack(alignment: .lastTextBaseline, spacing: 2) {
+                        Text("\(tapped.count)").font(.system(size: 36, weight: .bold, design: .rounded)).foregroundColor(.green)
+                        Text("/ \(targets.count)個").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                VStack(spacing: 4) {
+                    Text("見落とし").font(.caption).foregroundColor(.secondary)
+                    HStack(alignment: .lastTextBaseline, spacing: 2) {
+                        Text("\(missed.count)").font(.system(size: 36, weight: .bold, design: .rounded))
+                            .foregroundColor(missed.isEmpty ? .green : .red)
+                        Text("個").font(.caption).foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            VStack(spacing: 8) {
+                Text("左右別 見落とし分析").font(.headline)
+                HStack(spacing: 12) {
+                    CancellationSideCard(side: "左側", hit: leftHit, missed: leftMissed,
+                                         isHighlighted: leftMissed > rightMissed + 1)
+                    CancellationSideCard(side: "右側", hit: rightHit, missed: rightMissed,
+                                         isHighlighted: rightMissed > leftMissed + 1)
+                }
+                if let side = neglectSide {
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.orange)
+                        Text("\(side)の見落としが多く、半側空間無視の可能性があります")
+                            .font(.subheadline).foregroundColor(.orange)
+                    }
+                    .padding()
+                    .background(Color.orange.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
+                        Text("左右の見落とし差は少なく、空間的な無視所見は認めません")
+                            .font(.subheadline).foregroundColor(.secondary)
+                    }
+                    .padding()
+                    .background(Color.green.opacity(0.06))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(.horizontal)
+    }
+}
+
+private struct CancellationSideCard: View {
+    let side: String
+    let hit: Int
+    let missed: Int
+    let isHighlighted: Bool
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text(side).font(.subheadline.bold()).foregroundColor(isHighlighted ? .red : .primary)
+            Text("発見: \(hit)個").font(.caption).foregroundColor(.green)
+            Text("見落とし: \(missed)個").font(.caption).foregroundColor(missed > 0 ? .red : .secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(10)
+        .background(isHighlighted ? Color.red.opacity(0.08) : Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 

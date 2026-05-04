@@ -11,7 +11,7 @@ struct HomeView: View {
                 }
                 .padding(.bottom, 24)
             }
-            .navigationTitle("脳卒中評価ガイド")
+            .navigationTitle("脳卒中標準評価ツール")
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -28,7 +28,7 @@ private struct HeaderBannerView: View {
                 endPoint: .bottomTrailing
             )
             VStack(alignment: .leading, spacing: 6) {
-                Text("脳卒中病態別 評価ツール集")
+                Text("脳卒中標準評価ツール")
                     .font(.title2.bold())
                     .foregroundColor(.white)
                 Text("理学療法士のための臨床支援ツール")
@@ -180,10 +180,12 @@ func colorFromName(_ name: String) -> Color {
     case "orange": return .orange
     case "pink":   return .pink
     case "green":  return .green
+    case "indigo": return .indigo
     case "blue":   return .blue
     case "teal":   return .teal
     case "purple": return .purple
     case "yellow": return .yellow
+    case "mint":   return .mint
     case "cyan":   return .cyan
     default:       return .blue
     }
