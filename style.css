@@ -106,6 +106,13 @@ main {
   margin-bottom: 12px;
 }
 
+#move-list-wrapper {
+  max-height: 320px;
+  overflow-y: auto;
+  /* サイドバー内だけスクロールし、ページ全体をスクロールさせない */
+  overscroll-behavior: contain;
+}
+
 #move-list {
   list-style: none;
   counter-reset: move-counter;

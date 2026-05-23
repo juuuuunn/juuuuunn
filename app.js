@@ -333,16 +333,22 @@
     state.moveIndex = Math.max(0, Math.min(total, state.moveIndex + delta));
     renderBoard();
     renderMoveList();
+    // クリック後のフォーカスを外しブラウザの自動スクロールを防止
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
   }
 
   // === ボタン ===
-  document.getElementById('btn-first').addEventListener('click', () => { state.moveIndex = 0; renderBoard(); renderMoveList(); });
+  document.getElementById('btn-first').addEventListener('click', e => {
+    state.moveIndex = 0; renderBoard(); renderMoveList();
+    e.currentTarget.blur();
+  });
   document.getElementById('btn-prev').addEventListener('click', () => navigate(-1));
   document.getElementById('btn-next').addEventListener('click', () => navigate(1));
-  document.getElementById('btn-last').addEventListener('click', () => {
+  document.getElementById('btn-last').addEventListener('click', e => {
     if (state.openingIndex < 0) return;
     state.moveIndex = OPENINGS[state.openingIndex].moves.length;
     renderBoard(); renderMoveList();
+    e.currentTarget.blur();
   });
 
   // === キーボード ===
