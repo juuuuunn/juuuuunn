@@ -240,6 +240,9 @@
       toRC = sqToRC(lastMove.to);
     }
 
+    // 星マーク位置（将棋盤の目印）
+    const STAR_CELLS = new Set(['2,2','2,6','4,4','6,2','6,6']);
+
     boardEl.innerHTML = '';
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
@@ -247,6 +250,11 @@
         cell.className = 'cell';
         if (fromRC && fromRC.row === row && fromRC.col === col) cell.classList.add('highlight-from');
         if (toRC && toRC.row === row && toRC.col === col) cell.classList.add('highlight-to');
+        if (STAR_CELLS.has(`${row},${col}`)) {
+          const star = document.createElement('div');
+          star.className = 'star-mark';
+          cell.appendChild(star);
+        }
 
         const piece = board[row][col];
         if (piece) {
@@ -293,7 +301,7 @@
     });
 
     const cur = listEl.querySelector('.current');
-    if (cur) cur.scrollIntoView({ block: 'nearest' });
+    if (cur) cur.scrollIntoView({ block: 'nearest', behavior: 'instant' });
   }
 
   function renderOpeningList() {
@@ -339,8 +347,14 @@
 
   // === キーボード ===
   document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault(); // ページスクロールを抑止
+      navigate(1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); // ページスクロールを抑止
+      navigate(-1);
+    }
   });
 
   // === 初期化 ===
