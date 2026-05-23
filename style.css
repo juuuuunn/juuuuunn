@@ -254,55 +254,27 @@ main {
   z-index: 0;
 }
 
-/* ===== Pieces ===== */
-.piece {
-  font-size: 1.05rem;
-  font-weight: 900;
-  line-height: 1;
-  text-align: center;
-  user-select: none;
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ===== Pieces (SVG) ===== */
+.piece-svg {
+  width: 48px;
+  height: 48px;
+  display: block;
+  flex-shrink: 0;
   position: relative;
   z-index: 1;
-  /* drop-shadow は clip-path の外形に追従する */
-  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.5));
-  transition: filter 0.15s, transform 0.15s;
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", "HGS明朝E", serif;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.50))
+          drop-shadow(0 1px 2px rgba(0,0,0,0.30));
+  transition: filter 0.15s, transform 0.12s;
+  user-select: none;
+  overflow: visible;
 }
 
-/* 先手（下側）: 暖色系グラデーション・上向き五角形 */
-.piece.sente {
-  color: #2a0a00;
-  background: linear-gradient(155deg, #ffe080 0%, #ffaa20 45%, #e07000 100%);
-  clip-path: polygon(50% 3%, 95% 30%, 84% 97%, 16% 97%, 5% 30%);
-}
-
-/* 後手（上側）: 寒色系グラデーション・180度反転 */
-.piece.gote {
-  color: #f0e8ff;
-  background: linear-gradient(155deg, #c090ff 0%, #8040e0 45%, #4010b0 100%);
-  clip-path: polygon(50% 3%, 95% 30%, 84% 97%, 16% 97%, 5% 30%);
-  transform: rotate(180deg);
-}
-
-/* 成り駒 */
-.piece.sente.promoted {
-  color: #cc0000;
-  text-shadow: 0 0 6px rgba(255,80,0,0.4);
-}
-
-.piece.gote.promoted {
-  color: #ff8080;
-  text-shadow: 0 0 6px rgba(255,80,80,0.4);
-}
-
-/* ホバー時の浮き上がり */
-.cell:hover .piece {
-  filter: drop-shadow(0 5px 7px rgba(0,0,0,0.6)) brightness(1.08);
+/* ホバー時に浮き上がる */
+.cell:hover .piece-svg {
+  filter: drop-shadow(0 6px 9px rgba(0,0,0,0.55))
+          drop-shadow(0 2px 3px rgba(0,0,0,0.30))
+          brightness(1.06);
+  transform: translateY(-1px);
 }
 
 /* ===== Rank labels ===== */
@@ -425,10 +397,9 @@ main {
 
   .cell { width: 38px; height: 38px; }
 
-  .piece {
-    font-size: 0.82rem;
-    width: 33px;
-    height: 33px;
+  .piece-svg {
+    width: 34px;
+    height: 34px;
   }
 
   .rank-labels {
