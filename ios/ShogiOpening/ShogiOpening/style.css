@@ -48,6 +48,14 @@ main {
   border: 1px solid rgba(200,150,60,0.4);
 }
 
+.sidebar-left {
+  position: sticky;
+  top: 10px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .sidebar-left h2,
 .sidebar-right h2 {
   font-size: 0.9rem;
