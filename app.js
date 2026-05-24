@@ -1938,11 +1938,7 @@
       grouped[cat].push({ o, i });
     });
 
-    // アクティブなオープニングのカテゴリは展開
-    if (state.openingIndex >= 0) {
-      const activeCat = OPENINGS[state.openingIndex].category || 'その他';
-      state.collapsedCats.delete(activeCat);
-    }
+    // ※ 自動展開しない — ユーザーが手動で開く
 
     let html = '';
     const allCats = [
@@ -1973,6 +1969,12 @@
           state.collapsedCats.add(cat);
         }
         renderOpeningList();
+        // 開いた直後、アクティブ項目またはヘッダーが見えるようスクロール
+        requestAnimationFrame(() => {
+          const active = ul.querySelector('li.active');
+          const header = ul.querySelector(`li.cat-header[data-cat="${cat}"]`);
+          (active || header)?.scrollIntoView({ block: 'nearest' });
+        });
       });
     });
 

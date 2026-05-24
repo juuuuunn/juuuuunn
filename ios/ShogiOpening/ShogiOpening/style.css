@@ -54,6 +54,8 @@ main {
   max-height: calc(100vh - 80px);
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* padding-bottom が overflow-y:auto で消えるのを補う */
+  padding-bottom: 20px;
 }
 
 .sidebar-left h2,
@@ -263,25 +265,25 @@ main {
   display: grid;
   grid-template-columns: repeat(9, 52px);
   grid-template-rows: repeat(9, 52px);
-  border: 3px solid #7a4010;
+  border: 3px solid #5a2c08;
   border-radius: 4px;
-  background: #c8963a;
+  background: #9e6820;
   box-shadow:
-    0 6px 30px rgba(0,0,0,0.6),
-    0 0 0 1px #e8b060,
-    inset 0 0 20px rgba(160,100,20,0.3);
+    0 6px 30px rgba(0,0,0,0.65),
+    0 0 0 1px #c88040,
+    inset 0 0 20px rgba(100,55,10,0.4);
 }
 
 /* ===== Cells ===== */
 .cell {
   width: 52px;
   height: 52px;
-  border: 1px solid rgba(100,55,10,0.5);
+  border: 1px solid rgba(80,40,5,0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, #d4a853 0%, #c8943a 100%);
+  background: linear-gradient(135deg, #b8782a 0%, #a86018 100%);
   transition: background 0.12s;
 }
 
@@ -325,20 +327,21 @@ main {
   z-index: 1;
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "HGS明朝E", "游明朝", serif;
   filter:
-    drop-shadow(0 0 1px rgba(80,40,0,1))
-    drop-shadow(0 3px 5px rgba(0,0,0,0.55));
+    drop-shadow(0 0 1.5px rgba(60,30,0,1))
+    drop-shadow(0 0 0.5px rgba(0,0,0,0.8))
+    drop-shadow(0 3px 6px rgba(0,0,0,0.6));
   transition: filter 0.15s;
 }
 
-/* 先手（下側） */
+/* 先手（下側）— 板より明るい象牙色〜淡黄色 */
 .piece.sente {
-  background: linear-gradient(175deg, #FFFEF0 0%, #F5D050 45%, #C8900A 100%);
+  background: linear-gradient(175deg, #FFFFFF 0%, #FFFADC 35%, #FFE880 70%, #EEC830 100%);
   color: #180400;
 }
 
-/* 後手（上側） — 180度回転で向きを区別 */
+/* 後手（上側）— 同上・180度回転で向きを区別 */
 .piece.gote {
-  background: linear-gradient(175deg, #FFFEF0 0%, #F5D050 45%, #C8900A 100%);
+  background: linear-gradient(175deg, #FFFFFF 0%, #FFFADC 35%, #FFE880 70%, #EEC830 100%);
   color: #180400;
   transform: rotate(180deg);
 }
