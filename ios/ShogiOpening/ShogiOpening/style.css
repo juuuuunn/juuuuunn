@@ -30,7 +30,7 @@ header h1 {
 
 main {
   display: grid;
-  grid-template-columns: 190px 1fr 220px;
+  grid-template-columns: 210px 1fr 220px;
   gap: 14px;
   padding: 14px;
   max-width: 1020px;
