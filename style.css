@@ -49,12 +49,6 @@ main {
 }
 
 .sidebar-left {
-  position: sticky;
-  top: 10px;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  /* padding-bottom が overflow-y:auto で消えるのを補う */
   padding-bottom: 20px;
 }
 
