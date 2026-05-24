@@ -61,42 +61,6 @@
     </aside>
   </main>
 
-  <!-- 駒SVG共通グラデーション・フィルター定義（非表示） -->
-  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-    <defs>
-      <!-- 先手駒ボディ: クリーム→琥珀 -->
-      <linearGradient id="grad-sente" x1="20%" y1="0%" x2="80%" y2="100%">
-        <stop offset="0%" stop-color="#FFFCE8"/>
-        <stop offset="60%" stop-color="#F8D860"/>
-        <stop offset="100%" stop-color="#E8A820"/>
-      </linearGradient>
-      <!-- 後手駒ボディ: ラベンダー→紫 -->
-      <linearGradient id="grad-gote" x1="20%" y1="0%" x2="80%" y2="100%">
-        <stop offset="0%" stop-color="#F4EEFF"/>
-        <stop offset="60%" stop-color="#A870E8"/>
-        <stop offset="100%" stop-color="#6830C0"/>
-      </linearGradient>
-      <!-- 光沢ハイライト -->
-      <linearGradient id="grad-gloss" x1="0%" y1="0%" x2="10%" y2="100%">
-        <stop offset="0%" stop-color="rgba(255,255,255,0.80)"/>
-        <stop offset="55%" stop-color="rgba(255,255,255,0.20)"/>
-        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-      </linearGradient>
-      <!-- 成り駒グロウフィルター -->
-      <filter id="filter-promoted" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="blur"/>
-        <feFlood flood-color="#FF2200" flood-opacity="0.55" result="col"/>
-        <feComposite in="col" in2="blur" operator="in" result="glow"/>
-        <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <!-- 移動先ハイライト（金色光） -->
-      <radialGradient id="grad-highlight" cx="50%" cy="50%" r="55%">
-        <stop offset="0%" stop-color="rgba(255,220,0,0.55)"/>
-        <stop offset="100%" stop-color="rgba(255,180,0,0)"/>
-      </radialGradient>
-    </defs>
-  </svg>
-
   <script src="app.js"></script>
 </body>
 </html>

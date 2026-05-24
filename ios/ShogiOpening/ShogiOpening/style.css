@@ -254,27 +254,56 @@ main {
   z-index: 0;
 }
 
-/* ===== Pieces (SVG) ===== */
-.piece-svg {
-  width: 48px;
-  height: 48px;
-  display: block;
-  flex-shrink: 0;
+/* ===== Pieces ===== */
+.piece {
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+  user-select: none;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.50))
-          drop-shadow(0 1px 2px rgba(0,0,0,0.30));
-  transition: filter 0.15s, transform 0.12s;
-  user-select: none;
-  overflow: visible;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", "HGS明朝E", "游明朝", serif;
+  /* drop-shadow が clip-path 輪郭をなぞって縁取り＋影になる */
+  filter:
+    drop-shadow(0 0 1.5px rgba(100,55,0,0.85))
+    drop-shadow(0 3px 5px rgba(0,0,0,0.50));
+  transition: filter 0.15s;
+  clip-path: polygon(50% 3%, 95% 30%, 84% 97%, 16% 97%, 5% 30%);
 }
 
-/* ホバー時に浮き上がる */
-.cell:hover .piece-svg {
-  filter: drop-shadow(0 6px 9px rgba(0,0,0,0.55))
-          drop-shadow(0 2px 3px rgba(0,0,0,0.30))
-          brightness(1.06);
-  transform: translateY(-1px);
+/* 先手（下側） — 温かみのある木目調 */
+.piece.sente {
+  background: linear-gradient(165deg, #FFFDE8 0%, #F8DA60 55%, #DCAB18 100%);
+  color: #1A0600;
+}
+
+/* 後手（上側） — 同じ木目を 180 度回転して向きで区別 */
+.piece.gote {
+  background: linear-gradient(165deg, #FFFDE8 0%, #F8DA60 55%, #DCAB18 100%);
+  color: #1A0600;
+  transform: rotate(180deg);
+}
+
+/* 成り駒 — 赤文字で一目でわかる */
+.piece.sente.promoted,
+.piece.gote.promoted {
+  color: #CC0000;
+  filter:
+    drop-shadow(0 0 1.5px rgba(100,55,0,0.85))
+    drop-shadow(0 3px 5px rgba(0,0,0,0.50))
+    drop-shadow(0 0 4px rgba(200,0,0,0.45));
+}
+
+.cell:hover .piece {
+  filter:
+    drop-shadow(0 0 1.5px rgba(100,55,0,0.85))
+    drop-shadow(0 5px 8px rgba(0,0,0,0.60))
+    brightness(1.06);
 }
 
 /* ===== Rank labels ===== */
@@ -397,7 +426,8 @@ main {
 
   .cell { width: 38px; height: 38px; }
 
-  .piece-svg {
+  .piece {
+    font-size: 0.88rem;
     width: 34px;
     height: 34px;
   }

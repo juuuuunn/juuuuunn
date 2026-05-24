@@ -9,45 +9,6 @@
     return p.promoted ? (PROMOTED_KANJI[p.type] || KANJI[p.type]) : KANJI[p.type];
   }
 
-  // === SVG駒生成 ===
-  // 丸みある五角形の駒イラストをSVGで描画する
-  // 先手: クリーム〜琥珀グラデーション、後手: ラベンダー〜紫（180度回転）
-  function makePieceSVG(piece) {
-    const label  = pieceLabel(piece);
-    const sente  = piece.player === 0;
-    const promo  = piece.promoted;
-
-    const fillId  = sente ? 'grad-sente' : 'grad-gote';
-    const border  = sente ? '#B08020' : '#4818A0';
-    const shadow  = sente ? 'rgba(120,70,0,0.35)' : 'rgba(50,10,120,0.35)';
-    const kanji   = promo  ? (sente ? '#CC0000' : '#FF5858')
-                           : (sente ? '#2A0A00'  : '#F0EAFF');
-
-    // 丸みある将棋駒シルエット（上向き五角形）
-    const body  = 'M50,6 C67,6 90,22 93,42 L82,99 C80,106 20,106 18,99 L7,42 C10,22 33,6 50,6 Z';
-    // 光沢ハイライト（上部の楕円）
-    const gloss = 'M50,13 C63,13 77,24 79,37 L74,64 C72,69 28,69 26,64 L21,37 C23,24 37,13 50,13 Z';
-
-    // 後手は180度回転（体も文字も上下反転 = 本物の将棋駒の向き）
-    const rot = sente ? '' : 'transform="rotate(180 50 56)"';
-
-    return `<svg viewBox="0 0 100 112" class="piece-svg" aria-label="${label}">
-      <g ${rot}>
-        <path d="${body}"
-              fill="url(#${fillId})"
-              stroke="${border}" stroke-width="2" stroke-linejoin="round"/>
-        <path d="${gloss}" fill="url(#grad-gloss)"/>
-      </g>
-      <text x="50" y="68"
-            text-anchor="middle" dominant-baseline="middle"
-            font-size="36" font-weight="900"
-            font-family="'Hiragino Mincho ProN','Yu Mincho','HGS明朝E',Georgia,serif"
-            fill="${kanji}"
-            ${promo ? 'filter="url(#filter-promoted)"' : ''}
-            ${rot}>${label}</text>
-    </svg>`;
-  }
-
   // === 座標変換 ===
   // USI "8h" → file=8, rank=h(8) → row=7, col=1
   function sqToRC(sq) {
@@ -297,9 +258,10 @@
 
         const piece = board[row][col];
         if (piece) {
-          const tmp = document.createElement('div');
-          tmp.innerHTML = makePieceSVG(piece);
-          cell.appendChild(tmp.firstElementChild);
+          const el = document.createElement('div');
+          el.className = `piece ${piece.player === 0 ? 'sente' : 'gote'}${piece.promoted ? ' promoted' : ''}`;
+          el.textContent = pieceLabel(piece);
+          cell.appendChild(el);
         }
         boardEl.appendChild(cell);
       }
@@ -338,8 +300,20 @@
       });
     });
 
+    // wrapper 内のみスクロール（ページ全体をスクロールさせない）
+    const wrapper = document.getElementById('move-list-wrapper');
     const cur = listEl.querySelector('.current');
-    if (cur) cur.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    if (cur && wrapper) {
+      const itemTop    = cur.offsetTop;
+      const itemBot    = itemTop + cur.offsetHeight;
+      const wrapTop    = wrapper.scrollTop;
+      const wrapBot    = wrapTop + wrapper.clientHeight;
+      if (itemTop < wrapTop) {
+        wrapper.scrollTop = itemTop - 4;
+      } else if (itemBot > wrapBot) {
+        wrapper.scrollTop = itemBot - wrapper.clientHeight + 4;
+      }
+    }
   }
 
   function renderOpeningList() {
