@@ -1791,11 +1791,26 @@
   ];
 
   // === アプリ状態 ===
+  const CATEGORY_ORDER_GLOBAL = [
+    '汎用戦法（居飛車・振り飛車共通）',
+    '相居飛車の戦法',
+    '対振り飛車の戦法',
+    '振り飛車の戦法',
+    'その他の戦法',
+    '矢倉系の囲い',
+    '左美濃系の囲い',
+    '居飛車その他の囲い',
+    '美濃系の囲い',
+    '穴熊系の囲い',
+    '振り飛車その他の囲い',
+  ];
+
   let state = {
     openingIndex: -1,
     moveIndex: 0,
     boards: [initialBoard()],
     hands: [{ 0: {}, 1: {} }],
+    collapsedCats: new Set(CATEGORY_ORDER_GLOBAL), // 初期は全て折りたたみ
   };
 
   // === 定跡の読み込み ===
@@ -1822,6 +1837,7 @@
     document.getElementById('opening-desc').textContent = OPENINGS[idx].description;
     renderMoveList();
     renderBoard();
+    renderOpeningList(); // アクティブ更新＋アコーディオン再描画
   }
 
   // === 盤面描画 ===
@@ -1915,48 +1931,53 @@
 
   function renderOpeningList() {
     const ul = document.getElementById('opening-list');
-    // カテゴリ順
-    const CATEGORY_ORDER = [
-      '汎用戦法（居飛車・振り飛車共通）',
-      '相居飛車の戦法',
-      '対振り飛車の戦法',
-      '振り飛車の戦法',
-      'その他の戦法',
-      '矢倉系の囲い',
-      '左美濃系の囲い',
-      '居飛車その他の囲い',
-      '美濃系の囲い',
-      '穴熊系の囲い',
-      '振り飛車その他の囲い',
-    ];
     const grouped = {};
     OPENINGS.forEach((o, i) => {
       const cat = o.category || 'その他';
       if (!grouped[cat]) grouped[cat] = [];
       grouped[cat].push({ o, i });
     });
+
+    // アクティブなオープニングのカテゴリは展開
+    if (state.openingIndex >= 0) {
+      const activeCat = OPENINGS[state.openingIndex].category || 'その他';
+      state.collapsedCats.delete(activeCat);
+    }
+
     let html = '';
-    CATEGORY_ORDER.forEach(cat => {
-      if (!grouped[cat]) return;
-      html += `<li class="cat-header" data-cat="${cat}">${cat}</li>`;
-      grouped[cat].forEach(({ o, i }) => {
-        html += `<li data-idx="${i}"${i === state.openingIndex ? ' class="active"' : ''}>${o.name}</li>`;
-      });
-    });
-    // カテゴリに含まれないものも表示
-    Object.keys(grouped).forEach(cat => {
-      if (!CATEGORY_ORDER.includes(cat)) {
-        html += `<li class="cat-header">${cat}</li>`;
+    const allCats = [
+      ...CATEGORY_ORDER_GLOBAL.filter(c => grouped[c]),
+      ...Object.keys(grouped).filter(c => !CATEGORY_ORDER_GLOBAL.includes(c)),
+    ];
+
+    allCats.forEach(cat => {
+      const isCollapsed = state.collapsedCats.has(cat);
+      const arrow = isCollapsed ? '▶' : '▼';
+      html += `<li class="cat-header${isCollapsed ? ' collapsed' : ''}" data-cat="${cat}"><span class="cat-arrow">${arrow}</span>${cat}</li>`;
+      if (!isCollapsed) {
         grouped[cat].forEach(({ o, i }) => {
           html += `<li data-idx="${i}"${i === state.openingIndex ? ' class="active"' : ''}>${o.name}</li>`;
         });
       }
     });
+
     ul.innerHTML = html;
+
+    // カテゴリヘッダーのクリック→折りたたみトグル
+    ul.querySelectorAll('li.cat-header').forEach(li => {
+      li.addEventListener('click', () => {
+        const cat = li.dataset.cat;
+        if (state.collapsedCats.has(cat)) {
+          state.collapsedCats.delete(cat);
+        } else {
+          state.collapsedCats.add(cat);
+        }
+        renderOpeningList();
+      });
+    });
+
     ul.querySelectorAll('li[data-idx]').forEach(li => {
       li.addEventListener('click', () => {
-        ul.querySelectorAll('li').forEach(x => x.classList.remove('active'));
-        li.classList.add('active');
         loadOpening(parseInt(li.dataset.idx));
       });
     });
@@ -2008,9 +2029,7 @@
   });
 
   // === 初期化 ===
-  renderOpeningList();
   renderBoard();
   renderControls();
-  loadOpening(0);
-  renderOpeningList(); // re-render to mark active
+  loadOpening(0); // loadOpening内でrenderOpeningListも呼ばれる
 })();
