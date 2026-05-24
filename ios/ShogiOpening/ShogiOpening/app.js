@@ -68,6 +68,7 @@
     {
       id: 'yagura',
       name: '矢倉囲い',
+      category: '居飛車の囲い',
       description: '居飛車の代表的な囲い。金銀3枚で堅く王を守る陣形。相矢倉・角換わり矢倉など変化が豊富で、プロでも長年愛用されてきた。',
       moves: [
         { from:'7g', to:'7f', label:'７六歩',   player:0 },
@@ -87,8 +88,51 @@
       ]
     },
     {
+      id: 'funagakoi',
+      name: '舟囲い',
+      category: '居飛車の囲い',
+      description: '居飛車で飛車先の歩を伸ばしながら金銀で玉を守る囲い。組むまでの手数が少なく攻守のバランスが良い。振り飛車への対抗策として頻繁に用いられる。',
+      moves: [
+        { from:'7g', to:'7f', label:'７六歩',          player:0 },
+        { from:'8c', to:'8d', label:'８四歩',          player:1 },
+        { from:'2g', to:'2f', label:'２六歩',          player:0 },
+        { from:'8d', to:'8e', label:'８五歩',          player:1 },
+        { from:'6i', to:'6h', label:'金６八',          player:0 },
+        { from:'3c', to:'3d', label:'３四歩',          player:1 },
+        { from:'7i', to:'7h', label:'銀７八',          player:0 },
+        { from:'7a', to:'6b', label:'銀６二',          player:1 },
+        { from:'5i', to:'6i', label:'玉６九',          player:0 },
+        { from:'5a', to:'4b', label:'玉４二',          player:1 },
+        { from:'4i', to:'5h', label:'金５八（舟囲い完成）', player:0 },
+        { from:'4b', to:'3b', label:'玉３二',          player:1 },
+      ]
+    },
+    {
+      id: 'gangi',
+      name: '雁木',
+      category: '居飛車の囲い',
+      description: '銀を6七・4七に配置する居飛車の囲い。金銀の連携が取れた守りで、相居飛車の将棋でよく現れる。持久戦・急戦両方に対応できる柔軟な陣形。',
+      moves: [
+        { from:'7g', to:'7f', label:'７六歩',          player:0 },
+        { from:'3c', to:'3d', label:'３四歩',          player:1 },
+        { from:'6g', to:'6f', label:'６六歩',          player:0 },
+        { from:'8c', to:'8d', label:'８四歩',          player:1 },
+        { from:'7i', to:'6h', label:'銀６八',          player:0 },
+        { from:'7a', to:'6b', label:'銀６二',          player:1 },
+        { from:'6h', to:'6g', label:'銀６七',          player:0 },
+        { from:'5a', to:'4b', label:'玉４二',          player:1 },
+        { from:'3i', to:'4h', label:'銀４八',          player:0 },
+        { from:'4b', to:'3b', label:'玉３二',          player:1 },
+        { from:'4h', to:'4g', label:'銀４七',          player:0 },
+        { from:'6b', to:'5c', label:'銀５三',          player:1 },
+        { from:'4i', to:'4h', label:'金４八（雁木完成）', player:0 },
+        { from:'4a', to:'4b', label:'金４二',          player:1 },
+      ]
+    },
+    {
       id: 'mino',
       name: '美濃囲い（四間飛車）',
+      category: '振り飛車の囲い',
       description: '振り飛車の定番囲い。少ない手数で玉を安全に移動できる。四間飛車（飛車を4筋に振る）との組み合わせが最も多い。',
       moves: [
         { from:'7g', to:'7f', label:'７六歩',            player:0 },
@@ -110,6 +154,7 @@
     {
       id: 'nakabisha',
       name: '中飛車',
+      category: '振り飛車の戦法',
       description: '飛車を中央（5筋）に構える振り飛車戦法。中央の制圧を狙い積極的に攻める。ゴキゲン中飛車が特に有名。',
       moves: [
         { from:'5g', to:'5f', label:'５六歩',            player:0 },
@@ -131,6 +176,7 @@
     {
       id: 'bogin',
       name: '棒銀',
+      category: '居飛車の戦法',
       description: '銀将を一直線に前進させ飛車と連動して相手の陣を崩す戦法。シンプルながら破壊力が高く、将棋入門者にも人気。',
       moves: [
         { from:'7g', to:'7f', label:'７六歩',            player:0 },
@@ -152,6 +198,7 @@
     {
       id: 'anaguma',
       name: '穴熊',
+      category: '居飛車の囲い',
       description: '玉を盤端に潜らせ金銀で固める超堅陣。守りは最強クラスだが組むまでに手数がかかる。現代将棋でも頻出の戦法。',
       moves: [
         { from:'7g', to:'7f', label:'７六歩',              player:0 },
@@ -171,8 +218,75 @@
       ]
     },
     {
+      id: 'sangen',
+      name: '三間飛車',
+      category: '振り飛車の戦法',
+      description: '飛車を3筋に振る振り飛車戦法。飛車が3筋から8筋への攻めに転じやすく、石田流など多くの有力な変化がある。美濃囲いと組み合わせるのが定番。',
+      moves: [
+        { from:'7g', to:'7f', label:'７六歩',              player:0 },
+        { from:'3c', to:'3d', label:'３四歩',              player:1 },
+        { from:'2h', to:'3h', label:'飛３八（三間飛車）',  player:0 },
+        { from:'8c', to:'8d', label:'８四歩',              player:1 },
+        { from:'8h', to:'7g', label:'角７七',              player:0 },
+        { from:'8d', to:'8e', label:'８五歩',              player:1 },
+        { from:'3g', to:'3f', label:'３六歩',              player:0 },
+        { from:'7a', to:'6b', label:'銀６二',              player:1 },
+        { from:'5i', to:'6h', label:'玉６八',              player:0 },
+        { from:'5a', to:'4b', label:'玉４二',              player:1 },
+        { from:'6h', to:'7h', label:'玉７八',              player:0 },
+        { from:'4b', to:'3b', label:'玉３二',              player:1 },
+        { from:'7h', to:'8h', label:'玉８八（美濃の形）',  player:0 },
+        { from:'6b', to:'7c', label:'銀７三',              player:1 },
+      ]
+    },
+    {
+      id: 'mukaibisha',
+      name: '向かい飛車',
+      category: '振り飛車の戦法',
+      description: '飛車を相手の飛車と向かい合う8筋に振る戦法。飛車交換を狙いながら積極的に攻める。相手の飛先を牽制する効果もある。',
+      moves: [
+        { from:'7g', to:'7f', label:'７六歩',              player:0 },
+        { from:'8c', to:'8d', label:'８四歩',              player:1 },
+        { from:'8h', to:'7g', label:'角７七',              player:0 },
+        { from:'8d', to:'8e', label:'８五歩',              player:1 },
+        { from:'2h', to:'8h', label:'飛８八（向かい飛車）', player:0 },
+        { from:'3c', to:'3d', label:'３四歩',              player:1 },
+        { from:'7i', to:'7h', label:'銀７八',              player:0 },
+        { from:'7a', to:'6b', label:'銀６二',              player:1 },
+        { from:'6i', to:'7i', label:'金７九',              player:0 },
+        { from:'5a', to:'4b', label:'玉４二',              player:1 },
+        { from:'5i', to:'6h', label:'玉６八',              player:0 },
+        { from:'4b', to:'3b', label:'玉３二',              player:1 },
+        { from:'4i', to:'5h', label:'金５八',              player:0 },
+        { from:'6b', to:'7c', label:'銀７三',              player:1 },
+      ]
+    },
+    {
+      id: 'migi-shiken',
+      name: '右四間飛車',
+      category: '居飛車の戦法',
+      description: '飛車を4筋に移動させ4筋から積極的に攻める居飛車の急戦戦法。4五歩・銀と連動した攻撃が強力。振り飛車への有力な対策の一つ。',
+      moves: [
+        { from:'7g', to:'7f', label:'７六歩',              player:0 },
+        { from:'3c', to:'3d', label:'３四歩',              player:1 },
+        { from:'2h', to:'4h', label:'飛４八（右四間飛車）', player:0 },
+        { from:'4c', to:'4d', label:'４四歩',              player:1 },
+        { from:'4g', to:'4f', label:'４六歩',              player:0 },
+        { from:'8c', to:'8d', label:'８四歩',              player:1 },
+        { from:'4f', to:'4e', label:'４五歩',              player:0 },
+        { from:'4d', to:'4e', label:'４五同歩（歩取り）',  player:1 },
+        { from:'4h', to:'4e', label:'４五飛（歩取り）',    player:0 },
+        { from:'7a', to:'6b', label:'銀６二',              player:1 },
+        { from:'3i', to:'4h', label:'銀４八',              player:0 },
+        { from:'5a', to:'4b', label:'玉４二',              player:1 },
+        { from:'4h', to:'4g', label:'銀４七（右四間の形）', player:0 },
+        { from:'4b', to:'3b', label:'玉３二',              player:1 },
+      ]
+    },
+    {
       id: 'kakugawari',
       name: '角換わり腰掛け銀',
+      category: '居飛車の戦法',
       description: '序盤に角を交換し合う現代将棋の主流戦法。持ち角を活かした終盤が魅力。腰掛け銀で中央から積極的に攻める。',
       moves: [
         { from:'7g', to:'7f', label:'７六歩',              player:0 },
@@ -318,10 +432,33 @@
 
   function renderOpeningList() {
     const ul = document.getElementById('opening-list');
-    ul.innerHTML = OPENINGS.map((o, i) =>
-      `<li data-idx="${i}"${i === state.openingIndex ? ' class="active"' : ''}>${o.name}</li>`
-    ).join('');
-    ul.querySelectorAll('li').forEach(li => {
+    // カテゴリ順
+    const CATEGORY_ORDER = ['居飛車の囲い', '振り飛車の囲い', '居飛車の戦法', '振り飛車の戦法'];
+    const grouped = {};
+    OPENINGS.forEach((o, i) => {
+      const cat = o.category || 'その他';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push({ o, i });
+    });
+    let html = '';
+    CATEGORY_ORDER.forEach(cat => {
+      if (!grouped[cat]) return;
+      html += `<li class="cat-header" data-cat="${cat}">${cat}</li>`;
+      grouped[cat].forEach(({ o, i }) => {
+        html += `<li data-idx="${i}"${i === state.openingIndex ? ' class="active"' : ''}>${o.name}</li>`;
+      });
+    });
+    // カテゴリに含まれないものも表示
+    Object.keys(grouped).forEach(cat => {
+      if (!CATEGORY_ORDER.includes(cat)) {
+        html += `<li class="cat-header">${cat}</li>`;
+        grouped[cat].forEach(({ o, i }) => {
+          html += `<li data-idx="${i}"${i === state.openingIndex ? ' class="active"' : ''}>${o.name}</li>`;
+        });
+      }
+    });
+    ul.innerHTML = html;
+    ul.querySelectorAll('li[data-idx]').forEach(li => {
       li.addEventListener('click', () => {
         ul.querySelectorAll('li').forEach(x => x.classList.remove('active'));
         li.classList.add('active');

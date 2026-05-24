@@ -63,6 +63,23 @@ main {
   list-style: none;
 }
 
+#opening-list li.cat-header {
+  padding: 6px 4px 3px;
+  font-size: 0.7rem;
+  color: #8b4800;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid rgba(200,140,40,0.35);
+  margin-top: 8px;
+  margin-bottom: 4px;
+  cursor: default;
+  pointer-events: none;
+}
+
+#opening-list li.cat-header:first-child {
+  margin-top: 0;
+}
+
 #opening-list li {
   padding: 8px 10px;
   border-radius: 8px;
