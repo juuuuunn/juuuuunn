@@ -1969,11 +1969,14 @@
           state.collapsedCats.add(cat);
         }
         renderOpeningList();
-        // 開いた直後、アクティブ項目またはヘッダーが見えるようスクロール
+        // ページスクロールを起こさず、サイドバー内だけスクロール
         requestAnimationFrame(() => {
-          const active = ul.querySelector('li.active');
+          const sidebar = document.querySelector('.sidebar-left');
           const header = ul.querySelector(`li.cat-header[data-cat="${cat}"]`);
-          (active || header)?.scrollIntoView({ block: 'nearest' });
+          if (sidebar && header) {
+            const relTop = header.offsetTop - sidebar.offsetTop;
+            sidebar.scrollTop = Math.max(0, relTop - 8);
+          }
         });
       });
     });
