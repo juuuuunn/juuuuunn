@@ -1919,5 +1919,139 @@ let allProverbs: [Proverb] = [
     Proverb(id: 469, text: "災害は忘れた頃にやってくる", reading: "さいがいはわすれたころにやってくる",
             meaning: "天災は警戒が薄れた頃に突然やってくるので、常に備えておくことが大切だということ。",
             example: "災害は忘れた頃にやってくる、平和な時期こそ防災の備えを見直そう。", category: .nature),
+
+    // MARK: - さ行追加 (ids 470-476)
+
+    Proverb(id: 470, text: "細工は流々仕上げを御覧じろ", reading: "さいくはりゅうりゅうしあげをごらんじろ",
+            meaning: "仕事の仕方はさまざまあるが、大事なのは結果だから、仕上がりを見てから評価せよということ。",
+            example: "細工は流々仕上げを御覧じろ、途中で口を出さず完成まで待ってもらった。", category: .action),
+
+    Proverb(id: 471, text: "歳月人を待たず", reading: "さいげつひとをまたず",
+            meaning: "月日が経つのは早く、人が準備できるのを待ってはくれないということ。",
+            example: "歳月人を待たず、気づけば定年まであと数年になっていた。", category: .nature),
+
+    Proverb(id: 472, text: "先んずれば人を制す", reading: "さきんずればひとをせいす",
+            meaning: "他より先に行動することで、相手より有利な立場に立てるということ。",
+            example: "先んずれば人を制すで、ライバルより早く特許を申請した。", category: .action),
+
+    Proverb(id: 473, text: "策士策に溺れる", reading: "さくしさくにおぼれる",
+            meaning: "策略を多く用いる者は、自分の策を弄しすぎて失敗するということ。",
+            example: "策士策に溺れるとはよく言ったもので、複雑な計略が裏目に出た。", category: .action),
+
+    Proverb(id: 474, text: "酒は百薬の長", reading: "さけはひゃくやくのちょう",
+            meaning: "適量の酒は、どんな薬よりも体に良いということ。",
+            example: "酒は百薬の長というが、飲みすぎは逆効果なので適量を心がけている。", category: .action),
+
+    Proverb(id: 475, text: "去る者は日々に疎し", reading: "さるものはひびにうとし",
+            meaning: "死者や遠方に去った者は、時間とともに忘れられ疎遠になっていくということ。",
+            example: "去る者は日々に疎し、転勤した同僚とも最近は連絡を取らなくなった。", category: .relationships),
+
+    Proverb(id: 476, text: "山椒は小粒でもぴりりと辛い", reading: "さんしょはこつぶでもぴりりとからい",
+            meaning: "体は小さくても、気性が強く侮れない人のたとえ。",
+            example: "山椒は小粒でもぴりりと辛い、小柄な彼女の発言はいつも核心をつく。", category: .wisdom),
+
+    // MARK: - し行追加 (ids 477-487)
+
+    Proverb(id: 477, text: "地獄で仏", reading: "じごくでほとけ",
+            meaning: "非常に苦しい状況の中で、思いがけず助けを得ることのたとえ。",
+            example: "地獄で仏とはこのことで、困り果てた時に旧友が救いの手を差し伸べてくれた。", category: .luck),
+
+    Proverb(id: 478, text: "地獄の沙汰も金次第", reading: "じごくのさたもかねしだい",
+            meaning: "この世はすべてお金の力次第で左右されるということ。",
+            example: "地獄の沙汰も金次第というが、弁護士費用が払えず不利な状況になった。", category: .action),
+
+    Proverb(id: 479, text: "事実は小説より奇なり", reading: "じじつはしょうせつよりきなり",
+            meaning: "現実に起こる出来事は、フィクションよりも奇妙で不思議なことがあるということ。",
+            example: "事実は小説より奇なり、あの偶然の出会いは誰も信じてくれない。", category: .wisdom),
+
+    Proverb(id: 480, text: "地震雷火事親父", reading: "じしんかみなりかじおやじ",
+            meaning: "この世で恐ろしいものを順に挙げた言葉。",
+            example: "地震雷火事親父というが、現代では親父の権威もずいぶん薄れた。", category: .nature),
+
+    Proverb(id: 481, text: "子孫に美田を残さず", reading: "しそんにびでんをのこさず",
+            meaning: "子孫に財産を残してやると、子どもが依存して自立心を失うから残さない方がよいということ。",
+            example: "子孫に美田を残さず、子どもには財産より知恵と精神を残したい。", category: .wisdom),
+
+    Proverb(id: 482, text: "弱肉強食", reading: "じゃくにくきょうしょく",
+            meaning: "弱いものが強いものの餌食になり、強者だけが栄えること。",
+            example: "ビジネスの世界は弱肉強食、実力なければ淘汰されるのは世の常だ。", category: .action),
+
+    Proverb(id: 483, text: "蛇の道は蛇", reading: "じゃのみちはへび",
+            meaning: "同類のことは同じ仲間がよく知っているということ。",
+            example: "蛇の道は蛇というように、業界のことは業界人に聞くのが一番だ。", category: .wisdom),
+
+    Proverb(id: 484, text: "十人十色", reading: "じゅうにんといろ",
+            meaning: "人はそれぞれ好みや考えが違い、みな同じではないということ。",
+            example: "十人十色、同じ映画を見ても感想はみんなバラバラだった。", category: .wisdom),
+
+    Proverb(id: 485, text: "柔よく剛を制す", reading: "じゅうよくごうをせいす",
+            meaning: "しなやかで柔軟なものは、かたくて強いものを制することができるということ。",
+            example: "柔よく剛を制す、相手の力を利用する柔道の技法はまさにこれだ。", category: .action),
+
+    Proverb(id: 486, text: "正直の頭に神宿る", reading: "しょうじきのこうべにかみやどる",
+            meaning: "正直に生きる人には、神様の加護があるということ。",
+            example: "正直の頭に神宿るというから、嘘をつかず誠実に行動してきた。", category: .action),
+
+    Proverb(id: 487, text: "小人閑居して不善をなす", reading: "しょうじんかんきょしてふぜんをなす",
+            meaning: "品性の低い者が暇になると、ろくでもないことをするということ。",
+            example: "小人閑居して不善をなすというから、いつでも何かに打ち込んでいるようにした。", category: .action),
+
+    Proverb(id: 488, text: "上手の手から水が漏る", reading: "じょうずのてからみずがもる",
+            meaning: "名人や達人でも時には失敗することがあるということ。",
+            example: "上手の手から水が漏る、ベテランの料理人でも時々失敗することがある。", category: .wisdom),
+
+    Proverb(id: 489, text: "少年よ大志を抱け", reading: "しょうねんよたいしをいだけ",
+            meaning: "若者は大きな志をもって生きるべきだということ。",
+            example: "少年よ大志を抱け、夢を持って努力することが若さの特権だ。", category: .effort),
+
+    Proverb(id: 490, text: "勝敗は時の運", reading: "しょうはいはときのうん",
+            meaning: "勝ち負けは実力だけでなく、その時の運に左右されることもあるということ。",
+            example: "勝敗は時の運とはいえ、実力を磨いておくことが大切だ。", category: .luck),
+
+    // MARK: - す行追加 (ids 491-494)
+
+    Proverb(id: 491, text: "好きこそものの上手なれ", reading: "すきこそもののじょうずなれ",
+            meaning: "好きなことこそが物事の上達の近道だということ。",
+            example: "好きこそものの上手なれ、絵が好きで描き続けていたら自然と上達した。", category: .effort),
+
+    Proverb(id: 492, text: "雀百まで踊り忘れず", reading: "すずめひゃくまでおどりわすれず",
+            meaning: "幼い頃に身についた習慣や癖は、年老いても変わらないということ。",
+            example: "雀百まで踊り忘れず、長年の悪習慣はなかなか直せない。", category: .action),
+
+    Proverb(id: 493, text: "すべての道はローマに通ず", reading: "すべてのみちはろーまにつうず",
+            meaning: "どんな方法や手段をとっても、目的は同じところに行き着くということ。",
+            example: "すべての道はローマに通ずというように、やり方は違っても目標は同じだ。", category: .wisdom),
+
+    Proverb(id: 494, text: "住めば都", reading: "すめばみやこ",
+            meaning: "どんな不便な場所でも、住み慣れれば居心地がよくなるということ。",
+            example: "住めば都というが、最初は不便だった田舎暮らしにもすっかり慣れた。", category: .action),
+
+    // MARK: - せ行追加 (ids 495-497)
+
+    Proverb(id: 495, text: "栴檀は双葉より芳し", reading: "せんだんはふたばよりかんばし",
+            meaning: "大成する人物は幼い頃から常人とは違う優れた片鱗を見せるということ。",
+            example: "栴檀は双葉より芳し、幼少期から才能を発揮していた。", category: .effort),
+
+    Proverb(id: 496, text: "前門の虎後門の狼", reading: "ぜんもんのとらこうもんのおおかみ",
+            meaning: "一つの災難を逃れても、すぐに別の災難に遭遇すること。",
+            example: "前門の虎後門の狼で、ひとつのトラブルが解決したら別の問題が起きた。", category: .action),
+
+    Proverb(id: 497, text: "背に腹はかえられぬ", reading: "せにはらはかえられぬ",
+            meaning: "大切なことのためには、他のことを犠牲にしなければならないということ。",
+            example: "背に腹はかえられぬ、生活のために苦手な仕事も引き受けた。", category: .action),
+
+    // MARK: - そ行追加 (ids 498-500)
+
+    Proverb(id: 498, text: "惣領の甚六", reading: "そうりょうのじんろく",
+            meaning: "長子はお人好しで愚鈍なところがあるということ。",
+            example: "惣領の甚六というが、長男の彼はたしかにおっとりとした性格だ。", category: .relationships),
+
+    Proverb(id: 499, text: "底もあれば蓋もある", reading: "そこもあればふたもある",
+            meaning: "いろいろと込み入った事情があり、物事が簡単にはゆかないということ。",
+            example: "底もあれば蓋もあるというように、あの問題には複雑な背景がある。", category: .wisdom),
+
+    Proverb(id: 500, text: "損して得取れ", reading: "そんしてとくとれ",
+            meaning: "目先の少しの損をしても、のちにより大きな利益を得るようにするということ。",
+            example: "損して得取れ、今回は赤字でも長期的な関係を築くことを優先した。", category: .action),
 ]
 // swiftlint:enable file_length line_length
