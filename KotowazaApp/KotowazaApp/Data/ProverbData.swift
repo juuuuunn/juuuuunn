@@ -1099,5 +1099,619 @@ let allProverbs: [Proverb] = [
             meaning: "悲しいことは誰かと共有すると楽になり、嬉しいことは誰かと共有するとさらに喜びが大きくなる。",
             example: "友達に打ち明けたら気持ちが楽になった。悲しみは分かち合えば半分になるとはこのことだ.",
             category: .emotion),
+
+    // MARK: - 努力・根気 追加分 (ids 271-295)
+
+    Proverb(id: 271, text: "商いは牛の涎", reading: "あきないはうしのよだれ",
+            meaning: "商売は牛のよだれのように、細く長く着実に続けることが大切だということ。",
+            example: "商いは牛の涎というように、派手に稼ごうとせず地道に顧客を増やしていった。", category: .effort),
+
+    Proverb(id: 272, text: "足を棒にする", reading: "あしをぼうにする",
+            meaning: "長時間歩き回って足が疲れ果てること。懸命に動き回ること。",
+            example: "就職活動で足を棒にして企業を回り、ようやく内定を得た。", category: .effort),
+
+    Proverb(id: 273, text: "骨を折る", reading: "ほねをおる",
+            meaning: "苦労して力を尽くすこと。手間のかかる作業に精を出すこと。",
+            example: "彼は後輩のために骨を折って、就職先を探してくれた。", category: .effort),
+
+    Proverb(id: 274, text: "朝起き三文の徳", reading: "あさおきさんもんのとく",
+            meaning: "早く起きて行動すれば、それだけ得るものが多いということ。",
+            example: "朝起き三文の徳で、早朝に勉強すると頭が冴えて捗る。", category: .effort),
+
+    Proverb(id: 275, text: "努力に勝る天才なし", reading: "どりょくにまさるてんさいなし",
+            meaning: "天才的な素質があっても、努力する者には敵わないということ。",
+            example: "努力に勝る天才なし、才能があっても練習を怠っては上達しない。", category: .effort),
+
+    Proverb(id: 276, text: "人事を尽くして天命を待つ", reading: "じんじをつくしててんめいをまつ",
+            meaning: "できる限りの努力をしたら、あとは結果を天に任せて静かに待つということ。",
+            example: "試験勉強を精一杯やった。人事を尽くして天命を待つ気持ちで結果を待った。", category: .effort),
+
+    Proverb(id: 277, text: "念には念を入れよ", reading: "ねんにはねんをいれよ",
+            meaning: "用心の上にもさらに用心を重ねよということ。",
+            example: "念には念を入れよ、提出前にもう一度確認してから送った。", category: .effort),
+
+    Proverb(id: 278, text: "身を粉にして働く", reading: "みをこにしてはたらく",
+            meaning: "身体をすり減らすほど一生懸命働くこと。",
+            example: "家族のために身を粉にして働いた父の姿が忘れられない。", category: .effort),
+
+    Proverb(id: 279, text: "歯を食いしばる", reading: "はをくいしばる",
+            meaning: "苦しさや痛みをこらえて、懸命に耐え抜くこと。",
+            example: "最後の一周は歯を食いしばって走り切った。", category: .effort),
+
+    Proverb(id: 280, text: "腕を磨く", reading: "うでをみがく",
+            meaning: "技術や実力を向上させるために鍛錬を積むこと。",
+            example: "独立に向けて腕を磨く毎日を送っている。", category: .effort),
+
+    Proverb(id: 281, text: "蛍の光窓の雪", reading: "ほたるのひかりまどのゆき",
+            meaning: "蛍の光や雪明かりで勉強するほど、苦労して学んだということ。刻苦勉学のたとえ。",
+            example: "蛍の光窓の雪の心意気で、どんな環境でも勉強を続けた。", category: .effort),
+
+    Proverb(id: 282, text: "男子三日会わざれば刮目して見よ", reading: "だんしみっかあわざればかつもくしてみよ",
+            meaning: "男子たるものは、三日も会わなければそれだけ成長しているから、改めて見直せということ。",
+            example: "男子三日会わざれば刮目して見よ、久しぶりに会った彼は別人のように成長していた。", category: .effort),
+
+    Proverb(id: 283, text: "下手の横好き", reading: "へたのよこずき",
+            meaning: "下手なくせに、その物事を非常に好んでいること。",
+            example: "下手の横好きで絵を描き続けているうちに、少しずつ上達してきた。", category: .effort),
+
+    Proverb(id: 284, text: "木を曲げるは若木のうち", reading: "きをまげるはわかきのうち",
+            meaning: "木を思うように形作るには若いうちしかないように、人も若いうちに教育・鍛錬すべきだということ。",
+            example: "木を曲げるは若木のうち、子どもには早い時期から礼儀を教えた。", category: .effort),
+
+    Proverb(id: 285, text: "寸暇を惜しむ", reading: "すんかをおしむ",
+            meaning: "わずかな空き時間も無駄にせず、有効に活用すること。",
+            example: "寸暇を惜しんで勉強した結果、資格試験に合格できた。", category: .effort),
+
+    Proverb(id: 286, text: "汗は嘘をつかない", reading: "あせはうそをつかない",
+            meaning: "誠実に努力した分だけ、必ず結果に表れるということ。",
+            example: "汗は嘘をつかない、毎日の練習がいつか実を結ぶと信じている。", category: .effort),
+
+    Proverb(id: 287, text: "志あるところに道あり", reading: "こころざしあるところにみちあり",
+            meaning: "強い意志と目標があれば、必ずそこへ向かう道は開けるということ。",
+            example: "志あるところに道あり、諦めずに挑戦し続けた結果、ついに道が開けた。", category: .effort),
+
+    Proverb(id: 288, text: "七回倒れても八回起き上がれ", reading: "ななかいたおれてもはちかいおきあがれ",
+            meaning: "何度失敗しても諦めずに立ち上がれという励ましの言葉。",
+            example: "七回倒れても八回起き上がれという言葉を胸に、再挑戦した。", category: .effort),
+
+    Proverb(id: 289, text: "水滴石を穿つ", reading: "すいてきいしをうがつ",
+            meaning: "小さな水滴でも落ち続ければ石に穴をあけるように、たゆまぬ努力は大きな成果を生む。",
+            example: "水滴石を穿つ、毎日の積み重ねが大きな変化を生み出した。", category: .effort),
+
+    Proverb(id: 290, text: "一日千秋", reading: "いちじつせんしゅう",
+            meaning: "待ち遠しくて、一日が千年のように長く感じられること。",
+            example: "旅行を楽しみにしすぎて、出発まで一日千秋の思いで過ごした。", category: .effort),
+
+    Proverb(id: 291, text: "臥薪嘗胆", reading: "がしんしょうたん",
+            meaning: "目的を達成するために、長い間苦労・苦難に耐えること。薪の上に寝て苦い胆を嘗めた故事から。",
+            example: "試験合格のために臥薪嘗胆の日々を送り、ついに夢を実現した。", category: .effort),
+
+    Proverb(id: 292, text: "粉骨砕身", reading: "ふんこつさいしん",
+            meaning: "骨身を惜しまず、力の限り努力すること。",
+            example: "プロジェクトを成功させるために粉骨砕身の思いで取り組んだ。", category: .effort),
+
+    Proverb(id: 293, text: "不撓不屈", reading: "ふとうふくつ",
+            meaning: "どんな困難にも屈せず、くじけないこと。",
+            example: "不撓不屈の精神で何度も挑戦し続け、ついに頂点に立った。", category: .effort),
+
+    Proverb(id: 294, text: "一意専心", reading: "いちいせんしん",
+            meaning: "一つのことに心を集中して、他のことは一切考えないこと。",
+            example: "一意専心で研究に打ち込んだ結果、大きな発見につながった。", category: .effort),
+
+    Proverb(id: 295, text: "勇往邁進", reading: "ゆうおうまいしん",
+            meaning: "目標に向かって勇ましく突き進むこと。",
+            example: "困難を乗り越えながら勇往邁進、ついに目標を達成した。", category: .effort),
+
+    // MARK: - 知恵・学び 追加分 (ids 296-320)
+
+    Proverb(id: 296, text: "一葉落ちて天下の秋を知る", reading: "いちようおちててんかのあきをしる",
+            meaning: "わずかな兆候から大きな変化や出来事を予知すること。",
+            example: "一葉落ちて天下の秋を知る、小さなデータの変化が市場の転換を示していた。", category: .wisdom),
+
+    Proverb(id: 297, text: "嘘から出た誠", reading: "うそからでたまこと",
+            meaning: "冗談や嘘のつもりで言ったことが、本当になってしまうこと。",
+            example: "冗談で「社長になる」と言っていたら、嘘から出た誠で本当に会社を立ち上げた。", category: .wisdom),
+
+    Proverb(id: 298, text: "紺屋の白袴", reading: "こうやのしろはかま",
+            meaning: "他人のことにばかり忙しくて、自分のことが後回しになっていること。",
+            example: "美容師なのに自分の髪はボサボサ。紺屋の白袴とはよく言ったものだ。", category: .wisdom),
+
+    Proverb(id: 299, text: "医者の不養生", reading: "いしゃのふようじょう",
+            meaning: "他人には正しいことを教えながら、自分ではそれを実行していないこと。",
+            example: "健康の大切さを説く医者が不摂生をしている。医者の不養生だ。", category: .wisdom),
+
+    Proverb(id: 300, text: "七度尋ねて人を疑え", reading: "ななたびたずねてひとをうたがえ",
+            meaning: "物を失ったときはまず自分でよく探してから、人を疑うべきだということ。",
+            example: "七度尋ねて人を疑えというから、人を疑う前に自分でもう一度探してみた。", category: .wisdom),
+
+    Proverb(id: 301, text: "百里を行く者は九十里を半ばとす", reading: "ひゃくりをゆくものはくじゅうりをなかばとす",
+            meaning: "最後の一踏ん張りが最も大切で、九割できても油断してはならないということ。",
+            example: "百里を行く者は九十里を半ばとす、ゴール直前こそ気を引き締めた。", category: .wisdom),
+
+    Proverb(id: 302, text: "下手の考え休むに似たり", reading: "へたのかんがえやすむににたり",
+            meaning: "実力のない者が長時間考えても成果は出ず、休んでいるのと同じだということ。",
+            example: "下手の考え休むに似たり、まず動いてみることで答えが見えてきた。", category: .wisdom),
+
+    Proverb(id: 303, text: "月夜に提灯", reading: "つきよにちょうちん",
+            meaning: "月の明るい夜に提灯をともすように、全く必要のない無駄なことをすること。",
+            example: "月夜に提灯、すでに解決済みの問題にまた説明を求められた。", category: .wisdom),
+
+    Proverb(id: 304, text: "過ちを改めるに憚ることなかれ", reading: "あやまちをあらためるにはばかることなかれ",
+            meaning: "間違いに気づいたら、恥ずかしがらず躊躇せずに改めるべきだということ。",
+            example: "過ちを改めるに憚ることなかれ、素直に謝って方向転換した。", category: .wisdom),
+
+    Proverb(id: 305, text: "人の噂も七十五日", reading: "ひとのうわさもしちじゅうごにち",
+            meaning: "どんな噂話も時間が経てば忘れられるということ。",
+            example: "人の噂も七十五日、今は辛くても噂はいずれ消える。", category: .wisdom),
+
+    Proverb(id: 306, text: "良薬は口に苦し", reading: "りょうやくはくちにくし",
+            meaning: "体に効く薬は苦いように、ためになる忠告は聞きづらいものだということ。",
+            example: "良薬は口に苦し、厳しい指摘ほど自分の成長につながることが多い。", category: .wisdom),
+
+    Proverb(id: 307, text: "苦言は耳に逆らう", reading: "くげんはみにさからう",
+            meaning: "正しい忠告や諫言は耳に痛く聞きにくいが、身のためになるものだということ。",
+            example: "苦言は耳に逆らうというが、先輩の厳しい言葉が後の自分を救った。", category: .wisdom),
+
+    Proverb(id: 308, text: "頭隠して尻隠さず", reading: "あたまかくしてしりかくさず",
+            meaning: "悪いことや失敗を隠そうとして、肝心なところが隠しきれていないこと。",
+            example: "言い訳を並べているが、頭隠して尻隠さず、ミスの原因はバレバレだ。", category: .wisdom),
+
+    Proverb(id: 309, text: "見ざる聞かざる言わざる", reading: "みざるきかざるいわざる",
+            meaning: "悪いことは見ず聞かず言わずに、関わらないのが賢明だということ。",
+            example: "職場の派閥争いには見ざる聞かざる言わざるで、仕事に集中した。", category: .wisdom),
+
+    Proverb(id: 310, text: "知らぬ仏より見知った鬼", reading: "しらぬほとけよりみしったおに",
+            meaning: "知らない善人よりも、よく知っている悪人の方が付き合いやすい場合があるということ。",
+            example: "知らぬ仏より見知った鬼、勝手がわかっている相手の方が交渉しやすい。", category: .wisdom),
+
+    Proverb(id: 311, text: "鴨の水掻き", reading: "かものみずかき",
+            meaning: "表面は穏やかに見えても、陰で懸命に努力していること。",
+            example: "彼は鴨の水掻きで、涼しい顔をして水面下では必死に準備していた。", category: .wisdom),
+
+    Proverb(id: 312, text: "臨機応変", reading: "りんきおうへん",
+            meaning: "その場の状況に応じて、適切な判断や対応をすること。",
+            example: "トラブル発生時には臨機応変に対処することが求められる。", category: .wisdom),
+
+    Proverb(id: 313, text: "温故知新", reading: "おんこちしん",
+            meaning: "古いことをきわめ、そこから新しい知識や道理を見つけ出すこと。",
+            example: "温故知新で古典を読み返すと、現代に通じる教えが発見できた。", category: .wisdom),
+
+    Proverb(id: 314, text: "博覧強記", reading: "はくらんきょうき",
+            meaning: "広く書物を読んで、多くのことを記憶していること。",
+            example: "博覧強記の教授の講義はいつも豊富な知識に満ちていた。", category: .wisdom),
+
+    Proverb(id: 315, text: "知行合一", reading: "ちこうごういつ",
+            meaning: "知識と行動は一体であり、真の知は行動を伴うものだということ。",
+            example: "知行合一の精神で、学んだことはすぐに実践するようにしている。", category: .wisdom),
+
+    // MARK: - 人間関係 追加分 (ids 316-345)
+
+    Proverb(id: 316, text: "旅は道連れ世は情け", reading: "たびはみちづれよはなさけ",
+            meaning: "旅には連れが必要なように、世の中では人情が大切だということ。",
+            example: "旅は道連れ世は情け、困ったときに助け合える仲間の大切さを実感した。", category: .relationships),
+
+    Proverb(id: 317, text: "渡る世間に鬼はない", reading: "わたるせけんにおにはない",
+            meaning: "世の中には冷たい人ばかりではなく、困ったときに助けてくれる人も必ずいるということ。",
+            example: "見知らぬ土地で困っていたら助けてもらえた。渡る世間に鬼はないとはこのことだ。", category: .relationships),
+
+    Proverb(id: 318, text: "長いものには巻かれろ", reading: "ながいものにはまかれろ",
+            meaning: "強い権力や勢力には、逆らわずに従っておいた方が得策だということ。",
+            example: "長いものには巻かれろで、今は上司の方針に合わせて動いている。", category: .relationships),
+
+    Proverb(id: 319, text: "三つ子の魂百まで", reading: "みつごのたましいひゃくまで",
+            meaning: "三歳のころに形成された性格や習慣は、一生変わらないということ。",
+            example: "三つ子の魂百まで、幼いころの経験が今の自分の根っこになっている。", category: .relationships),
+
+    Proverb(id: 320, text: "坊主憎けりゃ袈裟まで憎い", reading: "ぼうずにくけりゃけさまでにくい",
+            meaning: "ある人が嫌いになると、その人に関連するものすべてが嫌いになってしまうこと。",
+            example: "坊主憎けりゃ袈裟まで憎いで、あの人の言うことは何もかも腹が立つ。", category: .relationships),
+
+    Proverb(id: 321, text: "蓼食う虫も好き好き", reading: "たでくうむしもすきずき",
+            meaning: "人の好みはそれぞれで、どんなものにも好む人がいるということ。",
+            example: "蓼食う虫も好き好き、他人の趣味にとやかく言うものではない。", category: .relationships),
+
+    Proverb(id: 322, text: "負うた子に教えられる", reading: "おうたこにおしえられる",
+            meaning: "自分が世話をしている子どもや年下の者から教えられることがあること。",
+            example: "負うた子に教えられるとはこのこと、新人から目から鱗のアイデアをもらった。", category: .relationships),
+
+    Proverb(id: 323, text: "金の切れ目が縁の切れ目", reading: "かねのきれめがえんのきれめ",
+            meaning: "お金がなくなると、それまでの人間関係も切れてしまうということ。",
+            example: "金の切れ目が縁の切れ目というが、本当の友人はそうはならない。", category: .relationships),
+
+    Proverb(id: 324, text: "可愛い子には旅をさせよ", reading: "かわいいこにはたびをさせよ",
+            meaning: "子どもがかわいければ、甘やかさずにあえて苦労をさせたほうが成長するということ。",
+            example: "可愛い子には旅をさせよ、息子を一人で海外留学させることにした。", category: .relationships),
+
+    Proverb(id: 325, text: "恩は石に刻め恨みは水に流せ", reading: "おんはいしにきざめうらみはみずにながせ",
+            meaning: "受けた恩はいつまでも忘れずに、受けた仕打ちへの恨みは水に流して忘れよということ。",
+            example: "恩は石に刻め恨みは水に流せ、いつまでも根に持つことをやめた。", category: .relationships),
+
+    Proverb(id: 326, text: "合縁奇縁", reading: "あいえんきえん",
+            meaning: "人と人との不思議な縁のこと。なぜか引き合う不思議な巡り合わせ。",
+            example: "こんな遠い場所で旧友に会うとは、合縁奇縁としか言いようがない。", category: .relationships),
+
+    Proverb(id: 327, text: "相手のない喧嘩はできない", reading: "あいてのないけんかはできない",
+            meaning: "喧嘩は一人ではできないもので、相手があって初めて成り立つということ。",
+            example: "相手のない喧嘩はできないから、こちらが無視すれば争いにはならない。", category: .relationships),
+
+    Proverb(id: 328, text: "愛は屋上の烏に及ぶ", reading: "あいはおくじょうのからすにおよぶ",
+            meaning: "ある人を愛すると、その人に関係するものすべてに愛情が及ぶということ。",
+            example: "愛は屋上の烏に及ぶ、彼女を好きになってから彼女の好きな音楽も好きになった。", category: .relationships),
+
+    Proverb(id: 329, text: "親の背中を見て子は育つ", reading: "おやのせなかをみてこはそだつ",
+            meaning: "子どもは親の行動を見てまねをしながら育つものだということ。",
+            example: "親の背中を見て子は育つ、自分の姿が子どもの手本になると思うと身が引き締まる。", category: .relationships),
+
+    Proverb(id: 330, text: "人の一生は重荷を負いて遠き道を行くがごとし", reading: "ひとのいっしょうはおもにをおいてとおきみちをゆくがごとし",
+            meaning: "人生は重い荷を背負って長い道を歩み続けるようなもので、辛抱と忍耐が必要だということ。",
+            example: "人の一生は重荷を負いて遠き道を行くがごとし、焦らず一歩一歩歩んでいこう。", category: .relationships),
+
+    Proverb(id: 331, text: "水魚の交わり", reading: "すいぎょのまじわり",
+            meaning: "魚と水のように、切り離せないほど深い親密な関係のこと。",
+            example: "二人は水魚の交わりで、何十年経っても変わらぬ友情を保っている。", category: .relationships),
+
+    Proverb(id: 332, text: "以心伝心", reading: "いしんでんしん",
+            meaning: "言葉を使わなくても、心と心が通じ合うこと。",
+            example: "長年の相棒とは以心伝心で、言わなくても気持ちが伝わる。", category: .relationships),
+
+    Proverb(id: 333, text: "一期一会", reading: "いちごいちえ",
+            meaning: "一生に一度きりの出会いだという気持ちを大切に、誠実に接すること。",
+            example: "一期一会の精神で、初めて会う人にも全力で向き合うようにしている。", category: .relationships),
+
+    Proverb(id: 334, text: "孟母三遷", reading: "もうぼさんせん",
+            meaning: "子の教育のためには環境選びが重要だということ。孟子の母が三度引っ越した故事から。",
+            example: "孟母三遷のように、子どもの教育環境を整えることに力を入れた。", category: .relationships),
+
+    Proverb(id: 335, text: "縁の下の力持ち", reading: "えんのしたのちからもち",
+            meaning: "表には出ないが、陰で支えている存在のこと。縁の下＝床下で支える柱のたとえ。",
+            example: "プロジェクトを陰で支えるスタッフは縁の下の力持ちとして欠かせない。", category: .relationships),
+
+    // MARK: - 自然・時間 追加分 (ids 336-360)
+
+    Proverb(id: 336, text: "女心と秋の空", reading: "おんなごころとあきのそら",
+            meaning: "女性の気持ちは秋の空のようにめまぐるしく変わるということ。",
+            example: "女心と秋の空、昨日と今日で気持ちが変わっていた。", category: .nature),
+
+    Proverb(id: 337, text: "水清ければ魚棲まず", reading: "みずきよければさかなすまず",
+            meaning: "清廉すぎる人には誰も近づきにくく、人が集まらないということ。",
+            example: "水清ければ魚棲まずというから、少し大目に見る寛容さも必要だ。", category: .nature),
+
+    Proverb(id: 338, text: "日暮れて道遠し", reading: "ひぐれてみちとおし",
+            meaning: "年を取ってしまったのに、まだやるべきことが多く残っていること。時間のなさを嘆く言葉。",
+            example: "日暮れて道遠しと感じるが、まだやりたいことが山積みだ。", category: .nature),
+
+    Proverb(id: 339, text: "月に叢雲花に風", reading: "つきにむらくもはなにかぜ",
+            meaning: "月は雲に隠れ、花は風に散らされる。よいことには邪魔が入りやすいということ。",
+            example: "月に叢雲花に風というように、うまくいきそうなときほどトラブルが起きる。", category: .nature),
+
+    Proverb(id: 340, text: "冬来たりなば春遠からじ", reading: "ふゆきたりなばはるとおからじ",
+            meaning: "冬が来たなら春はもうすぐそこまで来ている。辛い時期も必ず終わるという励ましの言葉。",
+            example: "冬来たりなば春遠からじ、今の苦しい状況も必ず好転する日が来る。", category: .nature),
+
+    Proverb(id: 341, text: "秋茄子は嫁に食わすな", reading: "あきなすびはよめにくわすな",
+            meaning: "秋の茄子は美味しいので嫁には食べさせるなという、嫁いびりのたとえ。または体を冷やすから食べさせるなという説も。",
+            example: "秋茄子は嫁に食わすなという言葉があるが、今時そんな考えは通用しない。", category: .nature),
+
+    Proverb(id: 342, text: "朝の来ない夜はない", reading: "あさのこないよるはない",
+            meaning: "どんなに暗い夜でも必ず夜明けは来る。苦しい状況も必ず終わるという希望の言葉。",
+            example: "朝の来ない夜はない、今の苦境も必ずいつか明けると信じて乗り越えた。", category: .nature),
+
+    Proverb(id: 343, text: "秋の夕焼け鎌を研げ", reading: "あきのゆうやけかまをとげ",
+            meaning: "秋の夕焼けは翌日が晴れる前兆なので、農作業の準備をせよということ。",
+            example: "秋の夕焼け鎌を研げというから、明日の好天に備えて準備した。", category: .nature),
+
+    Proverb(id: 344, text: "青菜に塩", reading: "あおなにしお",
+            meaning: "元気のなかった人が急にしょんぼりとなること。青菜に塩をかけるとしなびることから。",
+            example: "叱られた後の彼は青菜に塩のようにうなだれていた。", category: .nature),
+
+    Proverb(id: 345, text: "藍は藍より出でて藍より青し", reading: "あいはあいよりいでてあいよりあおし",
+            meaning: "弟子が師匠の実力を超えること。青は藍から生まれ藍より青いことから。",
+            example: "藍は藍より出でて藍より青し、弟子がついに師匠を超える演奏をした。", category: .nature),
+
+    Proverb(id: 346, text: "枯れ木も山の賑わい", reading: "かれきもやまのにぎわい",
+            meaning: "つまらないものでも、ないよりはあった方がましだということ。",
+            example: "枯れ木も山の賑わいと参加したが、意外と場が盛り上がった。", category: .nature),
+
+    Proverb(id: 347, text: "春の夜の夢のごとし", reading: "はるのよのゆめのごとし",
+            meaning: "春の夜の夢のように、栄華は儚く短いものだということ。",
+            example: "春の夜の夢のごとし、あの繁栄がこんなに早く終わるとは思わなかった。", category: .nature),
+
+    Proverb(id: 348, text: "濡れ落ち葉", reading: "ぬれおちば",
+            meaning: "退職した夫が妻にべったりくっついて離れない状態のたとえ。",
+            example: "定年退職した父が濡れ落ち葉のように母にまとわりついている。", category: .nature),
+
+    Proverb(id: 349, text: "花の命は短くて苦しきことのみ多かりき", reading: "はなのいのちはみじかくてくるしきことのみおおかりき",
+            meaning: "花の命が短いように、人生の美しい時期は短く、苦しいことが多いということ。",
+            example: "花の命は短くて苦しきことのみ多かりきと、詩人は人生の儚さを詠んだ。", category: .nature),
+
+    Proverb(id: 350, text: "七転び八起き", reading: "ななころびやおき",
+            meaning: "何度失敗してもくじけずに立ち上がること。七回倒れても八回起き上がること。",
+            example: "七転び八起きの精神で、失敗を繰り返しながらも前進し続けた。", category: .nature),
+
+    Proverb(id: 351, text: "日進月歩", reading: "にっしんげっぽ",
+            meaning: "日に日に絶えず進歩すること。めざましい速度で発展すること。",
+            example: "テクノロジーは日進月歩で、常に学び続けなければならない。", category: .nature),
+
+    Proverb(id: 352, text: "花鳥風月", reading: "かちょうふうげつ",
+            meaning: "自然の美しい景物。また、それを鑑賞する風流なこと。",
+            example: "花鳥風月を楽しむ日本の文化は、心を豊かにしてくれる。", category: .nature),
+
+    Proverb(id: 353, text: "山紫水明", reading: "さんしすいめい",
+            meaning: "山は紫にかすみ、川は清く澄み渡る美しい景色のこと。",
+            example: "この地方は山紫水明の地として、多くの観光客が訪れる。", category: .nature),
+
+    Proverb(id: 354, text: "諸行無常", reading: "しょぎょうむじょう",
+            meaning: "この世のすべての物事は常に変化し、同じ状態に留まることはないということ。",
+            example: "諸行無常の理を知れば、変化を恐れず受け入れることができる。", category: .nature),
+
+    Proverb(id: 355, text: "盛者必衰", reading: "じょうしゃひっすい",
+            meaning: "栄えているものは必ず衰える時が来るということ。",
+            example: "盛者必衰の理は歴史が証明している。かつての大企業も消えていった。", category: .nature),
+
+    // MARK: - 行動・判断 追加分 (ids 356-390)
+
+    Proverb(id: 356, text: "立つ鳥跡を濁さず", reading: "たつとりあとをにごさず",
+            meaning: "立ち去るときは、あとが見苦しくないようにきちんとしておくべきだということ。",
+            example: "立つ鳥跡を濁さず、退職前にしっかりと引き継ぎを済ませた。", category: .action),
+
+    Proverb(id: 357, text: "骨折り損のくたびれ儲け", reading: "ほねおりぞんのくたびれもうけ",
+            meaning: "苦労ばかりして、それに見合った成果が得られないこと。",
+            example: "骨折り損のくたびれ儲けとならないよう、効率的に取り組む方法を考えた。", category: .action),
+
+    Proverb(id: 358, text: "暖簾に腕押し", reading: "のれんにうでおし",
+            meaning: "手ごたえがなく、いくら働きかけても効果がないこと。",
+            example: "彼に何を言っても暖簾に腕押しで、全くこたえる様子がない。", category: .action),
+
+    Proverb(id: 359, text: "糠に釘", reading: "ぬかにくぎ",
+            meaning: "やわらかい糠に釘を打つように、手ごたえがなく効き目がないこと。",
+            example: "いくら注意しても糠に釘で、全く改善されない。", category: .action),
+
+    Proverb(id: 360, text: "蛙の面に水", reading: "かえるのつらにみず",
+            meaning: "蛙の顔に水をかけても平気なように、何をされても少しも堪えないこと。",
+            example: "蛙の面に水で、批判されても全く気にしない様子だった。", category: .action),
+
+    Proverb(id: 361, text: "猫に小判", reading: "ねこにこばん",
+            meaning: "価値のわからない者に、貴重なものを与えても意味がないこと。",
+            example: "猫に小判というか、高性能な機材を持て余している。", category: .action),
+
+    Proverb(id: 362, text: "豚に真珠", reading: "ぶたにしんじゅ",
+            meaning: "価値のわからない者に高価なものを与えても意味がないこと。",
+            example: "豚に真珠、せっかくの良い意見も聞く耳を持たない人には伝わらない。", category: .action),
+
+    Proverb(id: 363, text: "三度目の正直", reading: "さんどめのしょうじく",
+            meaning: "一度二度は当てにならなくても、三度目は確かだということ。",
+            example: "三度目の正直、二度失敗した試験に今回こそ合格した。", category: .action),
+
+    Proverb(id: 364, text: "二度あることは三度ある", reading: "にどあることはさんどある",
+            meaning: "同じことが二度起きたら、もう一度起きる可能性が高いということ。",
+            example: "二度あることは三度ある、同じミスを繰り返さないよう仕組みを変えた。", category: .action),
+
+    Proverb(id: 365, text: "言わぬが花", reading: "いわぬがはな",
+            meaning: "何でも言葉に出して言うより、言わないでいた方が美しい場合があること。",
+            example: "言わぬが花というから、本当のことを言わずに黙っていた。", category: .action),
+
+    Proverb(id: 366, text: "朝飯前", reading: "あさめしまえ",
+            meaning: "朝ご飯を食べる前でもできるほど、非常に簡単なこと。",
+            example: "この計算なら朝飯前、すぐに答えが出せる。", category: .action),
+
+    Proverb(id: 367, text: "今日の一針明日の十針", reading: "きょうのひとはりあすのとうはり",
+            meaning: "今日すべき縫い仕事を怠ると、明日は十倍も縫わなければならない。後回しにすることの戒め。",
+            example: "今日の一針明日の十針、先延ばしにせずすぐに対処することにした。", category: .action),
+
+    Proverb(id: 368, text: "鶏口となるも牛後となるなかれ", reading: "けいこうとなるもぎゅうごとなるなかれ",
+            meaning: "大きな集団の末端にいるより、小さくても集団のリーダーになれということ。",
+            example: "鶏口となるも牛後となるなかれ、大企業を辞めて小さな会社の社長になった。", category: .action),
+
+    Proverb(id: 369, text: "壁に耳あり障子に目あり", reading: "かべにみみありしょうじにめあり",
+            meaning: "どこで誰に聞かれているかわからないから、発言には常に注意せよということ。",
+            example: "壁に耳あり障子に目あり、社外の場では機密情報の話はしないよう気をつけた。", category: .action),
+
+    Proverb(id: 370, text: "悪事千里を走る", reading: "あくじせんりをはしる",
+            meaning: "悪い評判や不祥事は遠くまであっという間に広まるということ。",
+            example: "悪事千里を走るというから、不祥事はすぐに世間に知れ渡ってしまった。", category: .action),
+
+    Proverb(id: 371, text: "帯に短し襷に長し", reading: "おびにみじかしたすきにながし",
+            meaning: "帯にするには短く、たすきにするには長い。どちらの用途にも中途半端なこと。",
+            example: "帯に短し襷に長し、この案はどの目的にもぴったりはまらない。", category: .action),
+
+    Proverb(id: 372, text: "虻蜂捕らず", reading: "あぶはちとらず",
+            meaning: "欲張って二つのものを一度に取ろうとして、どちらも得られないこと。",
+            example: "虻蜂捕らずにならないよう、まず一つに集中することにした。", category: .action),
+
+    Proverb(id: 373, text: "旅の恥はかき捨て", reading: "たびのはじはかきすて",
+            meaning: "旅先では知り合いに会うこともなく、恥ずかしいことも自由にできるということ。",
+            example: "旅の恥はかき捨てと、普段は頼めない料理にも挑戦した。", category: .action),
+
+    Proverb(id: 374, text: "覆水盆に返らず", reading: "ふくすいぼんにかえらず",
+            meaning: "一度こぼれた水は盆に戻せないように、取り返しのつかないことのたとえ。",
+            example: "覆水盆に返らず、言ってしまった一言は取り消せないと気づいた。", category: .action),
+
+    Proverb(id: 375, text: "石の上にも三年", reading: "いしのうえにもさんねん",
+            meaning: "冷たい石の上でも三年座れば暖まるように、辛くても辛抱して続けることが大切だということ。",
+            example: "石の上にも三年というから、もう少し続けてみようと決めた。", category: .action),
+
+    Proverb(id: 376, text: "急がば回れ", reading: "いそがばまわれ",
+            meaning: "急いでいるときほど、危険な近道より安全な遠回りを選ぶほうが結局早いということ。",
+            example: "急がば回れ、慌てて進んで失敗するより確実な方法を選んだ。", category: .action),
+
+    Proverb(id: 377, text: "本末転倒", reading: "ほんまつてんとう",
+            meaning: "大切なことと、そうでないことの順序が逆になってしまうこと。",
+            example: "節約のために時間を浪費するのは本末転倒だ。", category: .action),
+
+    Proverb(id: 378, text: "一刀両断", reading: "いっとうりょうだん",
+            meaning: "物事をためらわずに、思い切りよく決断・処理すること。",
+            example: "長引く議論を一刀両断、リーダーが判断を下した。", category: .action),
+
+    Proverb(id: 379, text: "朝令暮改", reading: "ちょうれいぼかい",
+            meaning: "朝出した命令を夕方には改めるほど、方針や指示がころころ変わること。",
+            example: "朝令暮改では部下が困る。一度決めたことは貫くべきだ。", category: .action),
+
+    Proverb(id: 380, text: "百発百中", reading: "ひゃっぱつひゃくちゅう",
+            meaning: "矢・弾が必ず的に当たること。転じて、計画や予測が全て当たること。",
+            example: "彼の売上予測は百発百中で、チームから絶大な信頼を得ている。", category: .action),
+
+    Proverb(id: 381, text: "一石二鳥", reading: "いっせきにちょう",
+            meaning: "一つの行動で二つの利益を得ること。",
+            example: "通勤中に読書するのは一石二鳥だ。", category: .action),
+
+    Proverb(id: 382, text: "馬耳東風", reading: "ばじとうふう",
+            meaning: "人の意見や批評を全く気にしないで聞き流すこと。",
+            example: "何を注意してもあの人は馬耳東風で、全く聞く耳を持たない。", category: .action),
+
+    Proverb(id: 383, text: "用意周到", reading: "よういしゅうとう",
+            meaning: "準備が行き届いていて抜かりがないこと。",
+            example: "彼女は用意周到な性格で、全てのシナリオを事前に想定していた。", category: .action),
+
+    // MARK: - 運・運命 追加分 (ids 384-402)
+
+    Proverb(id: 384, text: "身から出た錆", reading: "みからでたさび",
+            meaning: "自分の行いのせいで、自分が苦しむ結果になること。自業自得のたとえ。",
+            example: "身から出た錆というしかない、自分の怠慢が招いた結果だ。", category: .luck),
+
+    Proverb(id: 385, text: "焼け木杭に火がつく", reading: "やけぼっくいにひがつく",
+            meaning: "一度関係があった者同士は、再び縁が戻りやすいということ。",
+            example: "焼け木杭に火がつくで、別れた二人がよりを戻した。", category: .luck),
+
+    Proverb(id: 386, text: "鳶が鷹を生む", reading: "とびがたかをうむ",
+            meaning: "平凡な親から優れた子が生まれること。",
+            example: "鳶が鷹を生むというか、普通の家庭から世界的な音楽家が誕生した。", category: .luck),
+
+    Proverb(id: 387, text: "好事魔多し", reading: "こうじまおおし",
+            meaning: "良いことがあるときには、邪魔が入ったり障害が起きやすいということ。",
+            example: "好事魔多し、順調に進んでいた計画に突然トラブルが発生した。", category: .luck),
+
+    Proverb(id: 388, text: "鴨が葱を背負ってくる", reading: "かもがねぎをしょってくる",
+            meaning: "都合よく獲物が自分から来ること。うまい話が向こうからやってくること。",
+            example: "鴨が葱を背負ってくるとはこのこと、ちょうど欲しい人材が向こうから来てくれた。", category: .luck),
+
+    Proverb(id: 389, text: "濡れ手で粟", reading: "ぬれてであわ",
+            meaning: "濡れた手で粟をつかむと粟がくっついてくるように、苦労せずに利益を得ること。",
+            example: "濡れ手で粟のような儲け話には裏があると疑うべきだ。", category: .luck),
+
+    Proverb(id: 390, text: "飛んで火にいる夏の虫", reading: "とんでひにいるなつのむし",
+            meaning: "自ら危険に飛び込んでいくことのたとえ。",
+            example: "飛んで火にいる夏の虫のように、危険な状況へ自ら突き進んでいった。", category: .luck),
+
+    Proverb(id: 391, text: "運がよければ牛の糞も味噌になる", reading: "うんがよければうしのふんもみそになる",
+            meaning: "運が良ければ、どんなものでも価値あるものになるということ。",
+            example: "運がよければ牛の糞も味噌になるというが、運を引き寄せる努力も大切だ。", category: .luck),
+
+    Proverb(id: 392, text: "江戸の敵を長崎で討つ", reading: "えどのかたきをながさきでうつ",
+            meaning: "全く別の場所や時期に、以前の仕返しをすること。",
+            example: "江戸の敵を長崎で討つというが、意外なところで恨みを晴らされた。", category: .luck),
+
+    Proverb(id: 393, text: "海老で鯛を釣る", reading: "えびでたいをつる",
+            meaning: "小さな投資や労力で大きな利益・成果を得ること。",
+            example: "海老で鯛を釣るとはこのこと、小さなプレゼントが大きな契約につながった。", category: .luck),
+
+    Proverb(id: 394, text: "因果応報", reading: "いんがおうほう",
+            meaning: "過去の善悪の行いに応じた報いが必ず返ってくるということ。",
+            example: "因果応報、人に親切にしてきたおかげで困ったときに助けてもらえた。", category: .luck),
+
+    Proverb(id: 395, text: "千載一遇", reading: "せんざいいちぐう",
+            meaning: "千年に一度あるかないかの、またとない絶好の機会のこと。",
+            example: "この案件は千載一遇のチャンス、絶対に逃したくない。", category: .luck),
+
+    Proverb(id: 396, text: "九死一生", reading: "きゅうしいっしょう",
+            meaning: "ほとんど助からないような危険な状況から、かろうじて生き延びること。",
+            example: "登山中に遭難し、九死一生の思いで生還した。", category: .luck),
+
+    // MARK: - 感情・心 追加分 (ids 397-430)
+
+    Proverb(id: 397, text: "喉元過ぎれば熱さを忘れる", reading: "のどもとすぎればあつさをわすれる",
+            meaning: "苦しいことも、過ぎ去ってしまえばすぐに忘れてしまうということ。",
+            example: "喉元過ぎれば熱さを忘れるで、あれほど辛かった受験勉強も今は懐かしい。", category: .emotion),
+
+    Proverb(id: 398, text: "目から鱗が落ちる", reading: "めからうろこがおちる",
+            meaning: "今まで気づかなかったことが突然わかり、視界が開ける感覚のこと。",
+            example: "先輩の一言で目から鱗が落ちる思いがし、問題の解決策が見えた。", category: .emotion),
+
+    Proverb(id: 399, text: "寝耳に水", reading: "ねみにみず",
+            meaning: "寝ていると耳に水が入るように、突然の驚くべき知らせに驚くこと。",
+            example: "急な転勤命令は寝耳に水で、しばらく状況が飲み込めなかった。", category: .emotion),
+
+    Proverb(id: 400, text: "青天の霹靂", reading: "せいてんのへきれき",
+            meaning: "青空に突然雷が落ちるように、突然の予想外の出来事に驚くこと。",
+            example: "突然の解雇通知は青天の霹靂で、言葉も出なかった。", category: .emotion),
+
+    Proverb(id: 401, text: "顔から火が出る", reading: "かおからひがでる",
+            meaning: "恥ずかしさのあまり、顔が真っ赤になること。非常に恥ずかしい思いをすること。",
+            example: "人前で大きなミスをして顔から火が出るほど恥ずかしかった。", category: .emotion),
+
+    Proverb(id: 402, text: "胸がつぶれる", reading: "むねがつぶれる",
+            meaning: "非常に悲しく、つらい思いをすること。心が痛むこと。",
+            example: "子どもが泣いている姿を見て胸がつぶれる思いだった。", category: .emotion),
+
+    Proverb(id: 403, text: "心が躍る", reading: "こころがおどる",
+            meaning: "期待や喜びで気持ちがわくわくと高まること。",
+            example: "旅行の計画を立てていると心が躍る。", category: .emotion),
+
+    Proverb(id: 404, text: "身の毛もよだつ", reading: "みのけもよだつ",
+            meaning: "恐怖や嫌悪感で体の毛が逆立つほどぞっとすること。",
+            example: "身の毛もよだつような怖い話を聞いて眠れなくなった。", category: .emotion),
+
+    Proverb(id: 405, text: "肩の荷が下りる", reading: "かたのにがおりる",
+            meaning: "重い責任や心配事から解放されてほっとすること。",
+            example: "無事にプロジェクトが完了し、肩の荷が下りた。", category: .emotion),
+
+    Proverb(id: 406, text: "涙をのむ", reading: "なみだをのむ",
+            meaning: "悲しみや悔しさを堪えて、表に出さないこと。",
+            example: "理不尽な決定に涙をのんだが、次のチャンスに向けて気持ちを切り替えた。", category: .emotion),
+
+    Proverb(id: 407, text: "居ても立ってもいられない", reading: "いてもたってもいられない",
+            meaning: "気になることがあって、じっとしていられない落ち着かない状態。",
+            example: "試験結果の発表を待つ間、居ても立ってもいられない気持ちだった。", category: .emotion),
+
+    Proverb(id: 408, text: "目を丸くする", reading: "めをまるくする",
+            meaning: "驚いて目を大きく見開くこと。非常に驚くこと。",
+            example: "予想外の結果に目を丸くして、しばらく言葉が出なかった。", category: .emotion),
+
+    Proverb(id: 409, text: "耳を疑う", reading: "みみをうたがう",
+            meaning: "聞いた内容が信じられず、本当に聞こえたのかどうかを疑うほど驚くこと。",
+            example: "まさかの合格通知に耳を疑い、何度も読み返した。", category: .emotion),
+
+    Proverb(id: 410, text: "鼻が高い", reading: "はながたかい",
+            meaning: "得意になって誇らしい気持ちでいること。",
+            example: "子どもが表彰されて鼻が高い思いだった。", category: .emotion),
+
+    Proverb(id: 411, text: "血の気が引く", reading: "ちのけがひく",
+            meaning: "恐怖や驚きで顔が青ざめること。",
+            example: "財布がないことに気づいて血の気が引いた。", category: .emotion),
+
+    Proverb(id: 412, text: "怒り心頭に発する", reading: "いかりしんとうにはっする",
+            meaning: "非常に激しく怒ること。怒りが頂点に達すること。",
+            example: "理不尽な扱いに怒り心頭に発したが、冷静を保つよう努めた。", category: .emotion),
+
+    Proverb(id: 413, text: "胸を打たれる", reading: "むねをうたれる",
+            meaning: "感動が胸に響き、強く心を動かされること。",
+            example: "被災地でのボランティア活動の話に胸を打たれた。", category: .emotion),
+
+    Proverb(id: 414, text: "歯がゆい", reading: "はがゆい",
+            meaning: "思いどおりにならずじれったく、もどかしく感じること。",
+            example: "助けたいのに何もできない歯がゆさを感じた。", category: .emotion),
+
+    Proverb(id: 415, text: "身が引き締まる", reading: "みがひきしまる",
+            meaning: "緊張感や責任感から、気持ちが引き締まること。",
+            example: "大役を任されて身が引き締まる思いだった。", category: .emotion),
+
+    Proverb(id: 416, text: "喜怒哀楽", reading: "きどあいらく",
+            meaning: "喜び・怒り・悲しみ・楽しみの四つ。人間のあらゆる感情を表す言葉。",
+            example: "あの映画は喜怒哀楽すべての感情を味わわせてくれる傑作だ。", category: .emotion),
+
+    Proverb(id: 417, text: "一喜一憂", reading: "いっきいちゆう",
+            meaning: "状況が変わるたびに、喜んだり心配したりすること。",
+            example: "試合の流れに一喜一憂しながら応援した。", category: .emotion),
+
+    Proverb(id: 418, text: "心機一転", reading: "しんきいってん",
+            meaning: "気持ちをがらりと切り替えて、新たな気持ちで取り組むこと。",
+            example: "心機一転、新しい環境で一からやり直そうと決意した。", category: .emotion),
+
+    Proverb(id: 419, text: "無我夢中", reading: "むがむちゅう",
+            meaning: "我を忘れて、一つのことに夢中になること。",
+            example: "無我夢中で作業に集中していたら、気づいたら夜になっていた。", category: .emotion),
+
+    Proverb(id: 420, text: "七転八倒", reading: "しちてんばっとう",
+            meaning: "ひどい苦しみや痛みで転げまわること。または激しく苦悩すること。",
+            example: "腹痛がひどく、七転八倒の苦しみだった。", category: .emotion),
 ]
 // swiftlint:enable file_length line_length
