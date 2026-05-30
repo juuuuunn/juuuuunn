@@ -5,93 +5,108 @@ struct SettingsView: View {
 
     @EnvironmentObject private var viewModel: ProverbViewModel
 
-    @State private var notificationTime: Date = {
-        var components = DateComponents()
-        components.hour = 8
-        components.minute = 0
-        return Calendar.current.date(from: components) ?? Date()
-    }()
+    @State private var slotTimes: [Date] = Array(repeating: Date(), count: 3)
 
     var body: some View {
         NavigationStack {
             Form {
-                notificationSection
+                if viewModel.authorizationStatus == .denied {
+                    deniedSection
+                } else {
+                    ForEach(viewModel.notificationSlots) { slot in
+                        slotSection(slot)
+                    }
+                }
                 infoSection
             }
             .navigationTitle("設定")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 viewModel.refreshAuthorizationStatus()
-                syncTimePicker()
+                syncSlotTimes()
             }
         }
     }
 
     // MARK: - Sections
 
-    private var notificationSection: some View {
+    private var deniedSection: some View {
         Section {
-            notificationToggleRow
-            if viewModel.notificationEnabled && viewModel.authorizationStatus == .authorized {
-                timePickerRow
+            HStack {
+                Label("通知を受け取る", systemImage: "bell.fill")
+                    .foregroundStyle(.primary)
+                Spacer()
+                Button("設定を開く") { openSystemSettings() }
+                    .font(.subheadline)
             }
         } header: {
             Text("毎日のことわざ通知")
         } footer: {
-            notificationFooterText
+            Text("通知が拒否されています。iOSの設定アプリから「ことわざ」アプリの通知を許可してください。")
         }
     }
 
-    private var notificationToggleRow: some View {
-        HStack {
-            Label("通知を受け取る", systemImage: "bell.fill")
-                .foregroundStyle(.primary)
+    @ViewBuilder
+    private func slotSection(_ slot: NotificationSlot) -> some View {
+        let slotIndex = slot.id
+        let slotNames = ["通知 1", "通知 2", "通知 3"]
 
-            Spacer()
-
-            if viewModel.authorizationStatus == .denied {
-                Button("設定を開く") {
-                    openSystemSettings()
-                }
-                .font(.subheadline)
-            } else {
+        Section {
+            // Toggle
+            HStack {
+                Label(slotNames[slotIndex], systemImage: "bell.fill")
+                    .foregroundStyle(.primary)
+                Spacer()
                 Toggle("", isOn: Binding(
-                    get: { viewModel.notificationEnabled },
+                    get: { viewModel.notificationSlots[slotIndex].enabled },
                     set: { newValue in
                         if viewModel.authorizationStatus == .notDetermined {
-                            viewModel.requestNotificationPermission()
+                            viewModel.requestNotificationPermission(slotId: slotIndex)
                         } else {
-                            viewModel.toggleNotification(enabled: newValue)
+                            viewModel.toggleSlot(id: slotIndex, enabled: newValue)
                         }
                     }
                 ))
                 .tint(.orange)
             }
-        }
-    }
 
-    private var timePickerRow: some View {
-        DatePicker(
-            "通知時刻",
-            selection: $notificationTime,
-            displayedComponents: .hourAndMinute
-        )
-        .onChange(of: notificationTime) { _, newValue in
-            let components = Calendar.current.dateComponents([.hour, .minute], from: newValue)
-            viewModel.updateNotificationTime(
-                hour: components.hour ?? 8,
-                minute: components.minute ?? 0
-            )
-        }
-        .tint(.orange)
-    }
+            if viewModel.notificationSlots[slotIndex].enabled {
+                // Time picker
+                DatePicker(
+                    "通知時刻",
+                    selection: $slotTimes[slotIndex],
+                    displayedComponents: .hourAndMinute
+                )
+                .onChange(of: slotTimes[slotIndex]) { _, newValue in
+                    let components = Calendar.current.dateComponents([.hour, .minute], from: newValue)
+                    var updated = viewModel.notificationSlots[slotIndex]
+                    updated.hour = components.hour ?? 8
+                    updated.minute = components.minute ?? 0
+                    viewModel.updateSlot(updated)
+                }
+                .tint(.orange)
 
-    @ViewBuilder
-    private var notificationFooterText: some View {
-        if viewModel.authorizationStatus == .denied {
-            Text("通知が拒否されています。iOSの設定アプリから「ことわざ」アプリの通知を許可してください。")
-        } else {
-            Text("毎日設定した時刻に、その日のことわざをお知らせします。")
+                // Category picker
+                Picker("カテゴリ", selection: Binding(
+                    get: { viewModel.notificationSlots[slotIndex].category },
+                    set: { newCategory in
+                        var updated = viewModel.notificationSlots[slotIndex]
+                        updated.category = newCategory
+                        viewModel.updateSlot(updated)
+                    }
+                )) {
+                    Text("すべて").tag(Optional<ProverbCategory>.none)
+                    ForEach(ProverbCategory.allCases, id: \.self) { category in
+                        Text(category.rawValue).tag(Optional(category))
+                    }
+                }
+            }
+        } header: {
+            Text(slotNames[slotIndex])
+        } footer: {
+            if slotIndex == 0 && !viewModel.notificationEnabled {
+                Text("毎日設定した時刻に、その日のことわざをお知らせします。")
+            }
         }
     }
 
@@ -105,12 +120,14 @@ struct SettingsView: View {
 
     // MARK: - Helpers
 
-    private func syncTimePicker() {
-        var components = DateComponents()
-        components.hour = viewModel.notificationHour
-        components.minute = viewModel.notificationMinute
-        if let date = Calendar.current.date(from: components) {
-            notificationTime = date
+    private func syncSlotTimes() {
+        for slot in viewModel.notificationSlots {
+            var components = DateComponents()
+            components.hour = slot.hour
+            components.minute = slot.minute
+            if let date = Calendar.current.date(from: components) {
+                slotTimes[slot.id] = date
+            }
         }
     }
 

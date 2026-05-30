@@ -6,9 +6,7 @@ final class ProverbViewModel: ObservableObject {
 
     @Published var todaysProverb: Proverb
     @Published var selectedCategory: ProverbCategory? = nil
-    @Published var notificationEnabled: Bool = false
-    @Published var notificationHour: Int = 8
-    @Published var notificationMinute: Int = 0
+    @Published var notificationSlots: [NotificationSlot] = NotificationSlot.defaults
     @Published var authorizationStatus: UNAuthorizationStatus = .notDetermined
 
     private let notificationService = NotificationService.shared
@@ -30,41 +28,42 @@ final class ProverbViewModel: ObservableObject {
 
     // MARK: - Notification
 
-    func requestNotificationPermission() {
+    var notificationEnabled: Bool {
+        notificationSlots.contains(where: \.enabled)
+    }
+
+    func requestNotificationPermission(slotId: Int) {
         notificationService.requestAuthorization { [weak self] granted in
             guard let self else { return }
-            self.notificationEnabled = granted
             if granted {
-                self.notificationService.scheduleDailyNotifications(
-                    hour: self.notificationHour,
-                    minute: self.notificationMinute
-                )
+                self.notificationSlots[slotId].enabled = true
+                self.notificationService.scheduleNotifications(slots: self.notificationSlots)
             }
             self.saveSettings()
             self.refreshAuthorizationStatus()
         }
     }
 
-    func updateNotificationTime(hour: Int, minute: Int) {
-        notificationHour = hour
-        notificationMinute = minute
+    func updateSlot(_ slot: NotificationSlot) {
+        guard slot.id < notificationSlots.count else { return }
+        notificationSlots[slot.id] = slot
         saveSettings()
         if notificationEnabled {
-            notificationService.scheduleDailyNotifications(hour: hour, minute: minute)
-        }
-    }
-
-    func toggleNotification(enabled: Bool) {
-        notificationEnabled = enabled
-        if enabled {
-            notificationService.scheduleDailyNotifications(
-                hour: notificationHour,
-                minute: notificationMinute
-            )
+            notificationService.scheduleNotifications(slots: notificationSlots)
         } else {
             notificationService.cancelAllNotifications()
         }
+    }
+
+    func toggleSlot(id: Int, enabled: Bool) {
+        guard id < notificationSlots.count else { return }
+        notificationSlots[id].enabled = enabled
         saveSettings()
+        if notificationEnabled {
+            notificationService.scheduleNotifications(slots: notificationSlots)
+        } else {
+            notificationService.cancelAllNotifications()
+        }
     }
 
     func refreshAuthorizationStatus() {
@@ -82,16 +81,32 @@ final class ProverbViewModel: ObservableObject {
     }
 
     private func saveSettings() {
-        let defaults = UserDefaults.standard
-        defaults.set(notificationEnabled, forKey: "notificationEnabled")
-        defaults.set(notificationHour, forKey: "notificationHour")
-        defaults.set(notificationMinute, forKey: "notificationMinute")
+        if let data = try? JSONEncoder().encode(notificationSlots) {
+            UserDefaults.standard.set(data, forKey: "notificationSlots")
+        }
     }
 
     private func loadSettings() {
         let defaults = UserDefaults.standard
-        notificationEnabled = defaults.bool(forKey: "notificationEnabled")
-        notificationHour = defaults.object(forKey: "notificationHour") as? Int ?? 8
-        notificationMinute = defaults.object(forKey: "notificationMinute") as? Int ?? 0
+
+        if let data = defaults.data(forKey: "notificationSlots"),
+           let slots = try? JSONDecoder().decode([NotificationSlot].self, from: data) {
+            notificationSlots = slots
+            return
+        }
+
+        // Migrate from old single-slot keys
+        if defaults.object(forKey: "notificationEnabled") != nil {
+            let wasEnabled = defaults.bool(forKey: "notificationEnabled")
+            let hour = defaults.object(forKey: "notificationHour") as? Int ?? 8
+            let minute = defaults.object(forKey: "notificationMinute") as? Int ?? 0
+            notificationSlots[0].enabled = wasEnabled
+            notificationSlots[0].hour = hour
+            notificationSlots[0].minute = minute
+            defaults.removeObject(forKey: "notificationEnabled")
+            defaults.removeObject(forKey: "notificationHour")
+            defaults.removeObject(forKey: "notificationMinute")
+            saveSettings()
+        }
     }
 }

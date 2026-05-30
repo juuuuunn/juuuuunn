@@ -19,14 +19,18 @@ final class NotificationService {
         }
     }
 
-    // 毎日指定時刻に通知をスケジュールする（起動時に呼ぶ）
-    func scheduleDailyNotifications(hour: Int, minute: Int) {
+    // 最大3スロット × 21日分 = 63件（iOSの上限64件以内）
+    func scheduleNotifications(slots: [NotificationSlot]) {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
 
-        // 今日を基準に 64 日分スケジュール（iOSの上限は64件）
-        for dayOffset in 0..<64 {
-            let proverb = proverbForDayOffset(dayOffset)
-            scheduleNotification(for: proverb, hour: hour, minute: minute, dayOffset: dayOffset)
+        let enabledSlots = slots.filter(\.enabled)
+        let daysPerSlot = enabledSlots.isEmpty ? 0 : min(21, 63 / max(enabledSlots.count, 1))
+
+        for slot in enabledSlots {
+            for dayOffset in 0..<daysPerSlot {
+                let proverb = proverbForDayOffset(dayOffset, category: slot.category)
+                scheduleNotification(for: proverb, slot: slot, dayOffset: dayOffset)
+            }
         }
     }
 
@@ -36,35 +40,39 @@ final class NotificationService {
 
     // MARK: - Private
 
-    private func proverbForDayOffset(_ offset: Int) -> Proverb {
-        // 固定シード: 起動日ごとにことわざが変わるが再起動しても同じことわざ
+    private func proverbForDayOffset(_ offset: Int, category: ProverbCategory?) -> Proverb {
+        let pool: [Proverb]
+        if let category {
+            let filtered = allProverbs.filter { $0.category == category }
+            pool = filtered.isEmpty ? allProverbs : filtered
+        } else {
+            pool = allProverbs
+        }
+
         let today = Calendar.current.startOfDay(for: Date())
         guard let targetDate = Calendar.current.date(byAdding: .day, value: offset, to: today) else {
-            return allProverbs[offset % allProverbs.count]
+            return pool[offset % pool.count]
         }
         let daysSinceEpoch = Int(targetDate.timeIntervalSince1970) / 86400
-        let index = ((daysSinceEpoch % allProverbs.count) + allProverbs.count) % allProverbs.count
-        return allProverbs[index]
+        let index = ((daysSinceEpoch % pool.count) + pool.count) % pool.count
+        return pool[index]
     }
 
-    private func scheduleNotification(for proverb: Proverb,
-                                      hour: Int,
-                                      minute: Int,
-                                      dayOffset: Int) {
+    private func scheduleNotification(for proverb: Proverb, slot: NotificationSlot, dayOffset: Int) {
         let content = UNMutableNotificationContent()
-        content.title = "今日のことわざ"
+        content.title = slot.category.map { "今日の\($0.rawValue)" } ?? "今日のことわざ"
         content.body = "「\(proverb.text)」\n\(proverb.meaning.prefix(40))…"
         content.sound = .default
 
         var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: Date())
         dateComponents.day = (dateComponents.day ?? 0) + dayOffset
-        dateComponents.hour = hour
-        dateComponents.minute = minute
+        dateComponents.hour = slot.hour
+        dateComponents.minute = slot.minute
         dateComponents.second = 0
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let request = UNNotificationRequest(
-            identifier: "kotowaza_day_\(dayOffset)",
+            identifier: "kotowaza_slot\(slot.id)_day_\(dayOffset)",
             content: content,
             trigger: trigger
         )
