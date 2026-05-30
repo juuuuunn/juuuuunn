@@ -3751,5 +3751,349 @@ let allProverbs: [Proverb] = [
     Proverb(id: 922, text: "のけば他人", reading: "のけばたにん",
             meaning: "夫婦は離婚してしまえば、まったくの他人になるということ。「のく」は退くの意で、夫婦の縁が切れれば、長年連れ添った相手でも他人同然になってしまうことへの戒め。",
             example: "のけば他人というように、何十年も連れ添った夫婦も離婚すれば赤の他人になってしまう。", category: .relationships),
+
+    Proverb(id: 923, text: "負け惜しみの減らず口", reading: "まけおしみのへらずぐち",
+            meaning: "負けた者が悔しさを隠して、勝手な理屈を並べること。",
+            example: "彼は試合に負けても負け惜しみの減らず口ばかり叩いている。", category: .emotion),
+
+    Proverb(id: 924, text: "馬子にも衣装", reading: "まごにもいしょう",
+            meaning: "どんな人でも立派な衣装を身につければ、立派に見えるということ。",
+            example: "普段はぼさぼさの彼も、スーツを着たら馬子にも衣装で見違えた。", category: .wisdom),
+
+    Proverb(id: 925, text: "孫は子より可愛い", reading: "まごはこよりかわいい",
+            meaning: "祖父母にとって孫は子供よりもなお可愛いということ。",
+            example: "祖母は孫の話になると目を細めた。孫は子より可愛いとはよく言ったものだ。", category: .relationships),
+
+    Proverb(id: 926, text: "孫を飼うより犬ころ飼え", reading: "まごをかうよりいぬころかえ",
+            meaning: "孫を可愛がって費用をかけるよりも、忠実な犬を飼う方がよいという皮肉。",
+            example: "孫を飼うより犬ころ飼えとも言うが、それほど孫に費用がかかるものだ。", category: .relationships),
+
+    Proverb(id: 927, text: "待たせる身となるも待つ身となるな", reading: "またせるみとなるもまつみとなるな",
+            meaning: "人を待たせることはあっても、自分が待つ立場にはなるなという教え。",
+            example: "待たせる身となるも待つ身となるなと言う。約束の時間には余裕を持って出よう。", category: .wisdom),
+
+    Proverb(id: 928, text: "待つうちが花", reading: "まつうちがはな",
+            meaning: "結果が明らかになる前の、期待している間が最も楽しいということ。",
+            example: "合格発表を前にして、待つうちが花だと友人が言った。", category: .emotion),
+
+    Proverb(id: 929, text: "松かさより年かさ", reading: "まつかさよりとしかさ",
+            meaning: "松ぼっくりの容積より、年長者の経験の方がはるかに貴重だということ。",
+            example: "何か迷ったときは先輩に相談しよう。松かさより年かさというものだ。", category: .wisdom),
+
+    Proverb(id: 930, text: "待てば海路の日和あり", reading: "まてばかいろのひよりあり",
+            meaning: "辛抱強く待っていれば、いずれよい機会が訪れるということ。",
+            example: "今は不況でも、待てば海路の日和ありという言葉を信じて頑張った。", category: .luck),
+
+    Proverb(id: 931, text: "俎板の鯉", reading: "まないたのこい",
+            meaning: "相手の思いのままに従わなければならない絶体絶命の状態のたとえ。",
+            example: "交渉の席では完全に相手ペースで、まさに俎板の鯉の状態だった。", category: .wisdom),
+
+    Proverb(id: 932, text: "学びて思わざれば罔し", reading: "まなびておもわざればくらし",
+            meaning: "教えを受けるだけで自分で考えなければ、真の知識は身につかないということ。",
+            example: "本を読んでも考えなければ身につかない。学びて思わざれば罔しとはそのことだ。", category: .wisdom),
+
+    Proverb(id: 933, text: "眉唾", reading: "まゆつば",
+            meaning: "信用できない話や怪しいことに対して用心すること。",
+            example: "彼の話はどうも眉唾物で、そのまま信じるわけにはいかない。", category: .wisdom),
+
+    Proverb(id: 934, text: "丸い卵も切りようで四角", reading: "まるいたまごもきりようでしかく",
+            meaning: "言い方ややり方次第でどのようにでもなるということ。",
+            example: "丸い卵も切りようで四角というように、伝え方一つで印象は大きく変わる。", category: .wisdom),
+
+    Proverb(id: 935, text: "真綿で首締める", reading: "まわたでくびしめる",
+            meaning: "じわじわと時間をかけて責めたり苦しめたりすること。",
+            example: "彼は真綿で首を締めるように、少しずつ相手を追い詰めていった。", category: .emotion),
+
+    Proverb(id: 936, text: "真綿に針を包む", reading: "まわたにはりをつつむ",
+            meaning: "柔らかそうに見えて内に鋭さや悪意を秘めていること。",
+            example: "彼女の言葉は真綿に針を包んだようで、一見優しいが実は辛辣だった。", category: .wisdom),
+
+    Proverb(id: 937, text: "ミイラ取りがミイラになる", reading: "みいらとりがみいらになる",
+            meaning: "人を連れ戻しに行った者が、かえって自分もそちらに引き込まれてしまうこと。",
+            example: "彼女を説得しに行ったら、ミイラ取りがミイラになるように自分も引き込まれてしまった。", category: .action),
+
+    Proverb(id: 938, text: "身過ぎは草の種", reading: "みすぎはくさのたね",
+            meaning: "生活の手段は何でもよく、どこにでも転がっているということ。",
+            example: "身過ぎは草の種というように、働く気さえあれば仕事はいくらでもある。", category: .wisdom),
+
+    Proverb(id: 939, text: "水清ければ月宿る", reading: "みずきよければつきやどる",
+            meaning: "心が清らかであれば、良いものや美しいものが自然に集まるということ。",
+            example: "水清ければ月宿るというように、誠実な人のもとには信頼が集まる。", category: .wisdom),
+
+    Proverb(id: 940, text: "水に絵を描く", reading: "みずにえをかく",
+            meaning: "何の痕跡も残らない、無駄なことのたとえ。",
+            example: "砂上の楼閣に投資するのは水に絵を描くようなものだ。", category: .wisdom),
+
+    Proverb(id: 941, text: "水は逆さに流れず", reading: "みずはさかさにながれず",
+            meaning: "物事は自然の道理に逆らうことはできないということ。",
+            example: "水は逆さに流れずというように、時間を巻き戻すことはできない。", category: .nature),
+
+    Proverb(id: 942, text: "水広ければ魚大なり", reading: "みずひろければうおおおなり",
+            meaning: "環境が大きく豊かであれば、そこで育つ人物も大きくなるということ。",
+            example: "水広ければ魚大なりという。大きな組織で経験を積むことが大切だ。", category: .wisdom),
+
+    Proverb(id: 943, text: "水をもって石に投ず", reading: "みずをもっていしにとうず",
+            meaning: "石に水をかけても割ることはできないように、何の効果もないことのたとえ。",
+            example: "彼への説得は水をもって石に投ずるようなもので、全く効果がなかった。", category: .wisdom),
+
+    Proverb(id: 944, text: "味噌も糞も一緒", reading: "みそもくそもいっしょ",
+            meaning: "良いものも悪いものも区別せず一緒にしてしまうこと。",
+            example: "味噌も糞も一緒にして評価するのでは、公平な判断とは言えない。", category: .wisdom),
+
+    Proverb(id: 945, text: "三たび肘を折って良医となる", reading: "みたびひじをおってりょういとなる",
+            meaning: "幾度も苦労を重ねた経験があってこそ、本物の専門家になれるということ。",
+            example: "三たび肘を折って良医となるというように、失敗を重ねて初めて一人前になれる。", category: .effort),
+
+    Proverb(id: 946, text: "三日坊主", reading: "みっかぼうず",
+            meaning: "何を始めても長続きせず、すぐにやめてしまうこと。またそのような人。",
+            example: "日記を書こうと決めたのに、またすぐやめてしまった。いつも三日坊主で困る。", category: .effort),
+
+    Proverb(id: 947, text: "三つ叱って五つ褒め七つ教えて子は育つ", reading: "みつしかってごつほめななつおしえてこはそだつ",
+            meaning: "子供を育てるには、叱るより褒め、たくさん教えることが大切だということ。",
+            example: "三つ叱って五つ褒め七つ教えて子は育つというように、褒めることを大切にしている。", category: .wisdom),
+
+    Proverb(id: 948, text: "満つれば欠ける", reading: "みつればかける",
+            meaning: "物事は満ち足りた状態になると、やがて衰えていくという自然の道理。",
+            example: "満つれば欠けるというように、繁栄が続いた会社も油断すれば傾く。", category: .nature),
+
+    Proverb(id: 949, text: "見ぬ商いはできぬ", reading: "みぬあきないはできぬ",
+            meaning: "実際に品物を目で確認せずには取引はできないということ。",
+            example: "見ぬ商いはできぬというから、現物を確認してから契約することにした。", category: .wisdom),
+
+    Proverb(id: 950, text: "見ぬうちが花", reading: "みぬうちがはな",
+            meaning: "実際に見る前の方が想像の中では美しく、見てしまうと失望することがあるということ。",
+            example: "憧れの場所も見ぬうちが花で、実際に行ってみたら思ったほどではなかった。", category: .wisdom),
+
+    Proverb(id: 951, text: "実のなる木は花から知れ", reading: "みのなるきははなからしれ",
+            meaning: "将来実りをもたらす木は花の段階からわかるように、才能は幼い頃から現れるということ。",
+            example: "実のなる木は花から知れというように、彼の子供の頃からの才能は際立っていた。", category: .wisdom),
+
+    Proverb(id: 952, text: "身は習わし", reading: "みはならわし",
+            meaning: "習慣や環境によって人は変わるものだということ。",
+            example: "身は習わしというように、毎日続けることで自然と身についていく。", category: .wisdom),
+
+    Proverb(id: 953, text: "蚯蚓の木登り", reading: "みみずのきのぼり",
+            meaning: "地中に生きるミミズが木に登ろうとするように、不可能なことのたとえ。",
+            example: "準備もせずにエベレストに登ろうとするのは蚯蚓の木登りと同じだ。", category: .wisdom),
+
+    Proverb(id: 954, text: "耳取って鼻をかむ", reading: "みみとってはなをかむ",
+            meaning: "突拍子もなく無理な要求をすること。",
+            example: "一度も会ったことのない相手に多額の援助を求めるとは、耳取って鼻をかむとはこのことだ。", category: .wisdom),
+
+    Proverb(id: 955, text: "耳に胼胝", reading: "みみにたこ",
+            meaning: "同じことを繰り返し聞かされて、うんざりすること。",
+            example: "「早く結婚しなさい」という言葉は耳に胼胝ができるほど聞かされた。", category: .emotion),
+
+    Proverb(id: 956, text: "耳を傾けて鐘を盗む", reading: "みみをかたむけてかねをぬすむ",
+            meaning: "自分だけは気づかれないと思って悪事を働くが、実はとっくにばれているということ。",
+            example: "耳を傾けて鐘を盗むというように、こっそり不正をしても必ず発覚する。", category: .wisdom),
+
+    Proverb(id: 957, text: "見目は果報の基", reading: "みめはかほうのもとい",
+            meaning: "容姿が美しいことは、幸運を呼び込む基になるということ。",
+            example: "見目は果報の基というから、身だしなみを整えることも大切だ。", category: .luck),
+
+    Proverb(id: 958, text: "見ると聞くとは大違い", reading: "みるときくとはおおちがい",
+            meaning: "実際に自分の目で見るのと、人から聞いて知るのとでは大きな違いがあるということ。",
+            example: "見ると聞くとは大違いで、現地に行って初めてその深刻さを理解した。", category: .wisdom),
+
+    Proverb(id: 959, text: "見るに目の毒", reading: "みるにめのどく",
+            meaning: "見ると欲しくなったり悪影響を受けたりするので、見ない方がよいこと。",
+            example: "あの店のショーウィンドウは見るに目の毒で、つい財布のひもが緩んでしまう。", category: .emotion),
+
+    Proverb(id: 960, text: "身を捨ててこそ浮かぶ瀬もあれ", reading: "みをすててこそうかぶせもあれ",
+            meaning: "一身を投げ出す覚悟で事に当たってこそ、初めて活路が開けるということ。",
+            example: "身を捨ててこそ浮かぶ瀬もあれという言葉を胸に、困難な交渉に挑んだ。", category: .action),
+
+    Proverb(id: 961, text: "六日の菖蒲十日の菊", reading: "むいかのあやめとおかのきく",
+            meaning: "時機を逸してしまうと、役に立たなくなることのたとえ。",
+            example: "六日の菖蒲十日の菊というように、手遅れになってから謝っても意味がない。", category: .wisdom),
+
+    Proverb(id: 962, text: "向かうしに矢立たず", reading: "むかうしにやたたず",
+            meaning: "正面から向き合っている相手には、直接攻撃することができないということ。",
+            example: "向かうしに矢立たずというように、時には迂回して交渉する方がよい場合もある。", category: .wisdom),
+
+    Proverb(id: 963, text: "昔取った杵柄", reading: "むかしとったきねづか",
+            meaning: "若い頃に習得した技量は、年をとっても十分に発揮できるということ。",
+            example: "昔取った杵柄で、長年のブランクがあっても彼の料理の腕は衰えていなかった。", category: .effort),
+
+    Proverb(id: 964, text: "昔のことを言うと鬼が笑う", reading: "むかしのことをいうとおにがわらう",
+            meaning: "遠い過去のことをとやかく言っても、今更どうにもならないということ。",
+            example: "昔のことを言うと鬼が笑うというから、過去の失敗を蒸し返すのはやめよう。", category: .wisdom),
+
+    Proverb(id: 965, text: "昔の某今の金貨", reading: "むかしのなにがしいまのきんか",
+            meaning: "昔は立派な人物が今では卑しい立場になっていること。時代が変われば評価も変わるということ。",
+            example: "昔の某今の金貨というように、かつての英雄が今では忘れられた存在になっていた。", category: .emotion),
+
+    Proverb(id: 966, text: "昔は今の鏡", reading: "むかしはいまのかがみ",
+            meaning: "歴史を学ぶことが、現在を生きる上での参考になるということ。",
+            example: "昔は今の鏡というように、歴史から学ぶことで同じ過ちを繰り返さずにすむ。", category: .wisdom),
+
+    Proverb(id: 967, text: "百足は死んでも倒れず", reading: "むかではしんでもたおれず",
+            meaning: "勢力の基盤が強固で、衰えても余力があることのたとえ。",
+            example: "百足は死んでも倒れずというように、老舗の企業はなかなか潰れないものだ。", category: .action),
+
+    Proverb(id: 968, text: "麦と姑は踏むほどよい", reading: "むぎとしゅうとめはふむほどよい",
+            meaning: "麦も姑も、厳しく扱うほどよい結果が出るということ。",
+            example: "麦と姑は踏むほどよいとも言うが、適度な厳しさが人を育てることもある。", category: .relationships),
+
+    Proverb(id: 969, text: "無芸大食", reading: "むげいたいしょく",
+            meaning: "取り立てて芸や能力もないのに、食べることばかり旺盛なこと。",
+            example: "何も取り柄がないのに食欲だけは旺盛な弟は、無芸大食の典型だ。", category: .wisdom),
+
+    Proverb(id: 970, text: "娘の子は強盗八人", reading: "むすめのこはごうとうはちにん",
+            meaning: "娘を育てて嫁に出すまでには莫大な費用がかかるということ。",
+            example: "娘の子は強盗八人というように、三人の娘を嫁がせるまでは大変な出費だった。", category: .relationships),
+
+    Proverb(id: 971, text: "娘を見るより母を見よ", reading: "むすめをみるよりははをみよ",
+            meaning: "結婚相手を選ぶときは、娘より母親の人柄や性格を見よということ。",
+            example: "娘を見るより母を見よというように、彼女の母親の礼儀正しさに感心した。", category: .wisdom),
+
+    Proverb(id: 972, text: "胸に一物", reading: "むねにいちもつ",
+            meaning: "心の中に何か企みや考えを隠し持っていること。",
+            example: "彼の親切な申し出には胸に一物あるようで、素直に受け取れなかった。", category: .emotion),
+
+    Proverb(id: 973, text: "紫の朱を奪う", reading: "むらさきのしゅをうばう",
+            meaning: "似たような偽物が本物の地位を奪ってしまうこと。",
+            example: "紫の朱を奪うというように、質の低いコピー商品が市場を席巻してしまった。", category: .wisdom),
+
+    Proverb(id: 974, text: "無理が通れば道理引っ込む", reading: "むりがとおればどうりひっこむ",
+            meaning: "道理に合わないことが罷り通るようになると、正しい道理が通らなくなるということ。",
+            example: "無理が通れば道理引っ込むというが、権力者のわがままがまかり通る社会は健全ではない。", category: .wisdom),
+
+    Proverb(id: 975, text: "名人は人を誘らず", reading: "めいじんはひとをいざなわず",
+            meaning: "本当の名人は自分から人を誘ったり、他人の欠点を指摘したりしないということ。",
+            example: "名人は人を誘らずというように、本物の達人は静かに自分の道を歩むものだ。", category: .wisdom),
+
+    Proverb(id: 976, text: "命は義によって軽し", reading: "めいはぎによってかるし",
+            meaning: "命は大切なものだが、義のためには命も惜しまないということ。",
+            example: "命は義によって軽しと言った武将のように、信念のために命をかけた人は少なくない。", category: .action),
+
+    Proverb(id: 977, text: "雌牛に腹突かれる", reading: "めうしにはらつかれる",
+            meaning: "温和で油断のならない相手から、思わぬ打撃を受けること。",
+            example: "おとなしそうな彼女から猛烈に反論されて、雌牛に腹突かれた気分だった。", category: .action),
+
+    Proverb(id: 978, text: "目から鼻へ抜ける", reading: "めからはなへぬける",
+            meaning: "非常に賢くて、機転が利くこと。",
+            example: "彼女は目から鼻へ抜けるような人で、状況を素早く把握して対応した。", category: .wisdom),
+
+    Proverb(id: 979, text: "目から火が出る", reading: "めからひがでる",
+            meaning: "頭や顔などに強い衝撃を受けた時の状態を表す言葉。",
+            example: "転んで頭を打ち、目から火が出るような衝撃を感じた。", category: .emotion),
+
+    Proverb(id: 980, text: "目くじらを立てる", reading: "めくじらをたてる",
+            meaning: "些細なことにも目を吊り上げて怒ること。",
+            example: "目くじらを立てるほどのことでもないのに、彼はひどく怒った。", category: .emotion),
+
+    Proverb(id: 981, text: "目糞鼻糞を笑う", reading: "めくそはなくそをわらう",
+            meaning: "自分にも欠点があるのに、他人の欠点を笑うこと。",
+            example: "目糞鼻糞を笑うとはこのことで、彼は自分の失敗を棚に上げて人の批判をする。", category: .wisdom),
+
+    Proverb(id: 982, text: "盲蛇に怖じず", reading: "めくらへびにおじず",
+            meaning: "知識がないために、本来恐ろしいものでも恐れを知らないこと。",
+            example: "盲蛇に怖じずというように、危険を知らないまま突き進んでしまった。", category: .wisdom),
+
+    Proverb(id: 983, text: "飯の上の蠅", reading: "めしのうえのはえ",
+            meaning: "食事の上にとまる蠅のように、邪魔で迷惑な存在のたとえ。",
+            example: "あの人は会議の場でいつも揚げ足ばかり取る、飯の上の蠅のような存在だ。", category: .emotion),
+
+    Proverb(id: 984, text: "目には青葉山ほとぎす初鰹", reading: "めにはあおばやまほとぎすはつがつお",
+            meaning: "初夏の目・耳・口を楽しませる代表的な風物を詠んだ言葉。",
+            example: "目には青葉山ほとぎす初鰹という句のように、五月は感覚を楽しませる季節だ。", category: .nature),
+
+    Proverb(id: 985, text: "目には目歯には歯", reading: "めにはめはにはは",
+            meaning: "受けた害に対しては、同じ程度の報復をしてよいという考え方。",
+            example: "目には目歯には歯というように、やられたらやり返すという姿勢で交渉に臨んだ。", category: .action),
+
+    Proverb(id: 986, text: "目の上の瘤", reading: "めのうえのこぶ",
+            meaning: "自分の地位より少し上にあって、邪魔で目障りな存在のたとえ。",
+            example: "彼はライバル会社の敏腕営業マンを目の上の瘤だと思っていた。", category: .emotion),
+
+    Proverb(id: 987, text: "目の正月", reading: "めのしょうがつ",
+            meaning: "美しいものや珍しいものを見て楽しむこと。",
+            example: "美術館で名画を鑑賞して、目の正月をした気分だった。", category: .emotion),
+
+    Proverb(id: 988, text: "目を皿", reading: "めをさら",
+            meaning: "目を大きく開いて熱心に探したり見たりする様子。",
+            example: "落とした指輪を探して、目を皿にして床を見回した。", category: .action),
+
+    Proverb(id: 989, text: "面壁九年", reading: "めんびきゅうねん",
+            meaning: "長年、わき目もふらずに一つのことに没頭して努力すること。",
+            example: "面壁九年の末に完成した彼の作品は、多くの人を感動させた。", category: .effort),
+
+    Proverb(id: 990, text: "面々の楊貴妃", reading: "めんめんのようきひ",
+            meaning: "誰もが自分の恋人や妻を最高の美人だと思っているということ。",
+            example: "面々の楊貴妃というように、それぞれが自分の妻を世界一だと思っているものだ。", category: .relationships),
+
+    Proverb(id: 991, text: "盲亀の浮木", reading: "もうきのふぼく",
+            meaning: "めったにあり得ない幸運なめぐり合わせのたとえ。",
+            example: "こんな偶然の出会いは盲亀の浮木のようなもので、二度とないだろう。", category: .luck),
+
+    Proverb(id: 992, text: "持ちつ持たれつ", reading: "もちつもたれつ",
+            meaning: "お互いに助け合い、頼り合うこと。",
+            example: "持ちつ持たれつの関係で、二つの会社はうまく協力して事業を進めた。", category: .relationships),
+
+    Proverb(id: 993, text: "餅に砂糖", reading: "もちにさとう",
+            meaning: "良いものにさらに良いものを加えることのたとえ。",
+            example: "実力のある彼がさらに経験を積んだのは、餅に砂糖のようなものだ。", category: .wisdom),
+
+    Proverb(id: 994, text: "餅は乞食に焼かせろ魚は殿様に焼かせろ", reading: "もちはこじきにやかせろさかなはとのさまにやかせろ",
+            meaning: "餅はじっくりと、魚はさっと焼くのがよいということ。物には適した扱い方があるということ。",
+            example: "餅は乞食に焼かせろ魚は殿様に焼かせろというように、物には適した調理法がある。", category: .wisdom),
+
+    Proverb(id: 995, text: "持ったが病", reading: "もったがやまい",
+            meaning: "物を持つと手放せなくなり、かえって不便になること。",
+            example: "余分な荷物は持ったが病で、持ち過ぎて動きが取れなくなった。", category: .wisdom),
+
+    Proverb(id: 996, text: "持つべきものは子", reading: "もつべきものはこ",
+            meaning: "困った時に助けてくれる子供こそ、最も大切な宝であるということ。",
+            example: "怪我をして入院した時、子供たちが毎日見舞いに来てくれた。持つべきものは子だと感じた。", category: .relationships),
+
+    Proverb(id: 997, text: "元の鞘へ収める", reading: "もとのさやへおさめる",
+            meaning: "仲違いした者同士が仲直りして、元の関係に戻ること。",
+            example: "けんかをしていた二人も、共通の友人の仲介で元の鞘へ収まった。", category: .relationships),
+
+    Proverb(id: 998, text: "元の女房に仲人なし", reading: "もとのにょうぼうになこうどなし",
+            meaning: "別れた夫婦が再び一緒になる時は仲人が不要なほど、簡単だということ。",
+            example: "元の女房に仲人なしというように、別れた二人はあっさりと再婚した。", category: .relationships),
+
+    Proverb(id: 999, text: "元のもくあみ", reading: "もとのもくあみ",
+            meaning: "苦労して手に入れたものも、結局は元の状態に戻ってしまうこと。",
+            example: "せっかく痩せたのに、また太ってしまって元のもくあみになった。", category: .effort),
+
+    Proverb(id: 1000, text: "元も子も失う", reading: "もともこもうしなう",
+            meaning: "元金だけでなく利益も合わせて、すべてを失ってしまうこと。",
+            example: "欲をかいて大きな賭けに出た結果、元も子も失ってしまった。", category: .wisdom),
+
+    Proverb(id: 1001, text: "物言えば唇寒し", reading: "ものいえばくちびるさむし",
+            meaning: "余計なことを口にすると、後で何かと面倒なことが起こるということ。",
+            example: "物言えば唇寒しというから、会議では余計な発言を控えるようにしている。", category: .wisdom),
+
+    Proverb(id: 1002, text: "物種は盗まれず人種は盗まれず", reading: "ものだねはぬすまれずひとだねはぬすまれず",
+            meaning: "植物の種は誰にも盗めないように、人の才能や品性は誰にも奪えないということ。",
+            example: "物種は盗まれず人種は盗まれずというように、真の才能は誰にも奪えない。", category: .wisdom),
+
+    Proverb(id: 1003, text: "物には時節", reading: "ものにはじせつ",
+            meaning: "何事もそれに適した時期があるということ。",
+            example: "物には時節というように、今は動く時ではないとじっと待つことにした。", category: .wisdom),
+
+    Proverb(id: 1004, text: "物は相談", reading: "ものはそうだん",
+            meaning: "何事も一人で抱え込まず、誰かに相談することが大切だということ。",
+            example: "物は相談というから、困った時は遠慮なく話しかけてください。", category: .wisdom),
+
+    Proverb(id: 1005, text: "物は試し", reading: "ものはためし",
+            meaning: "まずやってみること。試してみなければわからないということ。",
+            example: "物は試しというから、苦手な料理にも挑戦してみることにした。", category: .action),
+
+    Proverb(id: 1006, text: "貰う物は夏でも小袖", reading: "もらうものはなつでもこそで",
+            meaning: "もらえるものは何でも有り難く受け取るべきだということ。",
+            example: "貰う物は夏でも小袖というように、せっかくの厚意は素直に受け取るべきだ。", category: .wisdom),
+
+    Proverb(id: 1007, text: "門前に市をなす", reading: "もんぜんにいちをなす",
+            meaning: "名声や地位のある人の門前に多くの人が集まること。",
+            example: "有名な政治家の事務所は門前に市をなすほど、陳情者が押しかけていた。", category: .relationships),
+
+    Proverb(id: 1008, text: "門に入らば笠を脱げ", reading: "もんにいらばかさをぬげ",
+            meaning: "他人の家や組織に入る時は、礼儀をわきまえて行動せよということ。",
+            example: "門に入らば笠を脱げというように、よその会社を訪問する際は礼儀を尽くした。", category: .wisdom),
 ]
 // swiftlint:enable file_length line_length
