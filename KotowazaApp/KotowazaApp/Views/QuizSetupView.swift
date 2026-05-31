@@ -7,16 +7,14 @@ struct QuizSetupView: View {
     private let questionCountOptions = [5, 10, 20]
 
     var body: some View {
-        NavigationStack {
-            Form {
-                modeSection
-                filterSection
-                countSection
-                startSection
-            }
-            .navigationTitle("クイズ設定")
-            .navigationBarTitleDisplayMode(.large)
+        Form {
+            modeSection
+            filterSection
+            countSection
+            startSection
         }
+        .navigationTitle("クイズ設定")
+        .navigationBarTitleDisplayMode(.large)
     }
 
     // MARK: - Sections

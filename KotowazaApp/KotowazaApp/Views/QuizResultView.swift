@@ -5,25 +5,23 @@ struct QuizResultView: View {
     @ObservedObject var viewModel: QuizViewModel
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    scoreCard
-                    reviewList
-                }
-                .padding()
+        ScrollView {
+            VStack(spacing: 24) {
+                scoreCard
+                reviewList
             }
-            .navigationTitle("結果")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        viewModel.restart()
-                    } label: {
-                        Label("もう一度", systemImage: "arrow.counterclockwise")
-                    }
-                    .tint(.orange)
+            .padding()
+        }
+        .navigationTitle("結果")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    viewModel.restart()
+                } label: {
+                    Label("もう一度", systemImage: "arrow.counterclockwise")
                 }
+                .tint(.orange)
             }
         }
     }

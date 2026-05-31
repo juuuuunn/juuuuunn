@@ -5,30 +5,28 @@ struct QuizPlayView: View {
     @ObservedObject var viewModel: QuizViewModel
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                progressBar
-                if let question = viewModel.currentQuestion {
-                    ScrollView {
-                        VStack(spacing: 20) {
-                            questionCard(question)
-                            choicesGrid(question)
-                        }
-                        .padding()
+        VStack(spacing: 0) {
+            progressBar
+            if let question = viewModel.currentQuestion {
+                ScrollView {
+                    VStack(spacing: 20) {
+                        questionCard(question)
+                        choicesGrid(question)
                     }
+                    .padding()
+                }
 
-                    if viewModel.answers[question.id] != nil {
-                        nextButton(question)
-                    }
+                if viewModel.answers[question.id] != nil {
+                    nextButton(question)
                 }
             }
-            .navigationTitle("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("やめる") { viewModel.restart() }
-                        .foregroundStyle(.secondary)
-                }
+        }
+        .navigationTitle("Q\(viewModel.currentIndex + 1) / \(viewModel.questions.count)")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("やめる") { viewModel.restart() }
+                    .foregroundStyle(.secondary)
             }
         }
     }
