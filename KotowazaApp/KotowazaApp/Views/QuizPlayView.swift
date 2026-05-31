@@ -11,6 +11,7 @@ struct QuizPlayView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         questionCard(question)
+                        feedbackBanner(question)
                         choicesGrid(question)
                     }
                     .padding()
@@ -55,15 +56,44 @@ struct QuizPlayView: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text(question.questionText)
-                .font(question.mode == .meaningFromProverb ? .title2 : .body)
-                .fontWeight(question.mode == .meaningFromProverb ? .bold : .regular)
-                .lineLimit(nil)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+            VStack(spacing: 6) {
+                Text(question.questionText)
+                    .font(question.mode == .meaningFromProverb ? .title2 : .body)
+                    .fontWeight(question.mode == .meaningFromProverb ? .bold : .regular)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+
+                if question.mode == .meaningFromProverb {
+                    Text(question.correct.reading)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+    }
+
+    @ViewBuilder
+    private func feedbackBanner(_ question: QuizQuestion) -> some View {
+        if let answeredID = viewModel.answers[question.id] {
+            let isCorrect = answeredID == question.correct.id
+            HStack(spacing: 8) {
+                Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .font(.title3)
+                Text(isCorrect ? "正解！" : "不正解")
+                    .font(.headline)
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 10)
+            .background(isCorrect ? Color.green : Color.red)
+            .clipShape(Capsule())
+            .frame(maxWidth: .infinity)
+            .transition(.scale.combined(with: .opacity))
+            .animation(.spring(duration: 0.3), value: viewModel.answers[question.id] != nil)
         }
     }
 
@@ -103,11 +133,19 @@ struct QuizPlayView: View {
                         .foregroundStyle(isCorrect ? .green : (isChosen ? .red : .secondary))
                         .font(.title3)
                 }
-                Text(question.choiceText(for: proverb))
-                    .font(.body)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(question.choiceText(for: proverb))
+                        .font(.body)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if question.mode == .proverbFromMeaning {
+                        Text(proverb.reading)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
             .background(bgColor)

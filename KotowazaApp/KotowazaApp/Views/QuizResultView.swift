@@ -99,10 +99,15 @@ struct QuizResultView: View {
 
         return VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top, spacing: 8) {
-                Image(systemName: correct ? "checkmark.circle.fill" : "xmark.circle.fill")
-                    .foregroundStyle(correct ? .green : .red)
-                    .font(.title3)
-                    .padding(.top, 2)
+                VStack(spacing: 2) {
+                    Image(systemName: correct ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        .foregroundStyle(correct ? .green : .red)
+                        .font(.title3)
+                    Text(correct ? "正解" : "不正解")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(correct ? .green : .red)
+                }
+                .padding(.top, 2)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Q\(index). \(question.questionText)")
@@ -110,9 +115,14 @@ struct QuizResultView: View {
                         .fontWeight(.semibold)
                         .lineLimit(2)
 
-                    Text("正解：\(question.correct.text)")
-                        .font(.caption)
-                        .foregroundStyle(.green)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("正解：\(question.correct.text)")
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                        Text(question.correct.reading)
+                            .font(.caption2)
+                            .foregroundStyle(.green.opacity(0.7))
+                    }
 
                     if !correct, let chosen {
                         Text("あなた：\(question.choiceText(for: chosen))")
