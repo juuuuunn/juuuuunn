@@ -13,6 +13,11 @@ struct ContentView: View {
                     Label("一覧", systemImage: "list.bullet")
                 }
 
+            QuizView()
+                .tabItem {
+                    Label("クイズ", systemImage: "questionmark.circle.fill")
+                }
+
             SettingsView()
                 .tabItem {
                     Label("設定", systemImage: "gearshape.fill")

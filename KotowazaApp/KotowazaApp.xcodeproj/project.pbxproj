@@ -19,6 +19,12 @@
 		AA030000000000000000000A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA020000000000000000000B /* SettingsView.swift */; };
 		AA030000000000000000000B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA020000000000000000000C /* Assets.xcassets */; };
 		AA030000000000000000000C /* NotificationSlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA020000000000000000000E /* NotificationSlot.swift */; };
+		AA030000000000000000000D /* QuizQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA020000000000000000000F /* QuizQuestion.swift */; };
+		AA030000000000000000000E /* QuizViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0200000000000000000010 /* QuizViewModel.swift */; };
+		AA030000000000000000000F /* QuizSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0200000000000000000011 /* QuizSetupView.swift */; };
+		AA0300000000000000000010 /* QuizPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0200000000000000000012 /* QuizPlayView.swift */; };
+		AA0300000000000000000011 /* QuizResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0200000000000000000013 /* QuizResultView.swift */; };
+		AA0300000000000000000012 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0200000000000000000014 /* QuizView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +42,12 @@
 		AA020000000000000000000C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA020000000000000000000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA020000000000000000000E /* NotificationSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSlot.swift; sourceTree = "<group>"; };
+		AA020000000000000000000F /* QuizQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizQuestion.swift; sourceTree = "<group>"; };
+		AA0200000000000000000010 /* QuizViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizViewModel.swift; sourceTree = "<group>"; };
+		AA0200000000000000000011 /* QuizSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizSetupView.swift; sourceTree = "<group>"; };
+		AA0200000000000000000012 /* QuizPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizPlayView.swift; sourceTree = "<group>"; };
+		AA0200000000000000000013 /* QuizResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizResultView.swift; sourceTree = "<group>"; };
+		AA0200000000000000000014 /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +97,7 @@
 			children = (
 				AA0200000000000000000003 /* Proverb.swift */,
 				AA020000000000000000000E /* NotificationSlot.swift */,
+				AA020000000000000000000F /* QuizQuestion.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -109,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0200000000000000000006 /* ProverbViewModel.swift */,
+				AA0200000000000000000010 /* QuizViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -121,6 +135,10 @@
 				AA0200000000000000000009 /* ProverbListView.swift */,
 				AA020000000000000000000A /* ProverbDetailView.swift */,
 				AA020000000000000000000B /* SettingsView.swift */,
+				AA0200000000000000000011 /* QuizSetupView.swift */,
+				AA0200000000000000000012 /* QuizPlayView.swift */,
+				AA0200000000000000000013 /* QuizResultView.swift */,
+				AA0200000000000000000014 /* QuizView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -205,6 +223,12 @@
 				AA0300000000000000000009 /* ProverbDetailView.swift in Sources */,
 				AA030000000000000000000A /* SettingsView.swift in Sources */,
 				AA030000000000000000000C /* NotificationSlot.swift in Sources */,
+				AA030000000000000000000D /* QuizQuestion.swift in Sources */,
+				AA030000000000000000000E /* QuizViewModel.swift in Sources */,
+				AA030000000000000000000F /* QuizSetupView.swift in Sources */,
+				AA0300000000000000000010 /* QuizPlayView.swift in Sources */,
+				AA0300000000000000000011 /* QuizResultView.swift in Sources */,
+				AA0300000000000000000012 /* QuizView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
